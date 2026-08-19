@@ -67,15 +67,10 @@ def forbidden(e):
     return render_template('error/403.html'), 403
 
 
+with app.app_context():
+    db.create_all()
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-
-        user = User.query.filter_by(phone='09035619305').first()
-        if user:
-            user.is_admin = True
-            db.session.commit()
-
     app.run(debug=True)
 
 
