@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}ثبت‌نام | {{ club_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media (max-width: 480px) {
+    .auth-card {
+        padding: 24px 18px;
+    }
+    .auth-card div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+    }
+    }
+    .auth-wrapper { padding-block: 80px; background: var(--mist); min-height: 80vh; display: flex; align-items: center; }
+    .auth-card { background: var(--white); width: 100%; max-width: 480px; margin: 0 auto; padding: 40px; border-radius: var(--radius); border: 1px solid #E4EAF5; box-shadow: 0 20px 40px -18px rgba(10,31,68,.1); }
+    .auth-card h2 { text-align: center; color: var(--navy); margin-bottom: 24px; font-weight: 800; }
+    
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 0.9rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .form-control { width: 100%; padding: 12px 16px; border: 1.5px solid #E4EAF5; border-radius: 8px; font-family: inherit; font-size: 0.95rem; outline: none; transition: border-color 0.25s; }
+    .form-control:focus { border-color: var(--sky); }
+    
+    .form-error { color: #e74c3c; font-size: 0.8rem; margin-top: 6px; display: block; font-weight: 500; }
+    
+    .btn-block { width: 100%; margin-top: 10px; }
+    
+    .auth-footer { text-align: center; margin-top: 24px; font-size: 0.9rem; color: var(--line); }
+    .auth-footer a { color: var(--sky); font-weight: 700; transition: color 0.2s; }
+    .auth-footer a:hover { color: var(--blue); }
+    
+    /* نمایش پیغام‌های سیستم (فلش مسیج‌ها) */
+    .flash-messages { margin-bottom: 20px; }
+    .alert { padding: 12px 16px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 10px; }
+    .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="wrap" style="width: 100%;">
+        <div class="auth-card">
+            <h2>ثبت‌نام در آکادمی</h2>
+
+
+
+            <form method="POST" action="" novalidate>
+                <!-- این تگ برای امنیت (جلوگیری از هک CSRF) ضروریه -->
+                {{ form.hidden_tag() }}
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        {{ form.first_name.label }}
+                        {{ form.first_name(class="form-control", placeholder="نام") }}
+                        {% for error in form.first_name.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.last_name.label }}
+                        {{ form.last_name(class="form-control", placeholder="نام خانوادگی") }}
+                        {% for error in form.last_name.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ form.phone.label }}
+                    {{ form.phone(class="form-control", placeholder="09123456789") }}
+                    {% for error in form.phone.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.password.label }}
+                    {{ form.password(class="form-control", placeholder="حداقل ۶ کاراکتر") }}
+                    {% for error in form.password.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.confirm_password.label }}
+                    {{ form.confirm_password(class="form-control", placeholder="تکرار رمز عبور") }}
+                    {% for error in form.confirm_password.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                {{ form.submit(class="btn btn-primary btn-block") }}
+            </form>
+
+            <div class="auth-footer">
+                قبلاً ثبت‌نام کرده‌اید؟ <a href="{{ url_for('auth.login') }}">وارد شوید</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

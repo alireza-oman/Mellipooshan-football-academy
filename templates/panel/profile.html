@@ -1,0 +1,120 @@
+{% extends "panel/base_panel.html" %}
+
+{% set active_page = "profile" %}
+
+{% block title %}پروفایل من | {{ club_name }}{% endblock %}
+{% block page_title %}تنظیمات پروفایل{% endblock %}
+
+{% block panel_content %}
+<div class="profile-container">
+
+    <div class="profile-grid">
+
+        <!-- ================= ستون سمت راست: اطلاعات و پسورد ================= -->
+        <div class="profile-main-column">
+
+            <!-- فرم اول: اطلاعات کاربری -->
+            <div class="profile-card">
+                <h3 class="section-title">اطلاعات کاربری</h3>
+
+                <form action="" method="POST" novalidate>
+                    {{ profile_form.hidden_tag() }}
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            {{ profile_form.first_name.label }}
+                            {{ profile_form.first_name(class="form-control", placeholder="نام") }}
+                            {% for error in profile_form.first_name.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                        </div>
+                        <div class="form-group">
+                            {{ profile_form.last_name.label }}
+                            {{ profile_form.last_name(class="form-control", placeholder="نام خانوادگی") }}
+                            {% for error in profile_form.last_name.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>شماره موبایل (غیر قابل تغییر)</label>
+                        <input type="text" class="form-control" value="{{ current_user.phone }}" disabled style="background: var(--mist); cursor: not-allowed;">
+                    </div>
+
+                    {{ profile_form.submit_profile(class="btn btn-primary") }}
+                </form>
+            </div>
+
+            <!-- فرم دوم: تغییر رمز عبور -->
+            <div class="profile-card" style="margin-top: 24px;">
+                <h3 class="section-title">تغییر رمز عبور</h3>
+
+                <form action="" method="POST" novalidate>
+                    {{ password_form.hidden_tag() }}
+
+                    <div class="form-group">
+                        {{ password_form.current_password.label }}
+                        {{ password_form.current_password(class="form-control", placeholder="••••••••") }}
+                        {% for error in password_form.current_password.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            {{ password_form.new_password.label }}
+                            {{ password_form.new_password(class="form-control", placeholder="حداقل ۶ کاراکتر") }}
+                            {% for error in password_form.new_password.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                        </div>
+                        <div class="form-group">
+                            {{ password_form.confirm_password.label }}
+                            {{ password_form.confirm_password(class="form-control", placeholder="تکرار رمز جدید") }}
+                            {% for error in password_form.confirm_password.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                        </div>
+                    </div>
+
+                    {{ password_form.submit_password(class="btn btn-primary") }}
+                </form>
+            </div>
+
+        </div>
+
+        <!-- ================= ستون سمت چپ: تصویر آواتار ================= -->
+        <div class="profile-side-column">
+
+            <!-- فرم سوم: تصویر آواتار -->
+            <div class="profile-card avatar-section">
+                <h3 class="section-title" style="text-align: center; width: 100%;">تصویر پروفایل</h3>
+
+                <form action="" method="POST" enctype="multipart/form-data" novalidate style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                    {{ avatar_form.hidden_tag() }}
+
+                    <div class="avatar-wrapper">
+                        <!-- لود هوشمند عکس کاربر: اگر آپلود کرده بود از پوشه uploads وگرنه عکس پیش‌فرض اصلی -->
+                        <img id="avatar-preview"
+                             src="{{ url_for('static', filename='uploads/avatars/' + current_user.avatar) }}"
+                             alt="عکس پروفایل">
+                    </div>
+
+                    <div class="upload-controls">
+                        <!-- دکمه شیک و بزرگ برای انتخاب عکس -->
+                        <button type="button" class="btn btn-ghost" id="upload-trigger" style="color: var(--blue); border-color: var(--blue); width: 100%; margin-bottom: 12px;">انتخاب عکس جدید</button>
+
+                        <!-- فیلد مخفی انتخاب فایل اصلی WTForms -->
+                        {{ avatar_form.avatar(id="avatar-input", style="display: none;") }}
+                        {% for error in avatar_form.avatar.errors %}<span class="form-error" style="text-align: center; margin-bottom: 12px;">{{ error }}</span>{% endfor %}
+
+                        <!-- دکمه ذخیره و آپلود عکس جدید -->
+                        {{ avatar_form.submit_avatar(class="btn btn-primary", style="width: 100%;") }}
+                    </div>
+                </form>
+
+                <p class="avatar-tip" style="margin-top: 16px;">فرمت‌های مجاز: JPG یا PNG. حداکثر حجم: ۲ مگابایت</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- جاوااسکریپت کنترل دکمه آپلود و پیش‌نمایش عکس -->
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}

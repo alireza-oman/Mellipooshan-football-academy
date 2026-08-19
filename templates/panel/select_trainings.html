@@ -1,0 +1,70 @@
+{% extends "panel/base_panel.html" %}
+
+{% set active_page = "dashboard" %}
+
+{% block title %}انتخاب شیفت تمرینی {{ reg.player_fullname }} | {{ club_name }}{% endblock %}
+{% block page_title %}انتخاب شیفت تمرینی{% endblock %}
+
+{% block panel_content %}
+<div class="profile-container" style="max-width: 850px; margin: 0 auto;">
+
+    <a href="{{ url_for('panel.dashboard') }}" class="btn btn-ghost" style="margin-bottom: 20px; font-size: 0.85rem;">
+        ← بازگشت به داشبورد
+    </a>
+
+    <div class="profile-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <h3 class="section-title" style="margin-bottom: 4px;">انتخاب شیفت تمرینی: {{ reg.player_fullname }}</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">لطفاً یکی از شیفت‌های تمرینی زیر را برای بازیکن انتخاب کنید:</p>
+            </div>
+            <span class="ann-badge category-ثبت‌نام">✅ شهریه تایید شده</span>
+        </div>
+
+        {% if all_trainings %}
+            <form method="POST" action="">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                    {% for t in all_trainings %}
+                        <label style="background: var(--mist); border: 2px solid {% if reg.training_id == t.id %}var(--blue){% else %}var(--line){% endif %}; border-radius: 12px; padding: 18px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.2s;">
+
+                            <div>
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                    <h4 style="color: var(--navy); font-size: 1.05rem; font-weight: 800;">{{ t.title }}</h4>
+                                    <input type="radio" name="training_id" value="{{ t.id }}" {% if reg.training_id == t.id %}checked{% endif %} style="width: 20px; height: 20px; accent-color: var(--blue); cursor: pointer;">
+                                </div>
+
+                                <div style="margin-bottom: 10px;">
+                                    <span class="ann-badge category-تمرینات" style="font-size: 0.75rem;">رده: {{ t.age_group }}</span>
+                                </div>
+
+                                <div style="font-size: 0.85rem; color: var(--navy); line-height: 1.9;">
+                                    <div><strong>📅 روزها:</strong> {{ t.days }}</div>
+                                    <div><strong>⏰ ساعت:</strong> {{ t.time }}</div>
+                                    <div><strong>📍 مکان:</strong> {{ t.venue_name }}</div>
+                                    {% if t.coach_name %}<div><strong>👨‍🏫 مربی:</strong> {{ t.coach_name }}</div>{% endif %}
+                                </div>
+                            </div>
+
+                            {% if t.notes %}
+                                <div style="font-size: 0.78rem; color: var(--text-muted); border-top: 1px dashed var(--line); padding-top: 8px; margin-top: 10px;">
+                                    💡 {{ t.notes }}
+                                </div>
+                            {% endif %}
+
+                        </label>
+                    {% endfor %}
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem;">
+                    ثبت و ذخیره شیفت تمرینی
+                </button>
+            </form>
+        {% else %}
+            <div class="empty-announcements" style="padding: 40px; text-align: center;">
+                <p>در حال حاضر هیچ شیفت تمرینی فعالی تعریف نشده است.</p>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

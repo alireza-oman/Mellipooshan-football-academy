@@ -1,0 +1,61 @@
+{% extends "admin/base_admin.html" %}
+
+<!-- فعال ماندن منوی ثبت اطلاعیه در زمان ویرایش -->
+{% set active_page = "new_announcement" %}
+
+{% block title %}ویرایش اطلاعیه | {{ club_name }}{% endblock %}
+{% block page_title %}ویرایش اطلاعیه باشگاه{% endblock %}
+
+{% block admin_content %}
+<div class="profile-container" style="max-width: 800px; margin: 0 auto;">
+    
+    <div class="profile-card">
+        <h3 class="section-title" style="color: var(--danger); border-right-color: var(--danger);">ویرایش پیام: {{ announcement.title }}</h3>
+        
+        <!-- فرم ویرایش اطلاعیه متصل به WTForms -->
+        <form method="POST" action="" novalidate>
+            <!-- توکن امنیتی CSRF -->
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                {{ form.title.label }}
+                {{ form.title(class="form-control", placeholder="عنوان اطلاعیه") }}
+                {% for error in form.title.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form.category.label }}
+                    {{ form.category(class="form-control") }}
+                    {% for error in form.category.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.author.label }}
+                    {{ form.author(class="form-control", placeholder="نویسنده پیام") }}
+                    {% for error in form.author.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                {{ form.content.label }}
+                {{ form.content(class="form-control", rows="6", placeholder="متن کامل اطلاعیه...", style="resize: vertical; height: auto;") }}
+                {% for error in form.content.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-top: 10px; cursor: pointer;">
+                {{ form.is_important(style="width: 18px; height: 16px; cursor: pointer; accent-color: var(--danger);", id="is_important") }}
+                <label for="is_important" style="margin-bottom: 0; cursor: pointer; font-weight: 700;">علامت‌گذاری به عنوان اطلاعیه فوری و بسیار مهم</label>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <!-- دکمه سابمیت ثبت تغییرات با تم مدیریت (قرمز رنگ) -->
+                {{ form.submit(class="btn btn-primary", style="background: var(--danger); box-shadow: 0 8px 16px -4px rgba(231, 76, 60, 0.3);") }}
+                
+                <!-- دکمه بازگشت به لیست اطلاعیه‌ها در صورت انصراف -->
+                <a href="{{ url_for('panel.announcements') }}" class="btn btn-ghost" style="border-color: var(--text-muted); color: var(--text-muted);">انصراف</a>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,585 @@
+{% extends "admin/base_admin.html" %}
+
+{% set active_page = "about_us" %}
+
+{% block title %}مدیریت درباره ما | {{ club_name }}{% endblock %}
+{% block page_title %}مدیریت جامع بخش‌های درباره ما{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* استایل‌های اختصاصی تب‌بندی */
+    .tabs-header {
+        display: flex;
+        gap: 8px;
+        border-bottom: 2px solid var(--line);
+        margin-bottom: 24px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+    .tab-btn {
+        padding: 10px 18px;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        background: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.25s ease;
+    }
+    .tab-btn:hover {
+        color: var(--navy);
+    }
+    .tab-btn.active {
+        color: var(--danger);
+        border-bottom-color: var(--danger);
+    }
+    .tab-content {
+        display: none;
+    }
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* استایل بهبودیافته شبکه کارت‌های ثبت‌شده */
+    .list-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 18px;
+        margin-top: 24px;
+    }
+    .item-card {
+        background: var(--white);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 18px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 4px 12px rgba(10, 31, 68, 0.03);
+    }
+    .item-card img {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        border: 1px solid var(--line);
+    }
+    .item-card h4 {
+        color: var(--navy);
+        font-size: 1rem;
+        font-weight: 800;
+        margin-bottom: 6px;
+    }
+    .item-card p {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-bottom: 12px;
+    }
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 32px;
+        background: var(--white);
+        border: 1px dashed var(--line);
+        border-radius: 12px;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+    .form-error {
+        color: var(--danger);
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: block;
+        margin-top: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block admin_content %}
+<div class="profile-container">
+
+    <!-- دکمه‌های سربرگ تب‌ها -->
+    <div class="tabs-header">
+        <button class="tab-btn active" onclick="openTab(event, 'tab-main')">📌 اطلاعات اصلی</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-features')">⭐ چرا ما؟</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-facilities')">🏟️ امکانات</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-coaches')">👨‍🏫 مربیان</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-ages')">⚽ رده‌های سنی</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-achievements')">🏆 افتخارات</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-stats')">📊 آمارها</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-gallery')">🖼️ گالری</button>
+    </div>
+
+    <!-- ================= زبانه ۱: اطلاعات اصلی ================= -->
+    <div id="tab-main" class="tab-content active">
+        <div class="profile-card">
+            <h3 class="section-title" style="color: var(--danger); border-right-color: var(--danger);">اطلاعات پایه، مأموریت و کادر ثبت‌نام</h3>
+
+            <form action="{{ url_for('admin.save_about_main') }}" method="POST" enctype="multipart/form-data" novalidate>
+                {{ main_form.hidden_tag() }}
+
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ main_form.established_year.label }}
+                        {{ main_form.established_year(class="form-control", placeholder="مثلاً: ۱۳۹۰") }}
+                        {% for error in main_form.established_year.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ main_form.age_summary.label }}
+                        {{ main_form.age_summary(class="form-control", placeholder="مثلاً: ۶ تا ۱۸ سال") }}
+                        {% for error in main_form.age_summary.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ main_form.main_goal.label }}
+                    {{ main_form.main_goal(class="form-control", rows="3") }}
+                    {% for error in main_form.main_goal.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                <div class="form-group">
+                    {{ main_form.intro_image.label }}
+                    {{ main_form.intro_image(class="form-control") }}
+                    {% for error in main_form.intro_image.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                <hr style="margin: 24px 0; border: 0; border-top: 1px solid var(--line);">
+
+                <div class="form-group">
+                    {{ main_form.mission.label }}
+                    {{ main_form.mission(class="form-control", rows="3") }}
+                    {% for error in main_form.mission.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                <div class="form-group">
+                    {{ main_form.vision.label }}
+                    {{ main_form.vision(class="form-control", rows="3") }}
+                    {% for error in main_form.vision.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                <div class="form-group">
+                    {{ main_form.long_term_goals.label }}
+                    {{ main_form.long_term_goals(class="form-control", rows="3") }}
+                    {% for error in main_form.long_term_goals.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                <hr style="margin: 24px 0; border: 0; border-top: 1px solid var(--line);">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ main_form.cta_title.label }}
+                        {{ main_form.cta_title(class="form-control") }}
+                        {% for error in main_form.cta_title.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ main_form.cta_btn_text.label }}
+                        {{ main_form.cta_btn_text(class="form-control") }}
+                        {% for error in main_form.cta_btn_text.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ main_form.cta_text.label }}
+                    {{ main_form.cta_text(class="form-control", rows="2") }}
+                    {% for error in main_form.cta_text.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                {{ main_form.submit(class="btn btn-primary", style="background: var(--danger);") }}
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= زبانه ۲: چرا ما؟ ================= -->
+    <div id="tab-features" class="tab-content">
+        <div class="profile-card">
+            <h3 class="section-title" style="color: var(--danger); border-right-color: var(--danger);">افزودن ویژگی جدید (چرا ما؟)</h3>
+            <form action="{{ url_for('admin.add_about_feature') }}" method="POST" novalidate>
+                {{ feature_form.hidden_tag() }}
+
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ feature_form.title.label }}
+                        {{ feature_form.title(class="form-control") }}
+                        {% for error in feature_form.title.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+
+                    <div class="form-group">
+                        {{ feature_form.icon.label }}
+                        {{ feature_form.icon(class="form-control") }}
+                        {% for error in feature_form.icon.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ feature_form.description.label }}
+                    {{ feature_form.description(class="form-control", rows="2") }}
+                    {% for error in feature_form.description.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                {{ feature_form.submit(class="btn btn-primary", style="background: var(--danger);") }}
+            </form>
+        </div>
+
+        <div class="list-grid">
+            {% if features %}
+                {% for item in features %}
+                    <div class="item-card">
+                        <div>
+                            <h4>{{ item.title }}</h4>
+                            <p>{{ item.description }}</p>
+                        </div>
+                        <form action="{{ url_for('admin.delete_about_feature', item_id=item.id) }}" method="POST" style="margin-top: 10px;">
+                            {{ empty_form.hidden_tag() }}
+                            <button type="submit" class="btn btn-ghost" style="color: var(--danger); border-color: var(--danger); padding: 4px 8px; font-size: 0.75rem; width: 100%;">حذف</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">هنوز هیچ ویژگی برای «چرا ما» ثبت نشده است.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ================= زبانه ۳: امکانات ================= -->
+    <div id="tab-facilities" class="tab-content">
+        <div class="profile-card">
+            <h3 class="section-title" style="color: var(--danger); border-right-color: var(--danger);">افزودن امکانات جدید</h3>
+            <form action="{{ url_for('admin.add_about_facility') }}" method="POST" enctype="multipart/form-data" novalidate>
+                {{ facility_form.hidden_tag() }}
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ facility_form.title.label }}
+                        {{ facility_form.title(class="form-control") }}
+                        {% for error in facility_form.title.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ facility_form.image.label }}
+                        {{ facility_form.image(class="form-control") }}
+                        {% for error in facility_form.image.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ facility_form.description.label }}
+                    {{ facility_form.description(class="form-control", rows="2") }}
+                    {% for error in facility_form.description.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+                {{ facility_form.submit(class="btn btn-primary", style="background: var(--danger);") }}
+            </form>
+        </div>
+
+        <div class="list-grid">
+            {% if facilities %}
+                {% for item in facilities %}
+                    <div class="item-card">
+                        <div>
+                            <img src="{{ url_for('static', filename='uploads/about/' + item.image) }}" alt="{{ item.title }}" onerror="this.src='{{ url_for('static', filename='images/logo.png') }}';">
+                            <h4>{{ item.title }}</h4>
+                            <p>{{ item.description }}</p>
+                        </div>
+                        <form action="{{ url_for('admin.delete_about_facility', item_id=item.id) }}" method="POST" style="margin-top: 10px;">
+                            {{ empty_form.hidden_tag() }}
+                            <button type="submit" class="btn btn-ghost" style="color: var(--danger); border-color: var(--danger); padding: 4px 8px; font-size: 0.75rem; width: 100%;">حذف</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">هنوز هیچ امکاناتی ثبت نشده است.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ================= زبانه ۴: مربیان ================= -->
+    <div id="tab-coaches" class="tab-content">
+        <div class="profile-card">
+            <h3 class="section-title" style="color: var(--danger); border-right-color: var(--danger);">افزودن مربی جدید</h3>
+            <form action="{{ url_for('admin.add_coach') }}" method="POST" enctype="multipart/form-data" novalidate>
+                {{ coach_form.hidden_tag() }}
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ coach_form.name.label }}
+                        {{ coach_form.name(class="form-control") }}
+                        {% for error in coach_form.name.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ coach_form.role.label }}
+                        {{ coach_form.role(class="form-control") }}
+                        {% for error in coach_form.role.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ coach_form.photo.label }}
+                    {{ coach_form.photo(class="form-control") }}
+                    {% for error in coach_form.photo.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ coach_form.bio.label }}
+                    {{ coach_form.bio(class="form-control", rows="2") }}
+                    {% for error in coach_form.bio.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+                {{ coach_form.submit(class="btn btn-primary", style="background: var(--danger);") }}
+            </form>
+        </div>
+
+        <div class="list-grid">
+            {% if coaches %}
+                {% for coach in coaches %}
+                    <div class="item-card">
+                        <div>
+                            <img src="{{ url_for('static', filename='uploads/coaches/' + coach.photo) }}" alt="{{ coach.name }}" onerror="this.src='{{ url_for('static', filename='images/logo.png') }}';">
+                            <h4>{{ coach.name }}</h4>
+                            <span style="font-size: 0.8rem; color: var(--danger); font-weight: 700; display: block; margin-bottom: 6px;">{{ coach.role }}</span>
+                            {% if coach.bio %}<p>{{ coach.bio }}</p>{% endif %}
+                        </div>
+                        <form action="{{ url_for('admin.delete_coach', item_id=coach.id) }}" method="POST" style="margin-top: 10px;">
+                            {{ empty_form.hidden_tag() }}
+                            <button type="submit" class="btn btn-ghost" style="color: var(--danger); border-color: var(--danger); padding: 4px 8px; font-size: 0.75rem; width: 100%;">حذف</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">هنوز هیچ مربی ثبت نشده است.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ================= زبانه ۵: رده‌های سنی ================= -->
+    <div id="tab-ages" class="tab-content">
+        <div class="profile-card">
+            <h3 class="section-title" style="color: var(--danger); border-right-color: var(--danger);">افزودن رده سنی جدید</h3>
+            <form action="{{ url_for('admin.add_about_age') }}" method="POST" novalidate>
+                {{ age_form.hidden_tag() }}
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ age_form.title.label }}
+                        {{ age_form.title(class="form-control") }}
+                        {% for error in age_form.title.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ age_form.age_range.label }}
+                        {{ age_form.age_range(class="form-control") }}
+                        {% for error in age_form.age_range.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ age_form.description.label }}
+                    {{ age_form.description(class="form-control", rows="2") }}
+                    {% for error in age_form.description.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+                {{ age_form.submit(class="btn btn-primary", style="background: var(--danger);") }}
+            </form>
+        </div>
+
+        <div class="list-grid">
+            {% if age_groups %}
+                {% for item in age_groups %}
+                    <div class="item-card">
+                        <div>
+                            <h4>{{ item.title }}</h4>
+                            <span style="font-size: 0.85rem; color: var(--blue); font-weight: 700; display: block; margin-bottom: 6px;">{{ item.age_range }}</span>
+                            {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+                        </div>
+                        <form action="{{ url_for('admin.delete_about_age', item_id=item.id) }}" method="POST" style="margin-top: 10px;">
+                            {{ empty_form.hidden_tag() }}
+                            <button type="submit" class="btn btn-ghost" style="color: var(--danger); border-color: var(--danger); padding: 4px 8px; font-size: 0.75rem; width: 100%;">حذف</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">هنوز هیچ رده سنی ثبت نشده است.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ================= زبانه ۶: افتخارات ================= -->
+    <div id="tab-achievements" class="tab-content">
+        <div class="profile-card">
+            <h3 class="section-title" style="color: var(--danger); border-right-color: var(--danger);">افزودن افتخار / دستاورد</h3>
+            <form action="{{ url_for('admin.add_achievement') }}" method="POST" novalidate>
+                {{ achievement_form.hidden_tag() }}
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ achievement_form.title.label }}
+                        {{ achievement_form.title(class="form-control") }}
+                        {% for error in achievement_form.title.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ achievement_form.year.label }}
+                        {{ achievement_form.year(class="form-control") }}
+                        {% for error in achievement_form.year.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ achievement_form.description.label }}
+                    {{ achievement_form.description(class="form-control", rows="2") }}
+                    {% for error in achievement_form.description.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+                {{ achievement_form.submit(class="btn btn-primary", style="background: var(--danger);") }}
+            </form>
+        </div>
+
+        <div class="list-grid">
+            {% if achievements %}
+                {% for item in achievements %}
+                    <div class="item-card">
+                        <div>
+                            <h4>{{ item.title }}</h4>
+                            <span style="font-size: 0.85rem; color: var(--danger); font-weight: 700; display: block; margin-bottom: 6px;">سال {{ item.year }}</span>
+                            {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+                        </div>
+                        <form action="{{ url_for('admin.delete_achievement', item_id=item.id) }}" method="POST" style="margin-top: 10px;">
+                            {{ empty_form.hidden_tag() }}
+                            <button type="submit" class="btn btn-ghost" style="color: var(--danger); border-color: var(--danger); padding: 4px 8px; font-size: 0.75rem; width: 100%;">حذف</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">هنوز هیچ افتخاری ثبت نشده است.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ================= زبانه ۷: آمارها ================= -->
+    <div id="tab-stats" class="tab-content">
+        <div class="profile-card">
+            <h3 class="section-title" style="color: var(--danger); border-right-color: var(--danger);">افزودن آمار</h3>
+            <form action="{{ url_for('admin.add_about_stat') }}" method="POST" novalidate>
+                {{ stat_form.hidden_tag() }}
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ stat_form.number.label }}
+                        {{ stat_form.number(class="form-control") }}
+                        {% for error in stat_form.number.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ stat_form.label.label }}
+                        {{ stat_form.label(class="form-control") }}
+                        {% for error in stat_form.label.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ stat_form.icon.label }}
+                        {{ stat_form.icon(class="form-control") }}
+                        {% for error in stat_form.icon.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                </div>
+                {{ stat_form.submit(class="btn btn-primary", style="background: var(--danger);") }}
+            </form>
+        </div>
+
+        <div class="list-grid">
+            {% if stats %}
+                {% for item in stats %}
+                    <div class="item-card">
+                        <div>
+                            <h2 style="color: var(--navy); font-weight: 900; font-size: 1.8rem; margin-bottom: 4px;">{{ item.number }}</h2>
+                            <span style="font-weight: 700; color: var(--text-muted); font-size: 0.9rem;">{{ item.label }}</span>
+                        </div>
+                        <form action="{{ url_for('admin.delete_about_stat', item_id=item.id) }}" method="POST" style="margin-top: 14px;">
+                            {{ empty_form.hidden_tag() }}
+                            <button type="submit" class="btn btn-ghost" style="color: var(--danger); border-color: var(--danger); padding: 4px 8px; font-size: 0.75rem; width: 100%;">حذف</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">هنوز هیچ آماری ثبت نشده است.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ================= زبانه ۸: گالری عکس ================= -->
+    <div id="tab-gallery" class="tab-content">
+        <div class="profile-card">
+            <h3 class="section-title" style="color: var(--danger); border-right-color: var(--danger);">آپلود تصویر جدید در گالری</h3>
+            <form action="{{ url_for('admin.add_gallery_item') }}" method="POST" enctype="multipart/form-data" novalidate>
+                {{ gallery_form.hidden_tag() }}
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ gallery_form.title.label }}
+                        {{ gallery_form.title(class="form-control") }}
+                        {% for error in gallery_form.title.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ gallery_form.category.label }}
+                        {{ gallery_form.category(class="form-control") }}
+                        {% for error in gallery_form.category.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ gallery_form.image.label }}
+                    {{ gallery_form.image(class="form-control") }}
+                    {% for error in gallery_form.image.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+                {{ gallery_form.submit(class="btn btn-primary", style="background: var(--danger);") }}
+            </form>
+        </div>
+
+        <div class="list-grid">
+            {% if gallery %}
+                {% for item in gallery %}
+                    <div class="item-card">
+                        <div>
+                            <img src="{{ url_for('static', filename='uploads/gallery/' + item.image) }}" alt="{{ item.title or 'گالری' }}" onerror="this.src='{{ url_for('static', filename='images/logo.png') }}';">
+                            {% if item.title %}<h4 style="font-size: 0.9rem;">{{ item.title }}</h4>{% endif %}
+                            <span style="font-size: 0.75rem; background: var(--line); color: var(--navy); padding: 2px 8px; border-radius: 4px; font-weight: 600; display: inline-block; margin-top: 4px;">{{ item.category }}</span>
+                        </div>
+                        <form action="{{ url_for('admin.delete_gallery_item', item_id=item.id) }}" method="POST" style="margin-top: 10px;">
+                            {{ empty_form.hidden_tag() }}
+                            <button type="submit" class="btn btn-ghost" style="color: var(--danger); border-color: var(--danger); padding: 4px 8px; font-size: 0.75rem; width: 100%;">حذف</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">هنوز هیچ تصوری به گالری اضافه نشده است.</div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function openTab(evt, tabName) {
+        let i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].classList.remove("active");
+        }
+        tablinks = document.getElementsByClassName("tab-btn");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("active");
+        }
+
+        let targetContent = document.getElementById(tabName);
+        if (targetContent) {
+            targetContent.classList.add("active");
+        }
+
+        if (evt) {
+            evt.currentTarget.classList.add("active");
+        } else {
+            let btn = document.querySelector(`[onclick*="${tabName}"]`);
+            if (btn) btn.classList.add("active");
+        }
+
+        window.location.hash = tabName;
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        let currentHash = window.location.hash.replace('#', '');
+        if (currentHash && document.getElementById(currentHash)) {
+            openTab(null, currentHash);
+        }
+    });
+</script>
+{% endblock %}

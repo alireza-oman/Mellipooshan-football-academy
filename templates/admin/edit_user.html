@@ -1,0 +1,57 @@
+{% extends "admin/base_admin.html" %}
+
+{% set active_page = "users_list" %}
+
+{% block title %}ویرایش اطلاعات کاربر | {{ club_name }}{% endblock %}
+{% block page_title %}ویرایش اطلاعات کاربر{% endblock %}
+
+{% block admin_content %}
+<div class="profile-container" style="max-width: 600px; margin: 0 auto;">
+    
+    <div class="profile-card">
+        <h3 class="section-title" style="color: var(--danger); border-right-color: var(--danger);">تغییر مشخصات کاربر: {{ user.first_name }}</h3>
+        
+        <form method="POST" action="" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form.first_name.label }}
+                    {{ form.first_name(class="form-control") }}
+                    {% for error in form.first_name.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.last_name.label }}
+                    {{ form.last_name(class="form-control") }}
+                    {% for error in form.last_name.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                {{ form.phone.label }}
+                {{ form.phone(class="form-control") }}
+                {% for error in form.phone.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+            </div>
+
+            <!-- تغییر نقش کاربر (فقط برای اکانت‌های غیر از خود ادمین) -->
+            {% if user.id != current_user.id %}
+                <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-top: 10px; cursor: pointer;">
+                    {{ form.is_admin(style="width: 18px; height: 16px; cursor: pointer; accent-color: var(--danger);") }}
+                    <label for="is_admin" style="margin-bottom: 0; cursor: pointer; font-weight: 700;">دسترسی کامل ادمین به این کاربر داده شود.</label>
+                </div>
+            {% else %}
+                <div class="form-group" style="opacity: 0.6; cursor: not-allowed;">
+                    <input type="checkbox" checked disabled style="width: 18px; height: 16px; margin-left: 8px;">
+                    <label style="font-weight: 700; display: inline;">شما نمی‌توانید نقش مدیریت خودتان را سلب کنید.</label>
+                </div>
+            {% endif %}
+
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                {{ form.submit(class="btn btn-primary", style="background: var(--danger); box-shadow: 0 8px 16px -4px rgba(231, 76, 60, 0.3);") }}
+                <a href="{{ url_for('admin.users_list') }}" class="btn btn-ghost" style="border-color: var(--text-muted); color: var(--text-muted);">انصراف</a>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

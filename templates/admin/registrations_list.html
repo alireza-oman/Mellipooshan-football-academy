@@ -1,0 +1,80 @@
+{% extends "admin/base_admin.html" %}
+
+{% set active_page = "registrations_list" %}
+
+{% block title %}بررسی ثبت‌نام‌ها | {{ club_name }}{% endblock %}
+{% block page_title %}بررسی و تایید ثبت‌نام‌های آکادمی{% endblock %}
+
+{% block admin_content %}
+<div class="users-container">
+    
+    <div class="profile-card" style="padding: 24px; overflow-x: auto;">
+        <h3 class="section-title" style="color: var(--danger); border-right-color: var(--danger); margin-bottom: 20px;">درخواست‌های ثبت‌نام بازیکنان</h3>
+        
+        <table class="panel-table">
+            <thead>
+                <tr>
+                    <th style="width: 70px; text-align: center;">عکس</th>
+                    <th>نام بازیکن</th>
+                    <th>کد ملی بازیکن</th>
+                    <th>نام ولی</th>
+                    <th style="text-align: center;">وضعیت مدارک</th>
+                    <th style="text-align: center;">وضعیت شهریه</th>
+                    <th style="text-align: center;">تاریخ ارسال</th>
+                    <th style="width: 130px; text-align: center;">عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in registrations %}
+                    <tr>
+                        <td style="text-align: center;">
+                            <!-- نمایش عکس مینیاتوری پرسنلی بازیکن از پوشه مدارک -->
+                            <img src="{{ url_for('static', filename='uploads/documents/' + r.player_photo) }}" alt="عکس" class="table-avatar">
+                        </td>
+                        <td style="font-weight: 700; color: var(--navy);">{{ r.player_fullname }}</td>
+
+                        <td style="font-weight: 600; font-family: monospace; letter-spacing: 1px;">{{ r.national_id }}</td>
+                        <td>{{ r.parent_fullname }}</td>
+                        
+                        <!-- وضعیت بررسی اسناد بازیکن -->
+                        <td style="text-align: center;">
+                            {% if r.status == 'approved' %}
+                                <span class="ann-badge category-ثبت‌نام">مدارک تایید شده</span>
+                            {% elif r.status == 'rejected' %}
+                                <span class="ann-badge category-urgent">رد شده / ناقص</span>
+                            {% else %}
+                                <span class="ann-badge category-اداری">در انتظار تایید</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- وضعیت بررسی فیش واریزی یا درگاه شهریه -->
+                        <td style="text-align: center;">
+                            {% if r.payment_status == 'paid' %}
+                                <span class="ann-badge category-ثبت‌نام">پرداخت شده</span>
+                            {% elif r.payment_status == 'rejected' %}
+                                <span class="ann-badge category-urgent">فیش نامعتبر</span>
+                            {% else %}
+                                <span class="ann-badge category-عمومی">در انتظار پرداخت</span>
+                            {% endif %}
+                        </td>
+                        
+                        <td style="text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+                            {{ r.created_at.strftime('%Y/%m/%d') }}
+                        </td>
+                        <td>
+                            <div class="table-actions">
+                                <!-- دکمه اصلی جهت ارجاع به صفحه بررسی مدارک و جزییات بازیکن -->
+                                <a href="{{ url_for('admin.view_registration', reg_id=r.id) }}" class="btn btn-ghost action-edit-btn" style="border-color: var(--danger); color: var(--danger);">
+                                    بررسی پرونده
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+    </div>
+
+</div>
+{% endblock %}

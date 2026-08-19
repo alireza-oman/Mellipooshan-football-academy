@@ -1,0 +1,129 @@
+{% extends "panel/base_panel.html" %}
+
+{% set active_page = "dashboard" %}
+
+{% block title %}داشبورد بازیکن | {{ club_name }}{% endblock %}
+{% block page_title %}داشبورد کاربری{% endblock %}
+
+{% block panel_content %}
+
+<!-- کارت خوش‌آمدگویی عمومی -->
+<div class="welcome-card">
+    <div class="welcome-text">
+        <h1>خوش آمدید، {{ current_user.first_name }} {{ current_user.last_name }} عزیز! ⚽</h1>
+        <p>به سیستم مدیریت بازیکنان آکادمی ملی‌پوشان خوش آمدید. از طریق این پنل می‌توانید فرزندان خود را ثبت‌نام کنید و وضعیت مدارک، شهریه و جلسات تمرینی آن‌ها را مدیریت نمایید.</p>
+    </div>
+
+    <div class="welcome-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+    </div>
+</div>
+
+<!-- ================= بخش مدیریت بازیکنان ================= -->
+<div class="dashboard-section-header" style="margin-top: 40px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h3 class="section-title" style="margin-bottom: 0;">لیست بازیکنان تحت تکفل شما</h3>
+
+    {% if current_user.club_registrations %}
+        <a href="{{ url_for('enrollment.register') }}" class="btn btn-primary" style="padding: 10px 20px; font-size: 0.85rem;">
+            + ثبت‌نام بازیکن جدید
+        </a>
+    {% endif %}
+</div>
+
+{% if current_user.club_registrations %}
+    <div class="players-grid">
+        {% for reg in current_user.club_registrations %}
+            <div class="player-panel-card">
+
+                <!-- اطلاعات پایه بازیکن -->
+                <div class="player-card-header">
+                    <img src="{{ url_for('static', filename='uploads/documents/' + reg.player_photo) }}" alt="عکس پرسنلی {{ reg.player_fullname }}" class="player-card-photo">
+                    <div class="player-card-info">
+                        <h4>{{ reg.player_fullname }}</h4>
+                        <span>کد ملی: {{ reg.national_id }}</span>
+                    </div>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid var(--line); margin: 16px 0;">
+
+                <!-- وضعیت مدارک -->
+                <div class="player-card-status-row">
+                    <span class="status-label">وضعیت مدارک:</span>
+                    {% if reg.status == 'approved' %}
+                        <span class="ann-badge category-ثبت‌نام">مدارک تایید شده</span>
+                    {% elif reg.status == 'rejected' %}
+                        <span class="ann-badge category-urgent">رد شده / ناقص</span>
+                    {% else %}
+                        <span class="ann-badge category-اداری">در انتظار بررسی مدارک</span>
+                    {% endif %}
+                </div>
+
+                <!-- وضعیت شهریه -->
+                <div class="player-card-status-row" style="margin-top: 12px;">
+                    <span class="status-label">وضعیت شهریه:</span>
+                    {% if reg.payment_status == 'paid' %}
+                        <span class="ann-badge category-ثبت‌نام">✅ پرداخت تایید شد</span>
+                    {% elif reg.payment_status == 'pending_approval' %}
+                        <span class="ann-badge category-اداری">⏳ در انتظار تایید مدیریت</span>
+                    {% elif reg.payment_status == 'rejected' %}
+                        <span class="ann-badge category-urgent">❌ پرداخت نامعتبر / رد شده</span>
+                    {% else %}
+                        <span class="ann-badge category-عمومی">پرداخت نشده</span>
+                    {% endif %}
+                </div>
+
+                <!-- علت رد پرونده در صورت وجود -->
+                {% if reg.reject_reason %}
+                    <div class="reject-box-alert" style="margin-top: 16px; background: #fffcfc; border: 1px dashed var(--danger); padding: 12px; border-radius: 8px; font-size: 0.85rem; color: var(--danger);">
+                        <strong>علت رد پرونده:</strong> {{ reg.reject_reason }}
+                    </div>
+                {% endif %}
+
+                <!-- ۱. دکمه پرداخت شهریه: فقط در صورت تایید مدارک و عدم پرداخت قبلی یا رد شدن پرداخت -->
+                {% if reg.status == 'approved' and (reg.payment_status == 'unpaid' or reg.payment_status == 'rejected') %}
+                    <a href="{{ url_for('enrollment.payment', reg_id=reg.id) }}" class="btn btn-primary" style="width: 100%; margin-top: 20px; font-size: 0.9rem; background: var(--blue);">
+                        💳 پرداخت شهریه دوره (تستی)
+                    </a>
+                {% endif %}
+
+                <!-- ۲. پیام در انتظار تایید شهریه -->
+                {% if reg.payment_status == 'pending_approval' %}
+                    <div style="margin-top: 16px; background: #fef9e7; border: 1px solid #f39c12; color: #b7791f; padding: 10px; border-radius: 8px; font-size: 0.82rem; text-align: center;">
+                        پرداخت شما ثبت شده و به زودی توسط مدیریت باشگاه بررسی و تایید خواهد شد.
+                    </div>
+                {% endif %}
+
+                <!-- ۳. دکمه انتخاب تمرین: فقط و فقط زمانی که شهریه توسط ادمین تایید و Paid شده باشد -->
+<!-- در panel/dashboard.html زیر بخش تایید شهریه: -->
+{% if reg.payment_status == 'paid' %}
+    <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 0.85rem; color: var(--text-muted);">شیفت تمرینی:</span>
+            <span style="font-weight: 800; color: var(--blue); font-size: 0.85rem;">
+                {{ reg.training.title if reg.training else 'هنوز انتخاب نشده' }}
+            </span>
+        </div>
+
+        <a href="{{ url_for('panel.select_trainings', reg_id=reg.id) }}" class="btn btn-primary" style="width: 100%; font-size: 0.85rem; background: #27ae60; border-color: #27ae60;">
+            ⚽ {% if reg.training %}تغییر شیفت تمرینی{% else %}انتخاب شیفت تمرینی{% endif %}
+        </a>
+    </div>
+{% endif %}
+
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-announcements" style="padding: 48px 24px; border-style: dashed; border-color: var(--blue); background: #fafdff;">
+        <div class="empty-icon" style="color: var(--blue);">
+            <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
+        </div>
+        <h3 style="color: var(--navy); margin-bottom: 8px;">هنوز هیچ فرزندی ثبت‌نام نکرده‌اید!</h3>
+        <p style="margin-bottom: 24px;">برای شرکت در دوره‌های ورزشی و مسابقات رسمی آکادمی، باید مشخصات و مدارک بازیکن را در سیستم ثبت کنید.</p>
+        <a href="{{ url_for('enrollment.register') }}" class="btn btn-primary">ثبت‌نام اولین بازیکن</a>
+    </div>
+{% endif %}
+
+{% endblock %}

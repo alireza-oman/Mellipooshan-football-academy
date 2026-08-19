@@ -1,0 +1,63 @@
+{% extends "admin/base_admin.html" %}
+
+{% set active_page = "announcements_list" %}
+
+{% block title %}مدیریت اطلاعیه‌ها | {{ club_name }}{% endblock %}
+{% block page_title %}مدیریت اطلاعیه‌های باشگاه{% endblock %}
+
+{% block admin_content %}
+<div class="users-container">
+    
+    <div class="profile-card" style="padding: 24px; overflow-x: auto;">
+        <h3 class="section-title" style="color: var(--danger); border-right-color: var(--danger); margin-bottom: 20px;">لیست اطلاعیه‌های صادر شده</h3>
+        
+        <table class="panel-table">
+            <thead>
+                <tr>
+                    <th>عنوان اطلاعیه</th>
+                    <th style="text-align: center;">دسته‌بندی</th>
+                    <th>نویسنده</th>
+                    <th style="text-align: center;">وضعیت اهمیت</th>
+                    <th style="text-align: center;">تاریخ انتشار</th>
+                    <th style="width: 150px; text-align: center;">عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in announcements %}
+                    <tr>
+                        <td style="font-weight: 700; color: var(--navy); white-space: normal; min-width: 200px;">{{ a.title }}</td>
+                        <td style="text-align: center;">
+                            <span class="ann-badge category-{{ a.category }}">{{ a.category }}</span>
+                        </td>
+                        <td style="font-weight: 600;">{{ a.author }}</td>
+                        <td style="text-align: center;">
+                            {% if a.is_important %}
+                                <span class="ann-badge category-urgent">فوری / مهم</span>
+                            {% else %}
+                                <span class="ann-badge category-عمومی">معمولی</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+                            {{ a.created_at.strftime('%Y/%m/%d') }}
+                        </td>
+                        <td>
+                            <div class="table-actions">
+                                <!-- دکمه ویرایش -->
+                                <a href="{{ url_for('admin.edit_announcement', ann_id=a.id) }}" class="btn btn-ghost action-edit-btn">ویرایش</a>
+                                
+                                <!-- فرم حذف با توکن EmptyForm -->
+                                <form action="{{ url_for('admin.delete_announcement', ann_id=a.id) }}" method="POST" onsubmit="return confirm('آیا از حذف کامل این اطلاعیه مطمئن هستید؟');" style="display: inline;">
+                                    {{ empty_form.hidden_tag() }}
+                                    <button type="submit" class="btn btn-primary action-delete-btn">حذف</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+    </div>
+
+</div>
+{% endblock %}

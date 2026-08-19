@@ -1,0 +1,253 @@
+{% extends "admin/base_admin.html" %}
+
+{% set active_page = "registrations_list" %}
+
+{% block title %}بررسی پرونده {{ reg.player_fullname }} | {{ club_name }}{% endblock %}
+{% block page_title %}بررسی پرونده بازیکن{% endblock %}
+
+{% block admin_content %}
+<div class="profile-container" style="max-width: 900px; margin: 0 auto;">
+    
+    <!-- دکمه بازگشت به جدول کل ثبت‌نام‌ها -->
+    <a href="{{ url_for('admin.registrations_list') }}" class="btn btn-ghost" style="border-color: var(--text-muted); color: var(--text-muted); margin-bottom: 24px;">
+        ← بازگشت به لیست ثبت‌نام‌ها
+    </a>
+
+    <div class="profile-grid" style="grid-template-columns: 1fr;">
+        
+        <!-- کارت جامع اطلاعات متنی بازیکن -->
+        <div class="profile-card">
+            
+            <!-- وضعیت فعلی پرونده -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+                <h3 class="section-title" style="margin-bottom: 0; color: var(--danger); border-right-color: var(--danger);">مشخصات و اسناد ثبت‌نام</h3>
+                <div>
+                    <span style="font-weight: 700; margin-left: 8px;">وضعیت پرونده:</span>
+                    {% if reg.status == 'approved' %}
+                        <span class="ann-badge category-ثبت‌نام">مدارک تایید شده</span>
+                    {% elif reg.status == 'rejected' %}
+                        <span class="ann-badge category-urgent">رد شده / مدارک ناقص</span>
+                    {% else %}
+                        <span class="ann-badge category-اداری">در انتظار تایید</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- بخش اول: اطلاعات بازیکن -->
+            <h4 style="color: var(--navy); margin-bottom: 12px; font-weight: 800;">۱. اطلاعات بازیکن</h4>
+            <div class="form-row" style="margin-bottom: 24px;">
+                <div class="form-group">
+                    <label>نام و نام خانوادگی بازیکن</label>
+                    <input type="text" class="form-control" value="{{ reg.player_fullname }}" disabled style="background: var(--mist);">
+                </div>
+                <div class="form-group">
+                    <label>تاریخ تولد بازیکن</label>
+                    <input type="text" class="form-control" value="{{ reg.birth_date }}" disabled style="background: var(--mist);">
+                </div>
+            </div>
+            <div class="form-row" style="margin-bottom: 24px;">
+                <div class="form-group">
+                    <label>کد ملی ده رقمی</label>
+                    <input type="text" class="form-control" value="{{ reg.national_id }}" disabled style="background: var(--mist);">
+                </div>
+                <div class="form-group">
+                    <label>شماره تماس بازیکن</label>
+                    <input type="text" class="form-control" value="{{ reg.player_phone }}" disabled style="background: var(--mist);">
+                </div>
+            </div>
+
+            <hr class="form-divider">
+
+            <!-- بخش دوم: اطلاعات ولی -->
+            <h4 style="color: var(--navy); margin-bottom: 12px; font-weight: 800;">۲. اطلاعات ولی بازیکن</h4>
+            <div class="form-row" style="margin-bottom: 24px;">
+                <div class="form-group">
+                    <label>نام و نام خانوادگی ولی</label>
+                    <input type="text" class="form-control" value="{{ reg.parent_fullname }}" disabled style="background: var(--mist);">
+                </div>
+                <div class="form-group">
+                    <label>نسبت با بازیکن</label>
+                    <input type="text" class="form-control" value="{{ reg.parent_relation }}" disabled style="background: var(--mist);">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label>شماره تماس ولی بازیکن</label>
+                <input type="text" class="form-control" value="{{ reg.parent_phone }}" disabled style="background: var(--mist);">
+            </div>
+
+            <hr class="form-divider">
+
+            <!-- بخش سوم: اطلاعات سکونت -->
+            <h4 style="color: var(--navy); margin-bottom: 12px; font-weight: 800;">۳. آدرس و اطلاعات سکونت</h4>
+            <div class="form-row" style="margin-bottom: 24px;">
+                <div class="form-group">
+                    <label>استان</label>
+                    <input type="text" class="form-control" value="{{ reg.province }}" disabled style="background: var(--mist);">
+                </div>
+                <div class="form-group">
+                    <label>شهر</label>
+                    <input type="text" class="form-control" value="{{ reg.city }}" disabled style="background: var(--mist);">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label>آدرس دقیق محل سکونت</label>
+                <textarea class="form-control" rows="2" disabled style="background: var(--mist);">{{ reg.address }}</textarea>
+            </div>
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label>کد پستی</label>
+                <input type="text" class="form-control" value="{{ reg.postal_code if reg.postal_code else 'ثبت نشده' }}" disabled style="background: var(--mist);">
+            </div>
+
+            <hr class="form-divider">
+
+            <!-- بخش چهارم: اطلاعات ورزشی -->
+            <h4 style="color: var(--navy); margin-bottom: 12px; font-weight: 800;">۴. مشخصات فنی و ورزشی</h4>
+            <div class="form-row" style="margin-bottom: 24px;">
+                <div class="form-group">
+                    <label>پست بازی مورد علاقه</label>
+                    <input type="text" class="form-control" value="{{ reg.play_position if reg.play_position else 'ثبت نشده' }}" disabled style="background: var(--mist);">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label>سابقه فوتبال بازیکن</label>
+                <textarea class="form-control" rows="2" disabled style="background: var(--mist);">{{ reg.football_history if reg.football_history else 'فاقد سابقه قبلی' }}</textarea>
+            </div>
+
+            <hr class="form-divider">
+
+            <!-- بخش پنجم: توضیحات پزشکی -->
+            <h4 style="color: var(--navy); margin-bottom: 12px; font-weight: 800;">۵. توضیحات و پرونده پزشکی</h4>
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label>سابقه بیماری، شکستگی، مصرف دارو و...</label>
+                <textarea class="form-control" rows="3" disabled style="background: var(--mist);">{{ reg.medical_notes if reg.medical_notes else 'بازیکن فاقد هرگونه پرونده یا حساسیت پزشکی خاص است.' }}</textarea>
+            </div>
+
+            <hr class="form-divider">
+
+            <!-- بخش ششم: مدارک آپلود شده (اسکن تصاویر) -->
+            <h4 style="color: var(--navy); margin-bottom: 12px; font-weight: 800;">۶. تصاویر اسناد و مدارک ارسال شده</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">برای مشاهده هر مدرک در سایز بزرگ‌تر، روی کارت تصویر مربوط به آن کلیک کنید.</p>
+            
+            <div class="document-gallery">
+                
+                <!-- ۱. عکس پرسنلی بازیکن -->
+                <a href="{{ url_for('static', filename='uploads/documents/' + reg.player_photo) }}" target="_blank" class="document-card-preview">
+                    <img src="{{ url_for('static', filename='uploads/documents/' + reg.player_photo) }}" alt="عکس پرسنلی">
+                    <div class="doc-label">عکس پرسنلی بازیکن</div>
+                </a>
+
+                <!-- ۲. تصویر شناسنامه -->
+                <a href="{{ url_for('static', filename='uploads/documents/' + reg.birth_cert_img) }}" target="_blank" class="document-card-preview">
+                    <img src="{{ url_for('static', filename='uploads/documents/' + reg.birth_cert_img) }}" alt="تصویر شناسنامه">
+                    <div class="doc-label">تصویر شناسنامه</div>
+                </a>
+
+                <!-- ۳. تصویر رضایت‌نامه ولی -->
+                <a href="{{ url_for('static', filename='uploads/documents/' + reg.parent_consent_img) }}" target="_blank" class="document-card-preview">
+                    <img src="{{ url_for('static', filename='uploads/documents/' + reg.parent_consent_img) }}" alt="رضایت‌نامه ولی">
+                    <div class="doc-label">رضایت‌نامه ولی بازیکن</div>
+                </a>
+
+                <!-- ۴. گواهی سلامت پزشکی -->
+                <a href="{{ url_for('static', filename='uploads/documents/' + reg.medical_cert_img) }}" target="_blank" class="document-card-preview">
+                    <img src="{{ url_for('static', filename='uploads/documents/' + reg.medical_cert_img) }}" alt="گواهی پزشکی">
+                    <div class="doc-label">گواهی سلامت پزشکی</div>
+                </a>
+
+                <!-- ۵. کارت بیمه ورزشی -->
+                <a href="{{ url_for('static', filename='uploads/documents/' + reg.sports_insurance_img) }}" target="_blank" class="document-card-preview">
+                    <img src="{{ url_for('static', filename='uploads/documents/' + reg.sports_insurance_img) }}" alt="کارت بیمه">
+                    <div class="doc-label">کارت بیمه ورزشی</div>
+                </a>
+
+            </div>
+
+            <!-- ================= تصمیم‌گیری و تایید/رد نهایی پرونده ================= -->
+            <hr class="form-divider" style="margin-top: 40px;">
+            <h3 class="section-title" style="color: var(--danger); border-right-color: var(--danger); margin-bottom: 24px;">بخش تصمیم‌گیری و بررسی پرونده</h3>
+
+            <!-- اگر پرونده قبلاً رد شده باشد، دلیل آن نمایش داده می‌شود -->
+            {% if reg.status == 'rejected' and reg.reject_reason %}
+                <div style="background: #fffcfc; border: 1.5px dashed var(--danger); padding: 20px; border-radius: 8px; margin-bottom: 24px;">
+                    <p style="font-weight: 700; color: var(--danger); margin-bottom: 6px;">پرونده در حال حاضر به علت نقص مدارک رد شده است.</p>
+                    <p style="font-size: 0.9rem; color: var(--text-main);"><strong>علت رد قبلی ثبت‌نام:</strong> {{ reg.reject_reason }}</p>
+                </div>
+            {% endif %}
+
+            <div class="admin-decision-buttons" style="display: flex; gap: 16px; flex-wrap: wrap;">
+
+                <!-- 🌟 ۱. دکمه تایید: فقط در صورتی نشان داده شود که پرونده در حال حاضر تایید شده (approved) نباشد 🌟 -->
+                {% if reg.status != 'approved' %}
+                    <form action="{{ url_for('admin.approve_registration', reg_id=reg.id) }}" method="POST">
+                        {{ empty_form.hidden_tag() }}
+                        <button type="submit" class="btn btn-primary" style="background: #2ecc71; border-color: #2ecc71; box-shadow: 0 8px 16px -4px rgba(46, 204, 113, 0.3);">
+                            تایید نهایی مدارک و ثبت‌نام بازیکن
+                        </button>
+                    </form>
+                {% else %}
+                    <!-- اگر از قبل تایید شده بود، فقط این تگ سبز رنگ نشان داده شود -->
+                    <div style="background: #eafaf1; border: 1.5px solid #2ecc71; padding: 12px 24px; border-radius: 8px; color: #27ae60; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        پرونده این بازیکن با موفقیت تایید نهایی شده است.
+                    </div>
+                {% endif %}
+
+                <!-- 🌟 ۲. دکمه رد پرونده: فقط در صورتی نشان داده شود که پرونده در حال حاضر رد شده (rejected) نباشد 🌟 -->
+                {% if reg.status != 'rejected' %}
+                    <button type="button" class="btn btn-ghost" id="show-reject-form-btn" style="border-color: var(--danger); color: var(--danger);">
+                        رد پرونده / اعلام نقص مدارک
+                    </button>
+                {% endif %}
+
+            </div>
+
+            <!-- فرم ثبت علتِ رد پرونده (در ابتدا مخفی است و با دکمه بالا ظاهر می‌شود) -->
+            <div id="reject-form-container" style="display: none; margin-top: 24px; background: var(--mist); padding: 24px; border-radius: 8px; border: 1px solid var(--line);">
+                <form action="{{ url_for('admin.reject_registration', reg_id=reg.id) }}" method="POST" novalidate>
+                    {{ reject_form.hidden_tag() }}
+                    
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        {{ reject_form.reject_reason.label(style="font-weight: 700; color: var(--navy);") }}
+                        {{ reject_form.reject_reason(class="form-control", placeholder="مثال: تصویر رضایت‌نامه ولی مخدوش است. لطفاً عکس جدید آپلود کنید.") }}
+                        {% for error in reject_form.reject_reason.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    </div>
+
+                    <div style="display: flex; gap: 12px;">
+                        {{ reject_form.submit_reject(class="btn btn-primary", style="background: var(--danger); box-shadow: none;") }}
+                        <button type="button" class="btn btn-ghost" id="cancel-reject-btn" style="border-color: var(--text-muted); color: var(--text-muted);">انصراف</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- جاوااسکریپت داینامیک نمایش/مخفی کردن پنل رد پرونده -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const showRejectBtn = document.getElementById('show-reject-form-btn');
+        const cancelRejectBtn = document.getElementById('cancel-reject-btn');
+        const rejectContainer = document.getElementById('reject-form-container');
+
+        if (showRejectBtn && rejectContainer) {
+            showRejectBtn.addEventListener('click', () => {
+                rejectContainer.style.display = 'block';
+                showRejectBtn.style.display = 'none';
+                // اسکرول نرم به سمت فرم ورودی رد پرونده
+                rejectContainer.scrollIntoView({ behavior: 'smooth' });
+            });
+        }
+
+        if (cancelRejectBtn && showRejectBtn && rejectContainer) {
+            cancelRejectBtn.addEventListener('click', () => {
+                rejectContainer.style.display = 'none';
+                showRejectBtn.style.display = 'inline-flex';
+            });
+        }
+    });
+</script>
+{% endblock %}

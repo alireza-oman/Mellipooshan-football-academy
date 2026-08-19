@@ -1,0 +1,64 @@
+# ========================
+# Python & Bytecode
+# ========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# ========================
+# محیط‌های مجازی (Virtual Envs)
+# ========================
+venv/
+.venv/
+env/
+ENV/
+Football_mellipooshan/
+env.bak/
+venv.bak/
+
+# ========================
+# دیتابیس‌های محلی (Local DBs)
+# ========================
+*.db
+*.sqlite
+*.sqlite3
+instance/
+academy.db
+
+# ========================
+# فایل‌های آپلودی تستی کاربران
+# ========================
+static/uploads/avatars/*
+static/uploads/documents/*
+static/uploads/about/*
+static/uploads/coaches/*
+static/uploads/gallery/*
+
+# حفظ ساختار پوشه‌ها در گیت‌هاب
+!static/uploads/**/.gitkeep
+
+# ========================
+# متغیرهای محیطی و فایل‌های محرمانه
+# ========================
+.env
+.env.*
+!.env.example
+
+# ========================
+# تنظیمات ادیتورها (IDE)
+# ========================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ========================
+# لاگ‌ها و گزارش‌ها
+# ========================
+*.log
+

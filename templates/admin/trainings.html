@@ -1,0 +1,106 @@
+{% extends "admin/base_admin.html" %}
+
+{% set active_page = "trainings" %}
+
+{% block title %}مدیریت تمرینات | {{ club_name }}{% endblock %}
+{% block page_title %}مدیریت شیفت‌های تمرینی آکادمی{% endblock %}
+
+{% block admin_content %}
+<div class="profile-container">
+
+    <!-- فرم ثبت تمرین جدید -->
+    <div class="profile-card" style="margin-bottom: 32px;">
+        <h3 class="section-title" style="color: var(--danger); border-right-color: var(--danger);">افزودن شیفت تمرینی جدید</h3>
+
+        <form action="{{ url_for('admin.add_training') }}" method="POST" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form.title.label }}
+                    {{ form.title(class="form-control", placeholder="مثلاً: شیفت عصر نونهالان") }}
+                    {% for error in form.title.errors %}<span class="form-error" style="color: var(--danger); font-size: 0.8rem;">{{ error }}</span>{% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.age_group.label }}
+                    {{ form.age_group(class="form-control", placeholder="مثلاً: ۱۰ تا ۱۳ سال") }}
+                    {% for error in form.age_group.errors %}<span class="form-error" style="color: var(--danger); font-size: 0.8rem;">{{ error }}</span>{% endfor %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form.days.label }}
+                    {{ form.days(class="form-control", placeholder="مثلاً: روزهای زوج (شنبه، دوشنبه، چهارشنبه)") }}
+                    {% for error in form.days.errors %}<span class="form-error" style="color: var(--danger); font-size: 0.8rem;">{{ error }}</span>{% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.time.label }}
+                    {{ form.time(class="form-control", placeholder="مثلاً: ۱۶:۳۰ الی ۱۸:۰۰") }}
+                    {% for error in form.time.errors %}<span class="form-error" style="color: var(--danger); font-size: 0.8rem;">{{ error }}</span>{% endfor %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form.venue_name.label }}
+                    {{ form.venue_name(class="form-control", placeholder="مثلاً: زمین چمن شماره ۱ تختی") }}
+                    {% for error in form.venue_name.errors %}<span class="form-error" style="color: var(--danger); font-size: 0.8rem;">{{ error }}</span>{% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.coach_name.label }}
+                    {{ form.coach_name(class="form-control", placeholder="مثلاً: استاد رضایی") }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                {{ form.notes.label }}
+                {{ form.notes(class="form-control", rows="2", placeholder="توضیحات، وسایل مورد نیاز یا قوانین حضور در تمرین...") }}
+            </div>
+
+            {{ form.submit(class="btn btn-primary", style="background: var(--danger);") }}
+        </form>
+    </div>
+
+    <!-- لیست تمرینات ثبت‌شده -->
+    <div class="profile-card">
+        <h3 class="section-title" style="color: var(--danger); border-right-color: var(--danger); margin-bottom: 20px;">شیفت‌های تمرینی فعال</h3>
+
+        {% if trainings %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                {% for t in trainings %}
+                    <div style="background: var(--mist); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 8px;">
+                                <h4 style="color: var(--navy); font-weight: 800; font-size: 1.05rem;">{{ t.title }}</h4>
+                                <span class="ann-badge category-تمرینات" style="font-size: 0.75rem; white-space: nowrap;">{{ t.age_group }}</span>
+                            </div>
+
+                            <div style="font-size: 0.85rem; line-height: 1.9; background: var(--white); padding: 14px; border-radius: 8px; border: 1px solid var(--line); margin-bottom: 12px;">
+                                <div><strong>📅 روزها:</strong> {{ t.days }}</div>
+                                <div><strong>⏰ ساعت:</strong> {{ t.time }}</div>
+                                <div><strong>📍 مکان:</strong> {{ t.venue_name }}</div>
+                                {% if t.coach_name %}<div><strong>👨‍🏫 مربی:</strong> {{ t.coach_name }}</div>{% endif %}
+                            </div>
+
+                            {% if t.notes %}
+                                <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.6;">💡 {{ t.notes }}</p>
+                            {% endif %}
+                        </div>
+
+                        <form action="{{ url_for('admin.delete_training', training_id=t.id) }}" method="POST" style="margin-top: 16px;" onsubmit="return confirm('آیا از حذف این برنامه تمرینی مطمئن هستید؟')">
+                            {{ empty_form.hidden_tag() }}
+                            <button type="submit" class="btn btn-ghost" style="color: var(--danger); border-color: var(--danger); width: 100%; font-size: 0.85rem;">حذف شیفت</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                هنوز هیچ شیفت تمرینی ثبت نشده است.
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "panel/base_panel.html" %}
+
+<!-- فعال کردن دکمه منوی اطلاعیه‌ها در سایدبار بازیکن -->
+{% set active_page = "announcements" %}
+
+{% block title %}اطلاعیه‌ها | {{ club_name }}{% endblock %}
+{% block page_title %}اطلاعیه‌های آکادمی{% endblock %}
+
+{% block panel_content %}
+<div class="announcements-container">
+
+    {% if announcements %}
+        <div class="announcements-list">
+            {% for ann in announcements %}
+                <!-- اگر اطلاعیه مهم باشد، کلاس important-ann برای متمایز شدن اعمال می‌شود -->
+                <div class="announcement-card {% if ann.is_important %}important-ann{% endif %}">
+
+                    <div class="ann-header">
+                        <div class="ann-meta">
+                            <!-- نمایش دسته‌بندی با استایل رنگی مخصوص به خود -->
+                            <span class="ann-badge category-{{ ann.category }}">
+                                {{ ann.category }}
+                            </span>
+
+                            {% if ann.is_important %}
+                                <span class="ann-badge category-urgent">فوری / مهم</span>
+                            {% endif %}
+
+                            <span class="ann-author">نویسنده: {{ ann.author }}</span>
+                        </div>
+
+                        <!-- تاریخ ثبت اطلاعیه -->
+                        <span class="ann-date">{{ ann.created_at.strftime('%Y/%m/%d') }}</span>
+                    </div>
+
+                    <div class="ann-body">
+                        <h2 class="ann-title">{{ ann.title }}</h2>
+                        <p class="ann-content">{{ ann.content }}</p>
+                    </div>
+
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- نمایش باکس خالی در صورتی که اطلاعیه‌ای وجود نداشته باشد -->
+        <div class="empty-announcements">
+            <div class="empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+            </div>
+            <h3>اطلاعیه‌ای یافت نشد!</h3>
+            <p>در حال حاضر هیچ اطلاعیه جدیدی از طرف مدیریت باشگاه صادر نشده است.</p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

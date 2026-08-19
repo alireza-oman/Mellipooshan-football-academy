@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}صفحه مورد نظر یافت نشد | {{ club_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .error-wrapper {
+        padding-block: 100px;
+        background: var(--mist);
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    .error-card {
+        background: var(--white);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 60px 40px;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: 0 20px 40px -18px rgba(10,31,68,.1);
+    }
+    .error-code {
+        font-family: var(--font-num);
+        font-size: 6rem;
+        font-weight: 900;
+        line-height: 1;
+        color: var(--blue);
+        margin-bottom: 20px;
+        letter-spacing: 2px;
+    }
+    .error-card h2 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 12px;
+    }
+    .error-card p {
+        color: #475569;
+        font-size: 0.95rem;
+        line-height: 1.8;
+        margin-bottom: 32px;
+    }
+    .error-icon {
+        color: var(--blue);
+        margin: 0 auto 24px auto;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--mist);
+        border-radius: 50%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="error-wrapper">
+    <div class="wrap">
+        <div class="error-card">
+            <div class="error-icon">
+                <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M16 16s-1.5-2-4-2-4 2-4 2"></path>
+                    <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                    <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                </svg>
+            </div>
+            <div class="error-code">404</div>
+            <h2>صفحه مورد نظر پیدا نشد!</h2>
+            <p>متأسفانه صفحه‌ای که به دنبال آن هستید وجود ندارد یا آدرس آن تغییر کرده است. لطفاً آدرس را مجدداً بررسی کنید.</p>
+            <a href="/" class="btn btn-primary" style="width: 100%;">بازگشت به صفحه اصلی</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
