@@ -1,236 +1,950 @@
 {% set club_name = "آکادمی فوتبال ملی‌پوشان" %}
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}پنل مدیریت | {{ club_name }}{% endblock %}</title>
 
-    <!-- فونت‌ها -->
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>
+        {% block title %}
+            پنل مدیریت | {{ club_name }}
+        {% endblock %}
+    </title>
 
-    <!-- استایل‌های پایه پنل -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/base_panel.css') }}">
+    <!-- فونت -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
+    <!-- CSS مشترک پنل -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='CSS/base_panel.css') }}"
+    >
+
+    <!-- استایل‌های اختصاصی Admin -->
     <style>
-        /* بهینه‌سازی چیدمان و تیترهای سایدبار */
         .sidebar {
-            display: flex;
-            flex-direction: column;
             border-left-color: var(--danger);
         }
+
         .sidebar-nav {
-            flex: 1;
             overflow-y: auto;
-            padding: 16px 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
         }
-        /* اسکرول‌بار مخفی و تمیز برای سایدبار */
+
         .sidebar-nav::-webkit-scrollbar {
             width: 4px;
         }
+
         .sidebar-nav::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 4px;
         }
+
         .nav-category {
-            font-size: 0.72rem;
-            font-weight: 800;
-            color: #94a3b8;
-            padding: 12px 12px 4px 12px;
-            letter-spacing: 0.5px;
+            padding: 12px 12px 4px;
             display: flex;
             align-items: center;
             gap: 6px;
+
+            color: #94a3b8;
+            font-size: .72rem;
+            font-weight: 800;
+            letter-spacing: .5px;
         }
-        .sidebar-nav a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 14px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            transition: all 0.2s ease;
+
+        .sidebar-nav a.admin-active {
+            background: var(--danger) !important;
+            color: var(--white) !important;
+            box-shadow: 0 6px 14px -4px rgba(231, 76, 60, .45);
         }
-        .sidebar-nav a:hover {
+
+        .sidebar-nav a.admin-link:hover {
             background: #fdf2f2;
             color: var(--danger);
         }
-        .sidebar-nav a.active {
-            background: var(--danger) !important;
-            color: #ffffff !important;
-            box-shadow: 0 6px 14px -4px rgba(231, 76, 60, 0.45);
-        }
-        .sidebar-nav a svg {
-            width: 19px;
-            height: 19px;
+
+        .sidebar-nav .nav-divider {
+            height: 1px;
+            border: 0;
+            background: var(--line);
+            margin: 10px 8px;
             flex-shrink: 0;
         }
-        .nav-divider {
-            border: 0;
-            border-top: 1px solid var(--line);
-            margin: 10px 8px;
+
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 3px 10px;
+            margin-left: 8px;
+
+            border-radius: 50px;
+
+            background: var(--danger);
+            color: var(--white);
+
+            font-size: .72rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .admin-sidebar-title {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            line-height: 1.25;
+        }
+
+        .admin-sidebar-title strong {
+            font-size: .92rem;
+            font-weight: 800;
+            color: var(--danger);
+        }
+
+        .admin-sidebar-title small {
+            margin-top: 3px;
+            font-size: .68rem;
+            font-weight: 700;
+            color: var(--danger);
+        }
+
+        @media (max-width: 768px) {
+            .admin-badge {
+                display: none;
+            }
         }
     </style>
 
     {% block extra_css %}{% endblock %}
 </head>
+
 <body>
 
-    <!-- نمایش پیام‌های سیستم (Toast) -->
+    <!-- =========================
+         Flash Messages
+    ========================== -->
+
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <div class="toast-container">
+
                 {% for category, message in messages %}
+
                     <div class="toast toast-{{ category }}">
-                        <div class="toast-message">{{ message }}</div>
-                        <button class="toast-close">&times;</button>
+
+                        <div class="toast-message">
+                            {{ message }}
+                        </div>
+
+                        <button
+                            type="button"
+                            class="toast-close"
+                            aria-label="بستن پیام"
+                        >
+                            &times;
+                        </button>
+
                     </div>
+
                 {% endfor %}
+
             </div>
         {% endif %}
     {% endwith %}
 
+
+    <!-- =========================
+         Panel Layout
+    ========================== -->
+
     <div class="panel-layout">
 
-        <!-- ===== سایدبار اختصاصی ادمین ===== -->
+        <!-- =========================
+             Admin Sidebar
+        ========================== -->
+
         <aside class="sidebar">
 
-            <!-- هدر سایدبار با لوگو -->
-            <a href="/" class="sidebar-header" style="display: flex; align-items: center; text-decoration: none; color: var(--danger); gap: 10px;">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="لوگو {{ club_name }}" style="width: 38px; height: 38px; object-fit: contain;">
-                <div style="display: flex; flex-direction: column;">
-                    <span style="font-weight: 800; font-size: 0.95rem; line-height: 1.2;">{{ club_name }}</span>
-                    <span style="font-size: 0.72rem; color: var(--danger); font-weight: 700;">پنل مدیریت ارشد</span>
+            <!-- Sidebar Header -->
+
+            <a href="/" class="sidebar-header">
+
+                <img
+                    src="{{ url_for('static', filename='images/logo.png') }}"
+                    alt="لوگو {{ club_name }}"
+                >
+
+                <div class="admin-sidebar-title">
+
+                    <strong>
+                        {{ club_name }}
+                    </strong>
+
+                    <small>
+                        پنل مدیریت ارشد
+                    </small>
+
                 </div>
+
             </a>
+
+
+            <!-- =========================
+                 Sidebar Navigation
+            ========================== -->
 
             <nav class="sidebar-nav">
 
-                <!-- ۱. داشبورد اصلی -->
-                <a href="{{ url_for('admin.dashboard') }}" class="{% if active_page == 'admin_dashboard' %}active{% endif %}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+                <!-- Dashboard -->
+
+                <a
+                    href="{{ url_for('admin.dashboard') }}"
+                    class="
+                        admin-link
+                        {% if active_page == 'admin_dashboard' %}
+                            admin-active
+                        {% endif %}
+                    "
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <rect
+                            x="3"
+                            y="3"
+                            width="18"
+                            height="18"
+                            rx="2"
+                        ></rect>
+
+                        <line
+                            x1="9"
+                            y1="3"
+                            x2="9"
+                            y2="21"
+                        ></line>
+                    </svg>
+
                     داشبورد مدیریت
+
                 </a>
 
-                <!-- ۲. بخش امور بازیکنان و مالی -->
-                <div class="nav-category">امور بازیکنان و مالی</div>
 
-                <a href="{{ url_for('admin.registrations_list') }}" class="{% if active_page == 'registrations_list' %}active{% endif %}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
+                <!-- Category -->
+
+                <div class="nav-category">
+                    امور بازیکنان و مالی
+                </div>
+
+
+                <!-- Registrations -->
+
+                <a
+                    href="{{ url_for('admin.registrations_list') }}"
+                    class="
+                        admin-link
+                        {% if active_page == 'registrations_list' %}
+                            admin-active
+                        {% endif %}
+                    "
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+
+                        <circle
+                            cx="9"
+                            cy="7"
+                            r="4"
+                        ></circle>
+
+                        <line
+                            x1="19"
+                            y1="8"
+                            x2="19"
+                            y2="14"
+                        ></line>
+
+                        <line
+                            x1="22"
+                            y1="11"
+                            x2="16"
+                            y2="11"
+                        ></line>
+
+                    </svg>
+
                     بررسی ثبت‌نام‌ها
+
                 </a>
 
-                <a href="{{ url_for('admin.payments_list') }}" class="{% if active_page == 'payments' %}active{% endif %}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+
+                <!-- Payments -->
+
+                <a
+                    href="{{ url_for('admin.payments_list') }}"
+                    class="
+                        admin-link
+                        {% if active_page == 'payments' %}
+                            admin-active
+                        {% endif %}
+                    "
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+
+                        <rect
+                            x="1"
+                            y="4"
+                            width="22"
+                            height="16"
+                            rx="2"
+                        ></rect>
+
+                        <line
+                            x1="1"
+                            y1="10"
+                            x2="23"
+                            y2="10"
+                        ></line>
+
+                    </svg>
+
                     مدیریت پرداخت‌ها
+
                 </a>
 
-                <a href="{{ url_for('admin.trainings_list') }}" class="{% if active_page == 'trainings' %}active{% endif %}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+
+                <!-- Trainings -->
+
+                <a
+                    href="{{ url_for('admin.trainings_list') }}"
+                    class="
+                        admin-link
+                        {% if active_page == 'trainings' %}
+                            admin-active
+                        {% endif %}
+                    "
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                        ></circle>
+
+                        <polyline points="12 6 12 12 16 14"></polyline>
+
+                    </svg>
+
                     مدیریت شیفت‌های تمرین
+
                 </a>
 
-                <a href="{{ url_for('admin.users_list') }}" class="{% if active_page == 'users_list' %}active{% endif %}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+
+                <!-- Users -->
+
+                <a
+                    href="{{ url_for('admin.users_list') }}"
+                    class="
+                        admin-link
+                        {% if active_page == 'users_list' %}
+                            admin-active
+                        {% endif %}
+                    "
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+
+                        <path
+                            d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
+                        ></path>
+
+                        <circle
+                            cx="9"
+                            cy="7"
+                            r="4"
+                        ></circle>
+
+                        <path
+                            d="M23 21v-2a4 4 0 0 0-3-3.87"
+                        ></path>
+
+                        <path
+                            d="M16 3.13a4 4 0 0 1 0 7.75"
+                        ></path>
+
+                    </svg>
+
                     مدیریت کاربران سایت
+
                 </a>
 
-                <!-- ۳. بخش اطلاع‌رسانی و محتوای سایت -->
-                <div class="nav-category">محتوا و اطلاع‌رسانی</div>
 
-                <a href="{{ url_for('admin.announcements_list') }}" class="{% if active_page == 'announcements_list' %}active{% endif %}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <!-- Content Category -->
+
+                <div class="nav-category">
+                    محتوا و اطلاع‌رسانی
+                </div>
+
+
+                <!-- Announcements -->
+
+                <a
+                    href="{{ url_for('admin.announcements_list') }}"
+                    class="
+                        admin-link
+                        {% if active_page == 'announcements_list' %}
+                            admin-active
+                        {% endif %}
+                    "
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+
+                        <path
+                            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                        ></path>
+
+                        <polyline
+                            points="14 2 14 8 20 8"
+                        ></polyline>
+
+                        <line
+                            x1="16"
+                            y1="13"
+                            x2="8"
+                            y2="13"
+                        ></line>
+
+                        <line
+                            x1="16"
+                            y1="17"
+                            x2="8"
+                            y2="17"
+                        ></line>
+
+                        <polyline
+                            points="10 9 9 9 8 9"
+                        ></polyline>
+
+                    </svg>
+
                     لیست اطلاعیه‌ها
+
                 </a>
 
-                <a href="{{ url_for('admin.add_announcement') }}" class="{% if active_page == 'new_announcement' %}active{% endif %}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+
+                <!-- Add Announcement -->
+
+                <a
+                    href="{{ url_for('admin.add_announcement') }}"
+                    class="
+                        admin-link
+                        {% if active_page == 'new_announcement' %}
+                            admin-active
+                        {% endif %}
+                    "
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+
+                        <path d="M12 20h9"></path>
+
+                        <path
+                            d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"
+                        ></path>
+
+                    </svg>
+
                     ثبت اطلاعیه جدید
+
                 </a>
 
-                <a href="{{ url_for('admin.manage_about') }}" class="{% if active_page == 'about_us' %}active{% endif %}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+
+                <!-- About -->
+
+                <a
+                    href="{{ url_for('admin.manage_about') }}"
+                    class="
+                        admin-link
+                        {% if active_page == 'about_us' %}
+                            admin-active
+                        {% endif %}
+                    "
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                        ></circle>
+
+                        <line
+                            x1="12"
+                            y1="16"
+                            x2="12"
+                            y2="12"
+                        ></line>
+
+                        <line
+                            x1="12"
+                            y1="8"
+                            x2="12.01"
+                            y2="8"
+                        ></line>
+
+                    </svg>
+
                     مدیریت صفحه درباره ما
+
                 </a>
+
 
                 <hr class="nav-divider">
 
-                <!-- ۴. دسترسی‌های سریع و خروج -->
-                <a href="{{ url_for('panel.dashboard') }}" style="color: var(--blue);">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+
+                <!-- Player Panel -->
+
+                <a
+                    href="{{ url_for('panel.dashboard') }}"
+                    class="admin-link"
+                    style="color: var(--blue);"
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+
+                        <path d="M5 12h14"></path>
+
+                        <path d="M12 5l7 7-7 7"></path>
+
+                    </svg>
+
                     ورود به پنل بازیکنان
+
                 </a>
 
-                <a href="/" style="color: var(--navy);">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+
+                <!-- Main Website -->
+
+                <a
+                    href="/"
+                    class="admin-link"
+                    style="color: var(--navy);"
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+
+                        <path
+                            d="M3 9l9-7 9 7v11a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"
+                        ></path>
+
+                        <polyline
+                            points="9 22 9 12 15 12 15 22"
+                        ></polyline>
+
+                    </svg>
+
                     مشاهده سایت اصلی
+
                 </a>
 
-                <a href="{{ url_for('auth.logout') }}" style="color: var(--danger); margin-top: auto;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+
+                <!-- Logout -->
+
+                <a
+                    href="{{ url_for('auth.logout') }}"
+                    class="admin-link"
+                    style="color: var(--danger); margin-top: auto;"
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+
+                        <path
+                            d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+                        ></path>
+
+                        <polyline
+                            points="16 17 21 12 16 7"
+                        ></polyline>
+
+                        <line
+                            x1="21"
+                            y1="12"
+                            x2="9"
+                            y2="12"
+                        ></line>
+
+                    </svg>
+
                     خروج از سیستم
+
                 </a>
 
             </nav>
+
         </aside>
 
-        <!-- ===== بخش اصلی محتوای ادمین ===== -->
+
+        <!-- =========================
+             Sidebar Overlay
+        ========================== -->
+
+        <div
+            class="sidebar-overlay"
+            id="sidebarOverlay"
+            aria-hidden="true"
+        ></div>
+
+
+        <!-- =========================
+             Main Content
+        ========================== -->
+
         <main class="main-content">
 
-            <!-- هدر بالای پنل -->
+            <!-- Topbar -->
+
             <header class="topbar">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <!-- دکمه همبرگری مخصوص موبایل -->
-                    <button id="sidebarToggle" class="btn btn-ghost" style="padding: 6px; display: none; color: var(--navy); border-color: var(--line);">
-                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="3" y1="12" x2="21" y2="12"></line>
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <line x1="3" y1="18" x2="21" y2="18"></line>
+
+                <div class="topbar-left">
+
+                    <!-- Mobile Toggle -->
+
+                    <button
+                        type="button"
+                        id="sidebarToggle"
+                        class="btn btn-ghost"
+                        aria-label="باز و بسته کردن منوی مدیریت"
+                        aria-expanded="false"
+                    >
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            width="24"
+                            height="24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+
+                            <line
+                                x1="3"
+                                y1="12"
+                                x2="21"
+                                y2="12"
+                            ></line>
+
+                            <line
+                                x1="3"
+                                y1="6"
+                                x2="21"
+                                y2="6"
+                            ></line>
+
+                            <line
+                                x1="3"
+                                y1="18"
+                                x2="21"
+                                y2="18"
+                            ></line>
+
                         </svg>
+
                     </button>
-                    <h3 style="font-size: 1.1rem; color: var(--navy);">{% block page_title %}مدیریت{% endblock %}</h3>
+
+
+                    <!-- Page Title -->
+
+                    <h3>
+                        {% block page_title %}
+                            مدیریت
+                        {% endblock %}
+                    </h3>
+
                 </div>
+
+
+                <!-- Admin User -->
 
                 <div class="topbar-user">
-                    <span style="font-size: 0.75rem; background: var(--danger); color: #ffffff; padding: 3px 10px; border-radius: 50px; font-weight: 800; margin-left: 8px;">مدیر کل</span>
-                    <span>{{ current_user.first_name }} {{ current_user.last_name }}</span>
+
+                    <span class="admin-badge">
+                        مدیر کل
+                    </span>
+
+                    <span>
+                        {{ current_user.first_name }}
+                        {{ current_user.last_name }}
+                    </span>
+
                     <div class="avatar">
-                        <img src="{{ url_for('static', filename='uploads/avatars/' + current_user.avatar) }}"
-                             alt="پروفایل"
-                             style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"
-                             onerror="this.src='{{ url_for('static', filename='images/logo.png') }}';">
+
+                        {% if current_user.avatar %}
+
+                            <img
+                                src="{{ url_for(
+                                    'static',
+                                    filename='uploads/avatars/' + current_user.avatar
+                                ) }}"
+                                alt="پروفایل"
+                                onerror="this.src='{{ url_for(
+                                    'static',
+                                    filename='images/logo.png'
+                                ) }}';"
+                            >
+
+                        {% else %}
+
+                            <img
+                                src="{{ url_for(
+                                    'static',
+                                    filename='images/logo.png'
+                                ) }}"
+                                alt="پروفایل"
+                            >
+
+                        {% endif %}
+
                     </div>
+
                 </div>
+
             </header>
 
-            <!-- محتوای داینامیک صفحات ادمین -->
+
+            <!-- Dynamic Admin Content -->
+
             <div class="content-area">
-                {% block admin_content %}{% endblock %}
+
+                {% block admin_content %}
+                {% endblock %}
+
             </div>
 
         </main>
 
     </div>
 
-    <!-- اسکریپت‌های پایه و باز شدن سایدبار در موبایل -->
+
+    <!-- =========================
+         Base JS
+    ========================== -->
+
     <script src="{{ url_for('static', filename='JS/base.js') }}"></script>
+
+
+    <!-- =========================
+         Admin Sidebar JS
+    ========================== -->
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const toggleBtn = document.getElementById('sidebarToggle');
-            const sidebar = document.querySelector('.sidebar');
-            if (toggleBtn && sidebar) {
-                toggleBtn.addEventListener('click', () => {
-                    sidebar.classList.toggle('open');
-                });
+
+            const toggleBtn =
+                document.getElementById('sidebarToggle');
+
+            const sidebar =
+                document.querySelector('.sidebar');
+
+            const overlay =
+                document.getElementById('sidebarOverlay');
+
+
+            if (!toggleBtn || !sidebar || !overlay) {
+                return;
             }
+
+
+            const openSidebar = () => {
+
+                sidebar.classList.add('open');
+
+                overlay.classList.add('show');
+
+                document.body.classList.add('sidebar-open');
+
+                toggleBtn.setAttribute(
+                    'aria-expanded',
+                    'true'
+                );
+
+                overlay.setAttribute(
+                    'aria-hidden',
+                    'false'
+                );
+            };
+
+
+            const closeSidebar = () => {
+
+                sidebar.classList.remove('open');
+
+                overlay.classList.remove('show');
+
+                document.body.classList.remove('sidebar-open');
+
+                toggleBtn.setAttribute(
+                    'aria-expanded',
+                    'false'
+                );
+
+                overlay.setAttribute(
+                    'aria-hidden',
+                    'true'
+                );
+            };
+
+
+            const toggleSidebar = () => {
+
+                if (sidebar.classList.contains('open')) {
+                    closeSidebar();
+                } else {
+                    openSidebar();
+                }
+
+            };
+
+
+            // باز و بسته کردن با دکمه همبرگری
+
+            toggleBtn.addEventListener(
+                'click',
+                toggleSidebar
+            );
+
+
+            // بستن با کلیک روی فضای بیرون
+
+            overlay.addEventListener(
+                'click',
+                closeSidebar
+            );
+
+
+            // بستن با Escape
+
+            document.addEventListener(
+                'keydown',
+                (event) => {
+
+                    if (event.key === 'Escape') {
+                        closeSidebar();
+                    }
+
+                }
+            );
+
+
+            // بستن بعد از انتخاب یکی از لینک‌ها
+
+            document
+                .querySelectorAll('.sidebar-nav a')
+                .forEach(link => {
+
+                    link.addEventListener(
+                        'click',
+                        () => {
+
+                            if (window.innerWidth <= 768) {
+                                closeSidebar();
+                            }
+
+                        }
+                    );
+
+                });
+
+
+            // بستن هنگام برگشت به دسکتاپ
+
+            window.addEventListener(
+                'resize',
+                () => {
+
+                    if (window.innerWidth > 768) {
+                        closeSidebar();
+                    }
+
+                }
+            );
+
         });
     </script>
 
-    {% block extra_js %}{% endblock %}
+
+    {% block extra_js %}
+    {% endblock %}
+
 </body>
 </html>
+
