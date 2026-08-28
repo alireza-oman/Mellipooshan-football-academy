@@ -1,31 +1,31 @@
-# ⚽ سامانه جامع مدیریت و ثبت‌نام آکادمی فوتبال ملی‌پوشان
+# ⚽ Mellipooshan Football Academy — Management & Registration System
 
-یک وب‌اپلیکیشن یکپارچه و مدرن برای مدارس و آکادمی‌های فوتبال پایه، ساخته‌شده با **Flask (Python)**، پایگاه‌داده **SQLAlchemy** و طراحی کاملاً راست‌چین و ریسپانسیو (RTL).
+A modern and integrated web application for youth football academies and schools, built with **Flask (Python)**, **SQLAlchemy**, and a fully responsive **RTL** interface.
 
-## 🌟 ویژگی‌های کلیدی پروژه
+## 🌟 Key Features
 
-### 👨‍👩‍👦 پنل اولیا و بازیکنان
+### 👨‍👩‍👦 Parents & Players Panel
 
-* **ثبت‌نام چندمرحله‌ای (Multi-Step Form):** فرم ۶ مرحله‌ای هوشمند همراه با دراپ‌زون اختصاصی برای آپلود مدارک:
+* **Multi-Step Registration:** A smart 6-step registration form with a dedicated dropzone for document uploads:
 
-  * عکس پرسنلی
-  * شناسنامه
-  * بیمه ورزشی
-  * رضایت‌نامه
-* **رهگیری پرونده:** بررسی وضعیت مدارک و مشاهده دلایل رد احتمالی توسط مدیریت.
-* **پرداخت شهریه و انتخاب شیفت:** امکان انتخاب شیفت تمرینی ثابت هفتگی پس از تأیید شهریه.
-* **پروفایل کاربری:** مدیریت مشخصات، تغییر رمز عبور و آپلود آواتار با پیش‌نمایش زنده.
+  * Profile photo
+  * Birth certificate
+  * Sports insurance
+  * Consent form
+* **Application Tracking:** View application status and rejection reasons provided by administrators.
+* **Tuition Payment & Training Schedule:** Select a fixed weekly training schedule after tuition approval.
+* **User Profile:** Manage personal information, change passwords, and upload avatars with live preview.
 
-### 👑 پنل مدیریت ارشد (Admin Dashboard)
+### 👑 Admin Dashboard
 
-* **بررسی پرونده‌های ثبت‌نام:** مشاهده مشخصات کامل، پیش‌نمایش اسناد و تأیید یا رد مدارک همراه با ثبت علت.
-* **مدیریت پرداخت‌ها:** بررسی درخواست‌های شهریه و تأیید یا لغو آن‌ها.
-* **برنامه‌ریزی شیفت‌های تمرینی:** تعریف، ویرایش و حذف جلسات تمرینی رده‌های مختلف سنی.
-* **سیستم اطلاعیه‌رسانی:** انتشار اطلاعیه‌ها در دسته‌بندی‌های مختلف با قابلیت تعیین میزان فوریت.
-* **مدیریت پویای محتوا (CMS):** مدیریت بخش‌های مختلف صفحه «درباره ما»، مربیان، افتخارات، آمارها و گالری تصاویر.
-* **مدیریت کاربران:** مشاهده، تغییر سطح دسترسی و حذف اعضا با قابلیت صفحه‌بندی (Pagination).
+* **Registration Management:** Review complete registration details, preview documents, and approve or reject applications with a reason.
+* **Payment Management:** Review, approve, or cancel tuition payment requests.
+* **Training Schedule Management:** Create, edit, and delete training sessions for different age groups.
+* **Notification System:** Publish announcements with categories and priority levels.
+* **Dynamic Content Management (CMS):** Manage About Us sections, coaches, achievements, statistics, and gallery content.
+* **User Management:** View, update access levels, and delete users with pagination support.
 
-## 🛠️ تکنولوژی‌های استفاده‌شده
+## 🛠️ Technologies Used
 
 ### Backend
 
@@ -39,7 +39,7 @@
 ### Database
 
 * SQLite
-* سازگار با PostgreSQL و MySQL
+* Compatible with PostgreSQL and MySQL
 
 ### Frontend
 
@@ -54,16 +54,16 @@
 * Vazirmatn
 * Teko
 
-## 🚀 راهنمای نصب و راه‌اندازی محلی
+## 🚀 Local Setup
 
-### 1. کلون کردن مخزن
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/football-academy.git
-cd football-academy
+git clone https://github.com/alireza-oman/Mellipooshan-football-academy.git
+cd Mellipooshan-football-academy
 ```
 
-### 2. ساخت و فعال‌سازی محیط مجازی
+### 2. Create and Activate a Virtual Environment
 
 #### Windows
 
@@ -79,68 +79,68 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 3. نصب وابستگی‌ها
+### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. آماده‌سازی دیتابیس و داده‌های اولیه
+### 4. Initialize the Database and Seed Initial Data
 
 ```bash
 python seed.py
 ```
 
-### 5. اجرای پروژه
+### 5. Run the Application
 
 ```bash
 python app.py
 ```
 
-سپس مرورگر خود را باز کرده و وارد آدرس زیر شوید:
+Then open:
 
 ```text
 http://127.0.0.1:5000
 ```
 
-## 👤 حساب کاربری مدیر پیش‌فرض
+## 👤 Default Admin Account
 
-پس از اجرای پروژه، یک کاربر مدیر با دسترسی ادمین به‌صورت پیش‌فرض ایجاد می‌شود.
+After running the project, a default admin user is created with administrative access.
 
-* **شماره موبایل:** `---`
+* **Mobile Number:** `---`
 
-> در صورت استفاده از پروژه در محیط واقعی، حتماً اطلاعات ورود پیش‌فرض را تغییر دهید.
+> For production use, make sure to change the default login credentials.
 
-## 📂 ساختار پروژه
+## 📂 Project Structure
 
 ```text
 football-academy/
 │
-├── admin/                    # بلوپرینت و منطق پنل مدیریت
-├── auth/                     # بلوپرینت احراز هویت
-├── enrollment/               # ثبت‌نام دوره‌ها و آپلود اسناد
-├── panel/                    # پنل کاربری بازیکنان
+├── admin/                    # Admin blueprint and management logic
+├── auth/                     # Authentication blueprint
+├── enrollment/               # Registration and document uploads
+├── panel/                    # Player/user panel
 │
 ├── static/
-│   ├── css/                 # استایل‌های عمومی و پنل‌ها
-│   ├── js/                  # اسکریپت‌های تعاملی
-│   └── uploads/             # تصاویر و مدارک آپلودشده
+│   ├── css/                  # Global and panel styles
+│   ├── js/                   # Interactive scripts
+│   └── uploads/              # Uploaded images and documents
 │
-├── templates/               # قالب‌های Jinja2
+├── templates/                # Jinja2 templates
 │
-├── app.py                   # نقطه ورود اصلی برنامه
-├── config.py                # تنظیمات Development و Production
-├── extensions.py            # نمونه‌سازی Extensionهای Flask
-├── models.py                # مدل‌های پایگاه داده
-├── seed.py                  # ایجاد داده‌های اولیه
-├── requirements.txt         # وابستگی‌های Python
-├── .gitignore               # فایل‌های نادیده گرفته‌شده توسط Git
-└── README.md                # مستندات پروژه
+├── app.py                    # Main application entry point
+├── config.py                 # Development and production configuration
+├── extensions.py             # Flask extension instances
+├── models.py                 # Database models
+├── seed.py                   # Initial data creation
+├── requirements.txt          # Python dependencies
+├── .gitignore                # Ignored Git files
+└── README.md                 # Project documentation
 ```
 
-## 📌 ارسال پروژه به GitHub
+## 📌 GitHub Setup
 
-اگر هنوز Repository را به Git متصل نکرده‌اید:
+If the project has not been connected to Git yet:
 
 ```bash
 git init
@@ -151,7 +151,7 @@ git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
 git push -u origin main
 ```
 
-برای تغییرات بعدی:
+For future changes:
 
 ```bash
 git add .
@@ -159,23 +159,20 @@ git commit -m "Update project"
 git push
 ```
 
-## 🔐 نکات امنیتی
+## 🔐 Security
 
-قبل از انتشار پروژه در GitHub، اطلاعات حساس را داخل کد قرار ندهید.
+Never store sensitive information directly in the source code.
 
-مواردی مانند:
+Sensitive data such as:
 
 * `SECRET_KEY`
-* رمز عبور مدیر
-* اطلاعات اتصال به دیتابیس
-* API Keyها
-* اطلاعات درگاه پرداخت
+* Admin passwords
+* Database connection credentials
+* API keys
+* Payment gateway credentials
 
-باید در Environment Variables یا فایل‌های محلی قرار بگیرند و در `.gitignore` ثبت شوند.
+should be stored in environment variables or local configuration files and excluded using `.gitignore`.
 
-## 📄 License
-
-این پروژه تحت مجوز **MIT License** منتشر شده است.
 
 ## 🏷️ Tags
 
