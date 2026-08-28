@@ -173,7 +173,3 @@ Sensitive data such as:
 
 should be stored in environment variables or local configuration files and excluded using `.gitignore`.
 
-
-## 🏷️ Tags
-
-`Python` `Flask` `SQLAlchemy` `Flask-Login` `Flask-WTF` `Flask-Migrate` `SQLite` `JavaScript` `HTML5` `CSS3` `Jinja2` `Football Academy` `Management System` `RTL` `Web Application`
