@@ -1,17 +1,14 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField
-from wtforms.validators import DataRequired, Length, ValidationError, \
-    Optional, Regexp
+from wtforms import StringField, SubmitField, TextAreaField, SelectField
+from wtforms.validators import DataRequired, Length, Optional, Regexp, ValidationError
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from models import ClubRegistration
-
-PHONE_REGEX = r'^09\d{9}$'
-PHONE_ERROR_MSG = "شماره موبایل نامعتبر است. شماره باید با 09 شروع شده و ۱۱ رقم انگلیسی باشد."
-
+from security_utils import validate_national_code, PHONE_REGEX
 
 class ClubRegistrationForm(FlaskForm):
     player_fullname = StringField('نام و نام خانوادگی بازیکن', validators=[
-        DataRequired(message="وارد کردن نام و نام خانوادگی بازیکن الزامی است.")
+        DataRequired(message="وارد کردن نام و نام خانوادگی بازیکن الزامی است."),
+        Length(min=3, max=100, message="نام باید بین ۳ تا ۱۰۰ کاراکتر باشد.")
     ])
 
     birth_date = StringField('تاریخ تولد بازیکن (شمسی)', validators=[
@@ -20,16 +17,17 @@ class ClubRegistrationForm(FlaskForm):
 
     national_id = StringField('کد ملی بازیکن', validators=[
         DataRequired(message="وارد کردن کد ملی الزامی است."),
-        Length(min=10, max=10, message="کد ملی باید دقیقاً ۱۰ رقم باشد.")
+        Length(min=10, max=10, message="کد ملی باید ۱۰ رقم باشد.")
     ])
 
-    player_phone = StringField('شماره موبایل', validators=[
+    player_phone = StringField('شماره موبایل بازیکن', validators=[
         DataRequired(message="شماره موبایل الزامی است."),
-        Regexp(PHONE_REGEX, message=PHONE_ERROR_MSG)
+        Regexp(PHONE_REGEX, message="شماره موبایل بازیکن نامعتبر است.")
     ])
 
     parent_fullname = StringField('نام و نام خانوادگی ولی', validators=[
-        DataRequired(message="وارد کردن نام و نام خانوادگی ولی الزامی است.")
+        DataRequired(message="نام و نام خانوادگی ولی الزامی است."),
+        Length(min=3, max=100)
     ])
 
     parent_relation = SelectField('نسبت با بازیکن', choices=[
@@ -38,59 +36,54 @@ class ClubRegistrationForm(FlaskForm):
         ('سایر', 'سایر (قیم قانونی)')
     ], validators=[DataRequired(message="انتخاب نسبت الزامی است.")])
 
-    parent_phone = StringField('شماره موبایل', validators=[
-        DataRequired(message="شماره موبایل الزامی است."),
-        Regexp(PHONE_REGEX, message=PHONE_ERROR_MSG)
+    parent_phone = StringField('شماره موبایل ولی', validators=[
+        DataRequired(message="شماره موبایل ولی الزامی است."),
+        Regexp(PHONE_REGEX, message="شماره موبایل ولی نامعتبر است.")
     ])
 
-    province = StringField('استان', validators=[
-        DataRequired(message="وارد کردن استان الزامی است.")
-    ])
-
-    city = StringField('شهر', validators=[
-        DataRequired(message="وارد کردن شهر الزامی است.")
-    ])
-
-    address = TextAreaField('آدرس دقیق محل سکونت', validators=[
-        DataRequired(message="وارد کردن آدرس الزامی است.")
-    ])
-
-    postal_code = StringField('کد پستی (اختیاری)', validators=[Optional()])
-
+    province = StringField('استان', validators=[DataRequired(message="وارد کردن استان الزامی است.")])
+    city = StringField('شهر', validators=[DataRequired(message="وارد کردن شهر الزامی است.")])
+    address = TextAreaField('آدرس دقیق محل سکونت', validators=[DataRequired(message="وارد کردن آدرس الزامی است.")])
+    postal_code = StringField('کد پستی (اختیاری)', validators=[Optional(), Length(max=10)])
     football_history = TextAreaField('سابقه فوتبال (اختیاری)', validators=[Optional()])
+    play_position = StringField('پست بازی مورد علاقه (اختیاری)', validators=[Optional(), Length(max=50)])
 
-    play_position = StringField('پست بازی مورد علاقه (اختیاری)', validators=[Optional()])
+    # پسوندهای مجاز مدارک
+    ALLOWED_IMGS = ['jpg', 'jpeg', 'png', 'webp']
 
     player_photo = FileField('عکس پرسنلی بازیکن', validators=[
         FileRequired(message="آپلود عکس پرسنلی بازیکن الزامی است."),
-        FileAllowed(['jpg', 'jpeg', 'png'], 'فقط تصاویر با فرمت JPG یا PNG مجاز هستند.')
+        FileAllowed(ALLOWED_IMGS, 'فرمت مجاز: JPG, PNG, WEBP')
     ])
-
     birth_cert_img = FileField('تصویر شناسنامه بازیکن', validators=[
         FileRequired(message="آپلود تصویر شناسنامه الزامی است."),
-        FileAllowed(['jpg', 'jpeg', 'png'], 'فقط تصاویر با فرمت JPG یا PNG مجاز هستند.')
+        FileAllowed(ALLOWED_IMGS, 'فرمت مجاز: JPG, PNG, WEBP')
     ])
-
     parent_consent_img = FileField('رضایت‌نامه ولی', validators=[
         FileRequired(message="آپلود تصویر رضایت‌نامه ولی الزامی است."),
-        FileAllowed(['jpg', 'jpeg', 'png'], 'فقط تصاویر با فرمت JPG یا PNG مجاز هستند.')
+        FileAllowed(ALLOWED_IMGS, 'فرمت مجاز: JPG, PNG, WEBP')
     ])
-
     medical_cert_img = FileField('گواهی سلامت پزشکی', validators=[
         FileRequired(message="آپلود تصویر گواهی سلامت پزشکی الزامی است."),
-        FileAllowed(['jpg', 'jpeg', 'png'], 'فقط تصاویر با فرمت JPG یا PNG مجاز هستند.')
+        FileAllowed(ALLOWED_IMGS, 'فرمت مجاز: JPG, PNG, WEBP')
     ])
-
     sports_insurance_img = FileField('کارت بیمه ورزشی', validators=[
         FileRequired(message="آپلود تصویر کارت بیمه ورزشی الزامی است."),
-        FileAllowed(['jpg', 'jpeg', 'png'], 'فقط تصاویر با فرمت JPG یا PNG مجاز هستند.')
+        FileAllowed(ALLOWED_IMGS, 'فرمت مجاز: JPG, PNG, WEBP')
     ])
 
-    medical_notes = TextAreaField('توضیحات بیماری، شکستگی، مصرف دارو و... (اختیاری)', validators=[Optional()])
-
+    medical_notes = TextAreaField('توضیحات بیماری، مصرف دارو و... (اختیاری)', validators=[Optional()])
     submit = SubmitField('ثبت نهایی اطلاعات و ارسال مدارک')
 
-    def validate_national_id(self, national_id):
-        existing_reg = ClubRegistration.query.filter_by(national_id=national_id.data).first()
+    def validate_national_id(self, field):
+        code = field.data.strip() if field.data else ''
+        if not validate_national_code(code):
+            raise ValidationError('کد ملی وارد شده با الگوریتم کشوری مطابقت ندارد.')
+        existing_reg = ClubRegistration.query.filter_by(national_id=code).first()
         if existing_reg:
-            raise ValidationError('این کد ملی قبلاً ثبت‌نام شده است.')
+            raise ValidationError('این کد ملی قبلاً در سیستم پرونده ثبت کرده است.')
+
+
+class PaySubmitForm(FlaskForm):
+    """فرم امنیتی برای محافظت از عملیات پرداخت در برابر حملات CSRF"""
+    submit = SubmitField('ثبت پرداخت')

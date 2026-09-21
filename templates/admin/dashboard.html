@@ -3,69 +3,94 @@
 {% set active_page = "admin_dashboard" %}
 
 {% block title %}پنل مدیریت | {{ club_name }}{% endblock %}
-{% block page_title %}داشبورد مدیریت{% endblock %}
+{% block page_title %}داشبورد فرماندهی آکادمی{% endblock %}
 
 {% block admin_content %}
-<div class="welcome-card" style="border-right: 5px solid var(--danger);">
+
+<!-- کارت خوش‌آمدگویی مدیر -->
+<div class="welcome-banner" style="background: linear-gradient(135deg, #180507, var(--pitch-dark)); border-color: var(--admin-border);">
     <div class="welcome-text">
-        <h1 style="color: var(--danger);">خوش آمدید همکار گرامی! 👑</h1>
-        <p>به سیستم مدیریت آکادمی فوتبال ملی‌پوشان خوش آمدید. از منوی کناری می‌توانید اطلاعیه جدید ثبت کنید یا به امور فنی باشگاه رسیدگی نمایید.</p>
+        <h1 style="color: var(--admin-red);">خوش آمدید مدیر گرامی! 👑</h1>
+        <p>به پنل مرکزی کنترل و مدیریت آکادمی فوتبال ملی‌پوشان خوش آمدید. از بخش‌های زیر می‌توانید وضعیت پرونده‌های ورزشی، امور مالی و پیام‌های اطلاع‌رسانی را بررسی نمایید.</p>
     </div>
-    
-    <div class="welcome-icon" style="color: var(--danger);">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-        </svg>
+    <div class="welcome-badge-icon" style="color: var(--admin-red); background: rgba(255, 71, 87, 0.12);">
+        <i class="fas fa-user-shield"></i>
     </div>
 </div>
 
-<!-- 🌟 بخش جدید: کارت‌های آمارگیر مدیریتی 🌟 -->
+<!-- کارت‌های آمار ۴گانه ادمین با کلاس‌های استخراج‌شده در admin.css -->
 <div class="admin-stats-grid">
 
-    <!-- کارت تعداد اعضا -->
-    <div class="stat-box">
-        <div class="stat-info">
-            <span class="stat-title">تعداد کل اعضا و بازیکنان</span>
-            <h2 class="stat-number">{{ total_users }}</h2>
+    <div class="admin-stat-card">
+        <div class="stat-card-info">
+            <span class="stat-label">تعداد کل بازیکنان و کاربران</span>
+            <div class="stat-val">{{ total_users }}</div>
         </div>
-        <div class="stat-icon" style="color: var(--blue); background: #e8f0fe;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-        </div>
-    </div>
-
-    <!-- کارت تعداد اطلاعیه‌ها -->
-    <div class="stat-box">
-        <div class="stat-info">
-            <span class="stat-title">تعداد کل اطلاعیه‌ها</span>
-            <h2 class="stat-number">{{ total_announcements }}</h2>
-        </div>
-        <div class="stat-icon" style="color: var(--blue); background: var(--mist);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <div class="stat-card-icon stat-icon-users">
+            <i class="fas fa-users"></i>
         </div>
     </div>
 
-    <!-- 🌟 کارت کل ثبت‌نام‌های رسمی دوره (قرمز/سبز لایت) 🌟 -->
-    <div class="stat-box">
-        <div class="stat-info">
-            <span class="stat-title">کل پرونده‌های ثبت‌نام</span>
-            <h2 class="stat-number">{{ total_registrations }}</h2>
+    <div class="admin-stat-card">
+        <div class="stat-card-info">
+            <span class="stat-label">اطلاعیه‌های صادر شده</span>
+            <div class="stat-val">{{ total_announcements }}</div>
         </div>
-        <div class="stat-icon" style="color: #2ecc71; background: #eafaf1;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+        <div class="stat-card-icon stat-icon-announcements">
+            <i class="fas fa-bullhorn"></i>
         </div>
     </div>
 
-    <!-- 🌟 کارت ثبت‌نام‌های در انتظار بررسی (نارنجی لایت) 🌟 -->
-    <div class="stat-box" style="border: 1px solid rgba(243, 156, 18, 0.2); box-shadow: 0 10px 30px -15px rgba(243, 156, 18, 0.08);">
-        <div class="stat-info">
-            <span class="stat-title">بررسی نشده (اقدام فوری)</span>
-            <h2 class="stat-number" style="color: #f39c12;">{{ pending_registrations }}</h2>
+    <div class="admin-stat-card">
+        <div class="stat-card-info">
+            <span class="stat-label">کل پرونده‌های ثبت‌نام</span>
+            <div class="stat-val">{{ total_registrations }}</div>
         </div>
-        <div class="stat-icon" style="color: #f39c12; background: #fef9e7;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <div class="stat-card-icon stat-icon-registrations">
+            <i class="fas fa-id-badge"></i>
+        </div>
+    </div>
+
+    <div class="admin-stat-card" style="border-color: var(--admin-red);">
+        <div class="stat-card-info">
+            <span class="stat-label" style="color: var(--admin-red);">پرونده‌های نیازمند اقدام فوری</span>
+            <div class="stat-val" style="color: var(--admin-red);">{{ pending_registrations }}</div>
+        </div>
+        <div class="stat-card-icon stat-icon-pending">
+            <i class="fas fa-exclamation-circle"></i>
         </div>
     </div>
 
 </div>
+
+<!-- دسترسی‌های سریع ادمین -->
+<div class="dashboard-header-flex">
+    <div class="section-heading">
+        <h3>اقدامات پرکاربرد مدیریت</h3>
+        <span class="sub-text">دسترسی مستقیم به ماژول‌های پرمصرف سامانه</span>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+    <a href="{{ url_for('admin.registrations_list') }}" class="btn btn-ghost btn-block" style="justify-content: flex-start; padding: 16px;">
+        <i class="fas fa-clipboard-check" style="color: var(--admin-red); font-size: 1.2rem;"></i>
+        <span>بررسی و تایید مدارک بازیکنان</span>
+    </a>
+
+    <a href="{{ url_for('admin.payments_list') }}" class="btn btn-ghost btn-block" style="justify-content: flex-start; padding: 16px;">
+        <i class="fas fa-receipt" style="color: var(--success); font-size: 1.2rem;"></i>
+        <span>تایید فیش‌های واریزی شهریه</span>
+    </a>
+
+    <a href="{{ url_for('admin.add_announcement') }}" class="btn btn-ghost btn-block" style="justify-content: flex-start; padding: 16px;">
+        <i class="fas fa-bullhorn" style="color: var(--pitch-blue); font-size: 1.2rem;"></i>
+        <span>ارسال اطلاعیه فوری به باشگاه</span>
+    </a>
+
+    <a href="{{ url_for('admin.trainings_list') }}" class="btn btn-ghost btn-block" style="justify-content: flex-start; padding: 16px;">
+        <i class="fas fa-calendar-plus" style="color: var(--pitch-gold); font-size: 1.2rem;"></i>
+        <span>افزودن شیفت تمرینی جدید</span>
+    </a>
+</div>
+
 {% endblock %}

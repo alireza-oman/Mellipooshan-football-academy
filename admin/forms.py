@@ -1,18 +1,17 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SelectField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, Length, Regexp, Optional
 from flask_wtf.file import FileField, FileAllowed
+from security_utils import PHONE_REGEX
 
 class AnnouncementForm(FlaskForm):
     title = StringField('عنوان اطلاعیه', validators=[
         DataRequired(message="وارد کردن عنوان الزامی است."),
         Length(max=200, message="عنوان نباید بیشتر از ۲۰۰ کاراکتر باشد.")
     ])
-
     content = TextAreaField('متن اطلاعیه', validators=[
-        DataRequired(message="وارد کردن متن اطلاعیه الزامی است.")
+        DataRequired(message="وارد کردن متن الزامی است.")
     ])
-
     category = SelectField('دسته‌بندی', choices=[
         ('عمومی', 'عمومی'),
         ('تمرینات', 'تمرینات'),
@@ -20,124 +19,119 @@ class AnnouncementForm(FlaskForm):
         ('اداری', 'اداری'),
         ('فوری', 'فوری')
     ], default='عمومی')
-
     author = StringField('نویسنده پیام', default='مدیریت آکادمی', validators=[
         DataRequired(message="نام نویسنده الزامی است.")
     ])
-
-    is_important = BooleanField('علامت‌گذاری به عنوان فوری / مهم')
-
-    submit = SubmitField('انتشار اطلاعیه در باشگاه')
+    is_important = BooleanField('فوری / مهم')
+    submit = SubmitField('انتشار اطلاعیه')
 
 
 class AdminUserEditForm(FlaskForm):
-    first_name = StringField('نام', validators=[DataRequired(message="وارد کردن نام الزامی است.")])
-    last_name = StringField('نام خانوادگی', validators=[DataRequired(message="وارد کردن نام خانوادگی الزامی است.")])
-
+    first_name = StringField('نام', validators=[DataRequired(message="نام الزامی است.")])
+    last_name = StringField('نام خانوادگی', validators=[DataRequired(message="نام خانوادگی الزامی است.")])
     phone = StringField('شماره موبایل', validators=[
         DataRequired(message="شماره موبایل الزامی است."),
-        Length(min=11, max=11, message="شماره موبایل باید ۱۱ رقم باشد.")
+        Regexp(PHONE_REGEX, message="فرمت موبایل صحیح نیست.")
     ])
-
     is_admin = BooleanField('دسترسی مدیریت (ادمین)')
+    is_active = BooleanField('حساب کاربری فعال است')
     submit = SubmitField('ثبت تغییرات کاربر')
 
 
 class EmptyForm(FlaskForm):
-    pass
+    """فرم امن توکن CSRF برای تمام دکمه‌های حذف و تغییر وضعیت سریع"""
+    submit = SubmitField()
 
 
 class RejectRegistrationForm(FlaskForm):
     reject_reason = StringField('علت رد پرونده یا نقص مدارک', validators=[
-        DataRequired(message="وارد کردن علت رد یا نقص مدارک الزامی است.")
+        DataRequired(message="ذکر علت الزامی است."),
+        Length(min=3, max=255)
     ])
     submit_reject = SubmitField('ثبت علت و رد پرونده')
 
 
 class AboutMainForm(FlaskForm):
-    established_year = StringField('سال تأسیس آکادمی', validators=[DataRequired(message="این فیلد الزامی است.")])
-    main_goal = TextAreaField('هدف اصلی آکادمی', validators=[DataRequired(message="این فیلد الزامی است.")])
-    age_summary = StringField('خلاصه رده‌های سنی فعال', validators=[DataRequired(message="این فیلد الزامی است.")])
+    established_year = StringField('سال تأسیس', validators=[DataRequired()])
+    main_goal = TextAreaField('هدف اصلی', validators=[DataRequired()])
+    age_summary = StringField('خلاصه رده‌های سنی', validators=[DataRequired()])
     intro_image = FileField('تصویر معرفی اصلی', validators=[
-        FileAllowed(['jpg', 'jpeg', 'png'], 'فقط فرمت‌های تصویر JPG و PNG مجاز هستند.')
+        FileAllowed(['jpg', 'jpeg', 'png', 'webp'], 'فرمت نامعتبر است.')
     ])
-
-    mission = TextAreaField('مأموریت آکادمی', validators=[DataRequired(message="این فیلد الزامی است.")])
-    vision = TextAreaField('چشم‌انداز آینده', validators=[DataRequired(message="این فیلد الزامی است.")])
-    long_term_goals = TextAreaField('اهداف بلندمدت', validators=[DataRequired(message="این فیلد الزامی است.")])
-
-    cta_title = StringField('عنوان کادر ثبت‌نام', validators=[DataRequired(message="این فیلد الزامی است.")])
-    cta_text = TextAreaField('متن کادر ثبت‌نام', validators=[DataRequired(message="این فیلد الزامی است.")])
-    cta_btn_text = StringField('متن دکمه ثبت‌نام', validators=[DataRequired(message="این فیلد الزامی است.")])
-
-    submit = SubmitField('ذخیره و به‌روزرسانی اطلاعات اصلی')
+    mission = TextAreaField('مأموریت', validators=[DataRequired()])
+    vision = TextAreaField('چشم‌انداز', validators=[DataRequired()])
+    long_term_goals = TextAreaField('اهداف بلندمدت', validators=[DataRequired()])
+    cta_title = StringField('عنوان کادر اقدام', validators=[DataRequired()])
+    cta_text = TextAreaField('متن کادر اقدام', validators=[DataRequired()])
+    cta_btn_text = StringField('متن دکمه', validators=[DataRequired()])
+    submit = SubmitField('بروزرسانی درباره ما')
 
 
 class AboutFeatureForm(FlaskForm):
-    title = StringField('عنوان ویژگی (مثلاً: مربیان مجرب)', validators=[DataRequired(message="عنوان الزامی است.")])
-    description = TextAreaField('توضیح کوتاه ویژگی', validators=[DataRequired(message="توضیح الزامی است.")])
-    icon = SelectField('انتخاب آیکون', choices=[
-        ('award', '🏆 مدال / افتخار'),
-        ('users', '👥 مربیان / تیم'),
-        ('shield', '🛡️ محیط امن / ایمنی'),
-        ('check-circle', '✅ کیفیت / استاندارد'),
-        ('target', '🎯 هدف / رشد علمی'),
-        ('heart', '❤️ اخلاق و رشد فردی')
+    title = StringField('عنوان ویژگی', validators=[DataRequired()])
+    description = TextAreaField('توضیح', validators=[DataRequired()])
+    icon = SelectField('آیکون', choices=[
+        ('award', '🏆 مدال'),
+        ('users', '👥 مربیان'),
+        ('shield', '🛡️ محیط امن'),
+        ('check-circle', '✅ کیفیت'),
+        ('target', '🎯 هدف'),
+        ('heart', '❤️ رشد فردی')
     ], default='check-circle')
-    submit = SubmitField('ذخیره ویژگی')
+    submit = SubmitField('افزودن ویژگی')
 
 
 class AboutFacilityForm(FlaskForm):
-    title = StringField('عنوان امکانات (مثلاً: زمین چمن طبیعی)', validators=[DataRequired(message="عنوان الزامی است.")])
-    description = TextAreaField('توضیحات امکانات', validators=[DataRequired(message="توضیح الزامی است.")])
+    title = StringField('عنوان امکانات', validators=[DataRequired()])
+    description = TextAreaField('توضیحات', validators=[DataRequired()])
     image = FileField('تصویر امکانات', validators=[
-        FileAllowed(['jpg', 'jpeg', 'png'], 'فقط فرمت‌های تصویر مجاز هستند.')
+        FileAllowed(['jpg', 'jpeg', 'png', 'webp'], 'فرمت نامعتبر است.')
     ])
-    submit = SubmitField('ذخیره امکانات')
+    submit = SubmitField('افزودن امکانات')
 
 
 class CoachForm(FlaskForm):
-    name = StringField('نام و نام خانوادگی مربی', validators=[DataRequired(message="نام الزامی است.")])
-    role = StringField('سمت و مدرک مربیگری (مثلاً: سرمربی / مدرک A آسیا)', validators=[DataRequired(message="سمت الزامی است.")])
-    bio = TextAreaField('سوابق و بیوگرافی کوتاه')
+    name = StringField('نام مربی', validators=[DataRequired()])
+    role = StringField('سمت و مدرک', validators=[DataRequired()])
+    bio = TextAreaField('سوابق')
     photo = FileField('عکس مربی', validators=[
-        FileAllowed(['jpg', 'jpeg', 'png'], 'فقط فرمت‌های تصویر مجاز هستند.')
+        FileAllowed(['jpg', 'jpeg', 'png', 'webp'], 'فرمت نامعتبر است.')
     ])
     submit = SubmitField('ذخیره مربی')
 
 
 class AboutAgeGroupForm(FlaskForm):
-    title = StringField('عنوان رده سنی (مثلاً: نونهالان)', validators=[DataRequired(message="عنوان الزامی است.")])
-    age_range = StringField('محدوده سنی (مثلاً: ۱۰ تا ۱۳ سال)', validators=[DataRequired(message="محدوده سنی الزامی است.")])
-    description = TextAreaField('توضیحات برنامه تمرینی این رده')
+    title = StringField('عنوان رده سنی', validators=[DataRequired()])
+    age_range = StringField('محدوده سنی', validators=[DataRequired()])
+    description = TextAreaField('توضیحات')
     submit = SubmitField('ذخیره رده سنی')
 
 
 class AchievementForm(FlaskForm):
-    title = StringField('عنوان افتخار (مثلاً: قهرمانی لیگ استان)', validators=[DataRequired(message="عنوان الزامی است.")])
-    year = StringField('سال کسب افتخار (مثلاً: ۱۴۰۲)', validators=[DataRequired(message="سال الزامی است.")])
-    description = TextAreaField('توضیحات تکمیلی')
+    title = StringField('عنوان افتخار', validators=[DataRequired()])
+    year = StringField('سال کسب افتخار', validators=[DataRequired()])
+    description = TextAreaField('توضیحات')
     submit = SubmitField('ذخیره افتخار')
 
 
 class AboutStatForm(FlaskForm):
-    number = StringField('عدد آمار (مثلاً: ۲۰۰+)', validators=[DataRequired(message="عدد الزامی است.")])
-    label = StringField('عنوان آمار (مثلاً: بازیکن فعال)', validators=[DataRequired(message="عنوان الزامی است.")])
-    icon = SelectField('انتخاب آیکون', choices=[
+    number = StringField('عدد آمار', validators=[DataRequired()])
+    label = StringField('عنوان آمار', validators=[DataRequired()])
+    icon = SelectField('آیکون', choices=[
         ('users', '👥 بازیکنان'),
         ('user-check', '👨‍🏫 مربیان'),
-        ('calendar', '📅 سال فعالیت'),
-        ('trophy', '🏆 مسابقات / کاپ')
+        ('calendar', '📅 سابقه'),
+        ('trophy', '🏆 کاپ')
     ], default='users')
     submit = SubmitField('ذخیره آمار')
 
 
 class GalleryItemForm(FlaskForm):
-    title = StringField('عنوان تصویر (اختیاری)')
+    title = StringField('عنوان تصویر (اختیاری)', validators=[Optional(), Length(max=100)])
     image = FileField('فایل تصویر', validators=[
-        FileAllowed(['jpg', 'jpeg', 'png'], 'فقط تصاویر مجاز هستند.')
+        FileAllowed(['jpg', 'jpeg', 'png', 'webp'], 'فرمت نامعتبر است.')
     ])
-    category = SelectField('دسته‌بندی تصویر', choices=[
+    category = SelectField('دسته‌بندی', choices=[
         ('تمرینات', 'تمرینات'),
         ('مسابقات', 'مسابقات'),
         ('مراسم‌ها', 'مراسم‌ها و جوایز')
@@ -146,22 +140,12 @@ class GalleryItemForm(FlaskForm):
 
 
 class TrainingForm(FlaskForm):
-    title = StringField('عنوان شیفت / گروه تمرینی (مثلاً: نونهالان - شیفت عصر)', validators=[
-        DataRequired(message="عنوان تمرین الزامی است.")
-    ])
-    age_group = StringField('رده سنی (مثلاً: ۱۰ تا ۱۳ سال)', validators=[
-        DataRequired(message="وارد کردن رده سنی الزامی است.")
-    ])
-    days = StringField('روزهای برگزاری (مثلاً: روزهای زوج)', validators=[
-        DataRequired(message="روزهای برگزاری الزامی است.")
-    ])
-    time = StringField('ساعت برگزاری (مثلاً: ۱۶:۳۰ الی ۱۸:۰۰)', validators=[
-        DataRequired(message="ساعت برگزاری الزامی است.")
-    ])
-    venue_name = StringField('محل برگزاری (مثلاً: زمین چمن شماره ۱ آزادی)', validators=[
-        DataRequired(message="محل برگزاری الزامی است.")
-    ])
-    coach_name = StringField('نام مربی مسئول (اختیاری)')
-    notes = TextAreaField('توضیحات یا نکات مهم (اختیاری)')
-
+    title = StringField('عنوان شیفت تمرینی', validators=[DataRequired(message="عنوان الزامی است.")])
+    age_group = StringField('رده سنی', validators=[DataRequired(message="رده سنی الزامی است.")])
+    days = StringField('روزها', validators=[DataRequired(message="روزهای تمرین الزامی است.")])
+    time = StringField('ساعت', validators=[DataRequired(message="ساعت برگزاری الزامی است.")])
+    venue_name = StringField('نام زمین', validators=[DataRequired(message="نام محل تمرین الزامی است.")])
+    address = TextAreaField('آدرس زمین', validators=[DataRequired(message="آدرس الزامی است.")])
+    coach_name = StringField('نام مربی', validators=[Optional()])
+    notes = TextAreaField('نکات تکمیلی', validators=[Optional()])
     submit = SubmitField('ثبت برنامه تمرین')

@@ -1,81 +1,93 @@
-// static/js/register_course.js
+// static/JS/register_course.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    const formSteps = document.querySelectorAll('.form-step');
-    const progressSteps = document.querySelectorAll('.step-progressbar li');
-    const nextBtn = document.getElementById('nextBtn');
-    const prevBtn = document.getElementById('prevBtn');
-    const submitBtn = document.getElementById('submitBtn');
+    const pages = document.querySelectorAll('.form-step-page');
+    const navItems = document.querySelectorAll('.step-nav-item');
+    const progressBar = document.getElementById('stepperProgressBar');
+    const nextBtn = document.getElementById('flipNextBtn');
+    const prevBtn = document.getElementById('flipPrevBtn');
+    const submitBtn = document.getElementById('finalSubmitBtn');
 
     let currentStep = 0;
+    const totalSteps = pages.length;
 
-    // تابع برای به‌روزرسانی و نمایش مرحله فعال
-    function updateFormSteps() {
-        formSteps.forEach((step, index) => {
-            if (index === currentStep) {
-                step.classList.add('active');
-            } else {
-                step.classList.remove('active');
-            }
-        });
+    // تابع اصلی ورق زدن بین برگه‌ها
+    function flipToStep(targetStep, direction = 'forward') {
+        if (targetStep < 0 || targetStep >= totalSteps) return;
 
-        // به‌روزرسانی نوار پیشرفت (خط زمانی)
-        progressSteps.forEach((step, index) => {
-            if (index <= currentStep) {
-                step.classList.add('active');
-            } else {
-                step.classList.remove('active');
-            }
-        });
+        const currentActivePage = pages[currentStep];
+        const targetPage = pages[targetStep];
 
-        // مدیریت نمایش دکمه قبلی
-        if (currentStep === 0) {
-            prevBtn.style.visibility = 'hidden';
+        // حذف کلاس‌های انیمیشن قبلی
+        currentActivePage.classList.remove('active', 'flip-forward', 'flip-backward');
+
+        // اعمال انیمیشن ورق زدن بر اساس جهت حرکت
+        targetPage.classList.add('active');
+        if (direction === 'forward') {
+            targetPage.classList.add('flip-forward');
         } else {
-            prevBtn.style.visibility = 'visible';
+            targetPage.classList.add('flip-backward');
         }
 
-        // مدیریت دکمه‌های بعدی و ثبت نهایی
-        if (currentStep === formSteps.length - 1) {
+        currentStep = targetStep;
+
+        // به‌روزرسانی نوار دایره‌های بالا
+        navItems.forEach((item, idx) => {
+            item.classList.toggle('active', idx === currentStep);
+            item.classList.toggle('completed', idx < currentStep);
+        });
+
+        // به‌روزرسانی درصد نوار پیشرفت
+        const percentage = ((currentStep + 1) / totalSteps) * 100;
+        if (progressBar) {
+            progressBar.style.width = `${percentage}%`;
+        }
+
+        // دکمه بازگشت (در صفحه اول مخفی است)
+        if (prevBtn) {
+            prevBtn.style.visibility = (currentStep === 0) ? 'hidden' : 'visible';
+        }
+
+        // در صفحه آخر دکمه Next تبدیل به دکمه Submit می‌شود
+        if (currentStep === totalSteps - 1) {
             nextBtn.style.display = 'none';
             submitBtn.style.display = 'inline-flex';
         } else {
             nextBtn.style.display = 'inline-flex';
             submitBtn.style.display = 'none';
         }
+
+        // اسکرول نرم به بالای کادر در موبایل
+        const cardBox = document.querySelector('.stepper-card-box');
+        if (cardBox && window.innerWidth < 768) {
+            cardBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     }
 
-    // رویداد کلیک دکمه بعدی
+    // دکمه ورق زدن به بعد
     if (nextBtn) {
         nextBtn.addEventListener('click', () => {
-            // یک اعتبارسنجی اولیه فرانت‌اند (اختیاری برای بهبود کارایی)
-            const currentStepFields = formSteps[currentStep].querySelectorAll('input[required], select[required], textarea[required]');
-            let isValid = true;
-
-            // چک کردن اینکه فیلدهای اجباری مرحله فعلی خالی نباشند
-
-
-            if (isValid) {
-                if (currentStep < formSteps.length - 1) {
-                    currentStep++;
-                    updateFormSteps();
-                    // اسکرول نرم صفحه به بالای فرم جهت راحتی کار کاربران
-                    window.scrollTo({ top: 100, behavior: 'smooth' });
-                }
-            } else {
-                alert('لطفاً ابتدا تمام فیلدهای الزامی این مرحله را پر کنید.');
+            if (currentStep < totalSteps - 1) {
+                flipToStep(currentStep + 1, 'forward');
             }
         });
     }
 
-    // رویداد کلیک دکمه قبلی
+    // دکمه ورق زدن به قبل
     if (prevBtn) {
         prevBtn.addEventListener('click', () => {
             if (currentStep > 0) {
-                currentStep--;
-                updateFormSteps();
-                window.scrollTo({ top: 100, behavior: 'smooth' });
+                flipToStep(currentStep - 1, 'backward');
             }
         });
     }
+
+    // امکان کلیک مستقیم روی شماره‌های مرحله در بالای فرم جهت ورق زدن
+    window.jumpToStep = function(targetIndex) {
+        // کاربر فقط می‌تواند به مراحلی که قبلاً رفته یا مرحله فعلی بپرد
+        if (targetIndex <= currentStep + 1 && targetIndex !== currentStep) {
+            const dir = targetIndex > currentStep ? 'forward' : 'backward';
+            flipToStep(targetIndex, dir);
+        }
+    };
 });

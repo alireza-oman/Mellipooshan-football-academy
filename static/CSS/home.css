@@ -1,0 +1,477 @@
+/* =========================================================
+   HOME PAGE SPECIFIC STYLES (Elite Stadium Atmosphere)
+   ========================================================= */
+
+/* هیرو سکشن و تصویر تیم محوشونده در اسکرول */
+.pro-hero {
+    position: relative;
+    min-height: 92vh;
+    display: flex;
+    align-items: center;
+    background: var(--pitch-dark);
+    color: var(--text-pure);
+    padding-block: 100px 80px;
+    overflow: hidden;
+}
+
+/* تصویر تیم در پس‌زمینه که با اسکرول تدریجاً محو می‌شود */
+.hero-team-backdrop {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=2000&auto=format&fit=crop') center center / cover no-repeat;
+    opacity: 0.45;
+    filter: saturate(1.2) contrast(1.1);
+    transform: scale(1.02);
+    will-change: opacity, transform;
+    pointer-events: none;
+}
+
+/* گرادینت تیره روی تصویر جهت خوانایی بی‌نقص متون */
+.backdrop-gradient-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 75% 25%, rgba(22, 91, 224, 0.25) 0%, transparent 60%),
+                linear-gradient(180deg, rgba(4, 12, 24, 0.7) 0%, var(--pitch-dark) 95%);
+}
+
+/* شبیه‌ساز نورافکن استادیوم */
+.stadium-light {
+    position: absolute;
+    top: -150px;
+    right: 15%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(0, 210, 255, 0.18) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.tactical-field-lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.hero-content-wrap {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.pro-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 16px;
+    background: rgba(229, 169, 59, 0.12);
+    border: 1px solid rgba(229, 169, 59, 0.35);
+    border-radius: 50px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--pitch-gold);
+    margin-bottom: 24px;
+}
+
+.live-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--pitch-gold);
+    box-shadow: 0 0 0 4px rgba(229, 169, 59, 0.3);
+    animation: pulseGlow 1.8s infinite;
+}
+
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 0 0 rgba(229, 169, 59, 0.6); }
+    70% { box-shadow: 0 0 0 10px rgba(229, 169, 59, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(229, 169, 59, 0); }
+}
+
+.hero-glory-title {
+    font-size: clamp(2.4rem, 1.8rem + 2.5vw, 4rem);
+    font-weight: 900;
+    line-height: 1.25;
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
+}
+
+.hero-glory-title span {
+    background: linear-gradient(135deg, var(--pitch-cyan), var(--pitch-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-description {
+    font-size: 1.12rem;
+    color: var(--text-muted);
+    line-height: 2;
+    margin-bottom: 38px;
+    max-width: 580px;
+}
+
+.hero-action-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 50px;
+}
+
+.trust-strip {
+    display: flex;
+    gap: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.trust-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.trust-item i {
+    font-size: 1.6rem;
+    color: var(--pitch-cyan);
+}
+
+.trust-item strong {
+    display: block;
+    font-size: 0.88rem;
+    color: var(--text-pure);
+}
+
+.trust-item span {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+}
+
+/* کارت فریم شناور */
+.hero-visual-side {
+    position: relative;
+}
+
+.hero-card-frame {
+    position: relative;
+    border-radius: var(--radius-lg);
+    padding: 10px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.03));
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 25px 60px -15px rgba(0,0,0,0.6);
+}
+
+.hero-inner-img {
+    height: 440px;
+    border-radius: calc(var(--radius-lg) - 4px);
+    overflow: hidden;
+}
+
+.hero-inner-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.floating-chip {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    background: rgba(8, 22, 43, 0.92);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.4);
+}
+
+.chip-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(229, 169, 59, 0.15);
+    color: var(--pitch-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.chip-val {
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--text-pure);
+}
+
+.chip-sub {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.chip-stats {
+    bottom: -20px;
+    right: -20px;
+}
+
+.chip-coach {
+    top: 20px;
+    left: -25px;
+}
+
+/* نوار شمارنده‌ها */
+.stats-counter-strip {
+    background: var(--pitch-navy);
+    padding-block: 50px;
+    border-block: 1px solid rgba(255,255,255,0.06);
+}
+
+.stats-counter-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.counter-box {
+    text-align: center;
+    padding: 10px;
+}
+
+.counter-icon-wrap {
+    font-size: 2rem;
+    color: var(--pitch-gold);
+    margin-bottom: 8px;
+}
+
+.counter-number {
+    font-family: var(--font-num);
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--text-pure);
+    line-height: 1;
+    direction: ltr;
+}
+
+.counter-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* سکشن‌های بدنه */
+.pitch-section {
+    padding-block: 90px;
+}
+
+.section-title-center {
+    text-align: center;
+    max-width: 650px;
+    margin: 0 auto 55px;
+}
+
+.pro-tag {
+    display: inline-block;
+    padding: 4px 14px;
+    background: rgba(22, 91, 224, 0.1);
+    color: var(--pitch-blue);
+    font-size: 0.85rem;
+    font-weight: 800;
+    border-radius: 50px;
+    margin-bottom: 12px;
+}
+
+.section-title-center h2 {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--pitch-navy);
+    line-height: 1.4;
+    margin-bottom: 14px;
+}
+
+.section-title-center p {
+    color: #62748d;
+    font-size: 1.05rem;
+}
+
+/* کارت‌های چرا ما */
+.pro-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+}
+
+.pro-feature-card {
+    background: var(--surface-card);
+    padding: 36px 28px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+    box-shadow: 0 10px 30px -10px rgba(8, 22, 43, 0.05);
+    transition: all 0.3s var(--ease-out);
+}
+
+.pro-feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 45px -12px rgba(22, 91, 224, 0.15);
+    border-color: rgba(22, 91, 224, 0.3);
+}
+
+.card-icon-halo {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: #edf3ff;
+    color: var(--pitch-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    margin-bottom: 22px;
+}
+
+.pro-feature-card h3 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--pitch-navy);
+    margin-bottom: 12px;
+}
+
+.pro-feature-card p {
+    font-size: 0.92rem;
+    color: #62748d;
+    line-height: 1.8;
+}
+
+/* کارت‌های رده‌های سنی */
+.programs-elite-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.elite-program-card {
+    background: var(--surface-card);
+    padding: 38px 30px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-light);
+    box-shadow: 0 12px 35px -12px rgba(8, 22, 43, 0.07);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s var(--ease-out);
+}
+
+.elite-program-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--pitch-gold);
+}
+
+.program-badge-top {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--pitch-navy);
+    margin-bottom: 6px;
+}
+
+.program-age-pill {
+    display: inline-block;
+    color: var(--pitch-blue);
+    font-weight: 700;
+    font-size: 0.88rem;
+    margin-bottom: 18px;
+}
+
+.program-desc {
+    color: #62748d;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    margin-bottom: 24px;
+}
+
+.program-features-list span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.86rem;
+    color: #3b4e67;
+    margin-bottom: 8px;
+}
+
+.program-features-list i {
+    color: #00c853;
+}
+
+/* بنر CTA پر انرژی */
+.pro-cta-banner {
+    padding-bottom: 90px;
+}
+
+.cta-banner-inner {
+    background: linear-gradient(135deg, var(--pitch-dark), var(--pitch-navy-light));
+    border-radius: var(--radius-lg);
+    padding: 60px 50px;
+    color: var(--text-pure);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    box-shadow: 0 25px 50px -15px rgba(8, 22, 43, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cta-content h2 {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 12px;
+}
+
+.cta-content p {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+}
+
+@media (max-width: 1000px) {
+    .hero-content-wrap {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .hero-description {
+        margin-inline: auto;
+    }
+    .hero-action-group {
+        justify-content: center;
+    }
+    .trust-strip {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .hero-visual-side {
+        max-width: 480px;
+        margin-inline: auto;
+    }
+    .pro-grid-4, .programs-elite-grid, .stats-counter-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .cta-banner-inner {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .pro-grid-4, .programs-elite-grid, .stats-counter-grid {
+        grid-template-columns: 1fr;
+    }
+    .hero-card-frame {
+        padding: 6px;
+    }
+    .hero-inner-img {
+        height: 300px;
+    }
+    .floating-chip {
+        display: none;
+    }
+}

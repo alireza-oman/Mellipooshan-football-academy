@@ -6,62 +6,79 @@
 {% block page_title %}انتخاب شیفت تمرینی{% endblock %}
 
 {% block panel_content %}
-<div class="profile-container" style="max-width: 850px; margin: 0 auto;">
+<div class="training-select-container">
 
-    <a href="{{ url_for('panel.dashboard') }}" class="btn btn-ghost" style="margin-bottom: 20px; font-size: 0.85rem;">
-        ← بازگشت به داشبورد
-    </a>
+    <div class="back-link-box">
+        <a href="{{ url_for('panel.dashboard') }}" class="btn btn-ghost btn-sm">
+            <i class="fas fa-arrow-right"></i> بازگشت به داشبورد بازیکنان
+        </a>
+    </div>
 
-    <div class="profile-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+    <div class="panel-box">
+        <div class="box-header-flex">
             <div>
-                <h3 class="section-title" style="margin-bottom: 4px;">انتخاب شیفت تمرینی: {{ reg.player_fullname }}</h3>
-                <p style="color: var(--text-muted); font-size: 0.9rem;">لطفاً یکی از شیفت‌های تمرینی زیر را برای بازیکن انتخاب کنید:</p>
+                <h3>شیفت‌های تمرینی موجود برای: <span class="highlight-name">{{ reg.player_fullname }}</span></h3>
+                <p class="subtitle">لطفاً سانس و زمین تمرینی متناسب با رده سنی بازیکن را انتخاب فرمایید:</p>
             </div>
-            <span class="ann-badge category-ثبت‌نام">✅ شهریه تایید شده</span>
+            <span class="badge badge-success"><i class="fas fa-check-double"></i> وضعیت شهریه: پرداخت‌شده</span>
         </div>
 
         {% if all_trainings %}
-            <form method="POST" action="">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 24px;">
+            <!-- فرم انتخاب سانس تمرینی به همراه توکن ضد جعل CSRF -->
+            <form method="POST" action="{{ url_for('panel.select_trainings', reg_id=reg.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="trainings-cards-grid">
                     {% for t in all_trainings %}
-                        <label style="background: var(--mist); border: 2px solid {% if reg.training_id == t.id %}var(--blue){% else %}var(--line){% endif %}; border-radius: 12px; padding: 18px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.2s;">
-
-                            <div>
-                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                    <h4 style="color: var(--navy); font-size: 1.05rem; font-weight: 800;">{{ t.title }}</h4>
-                                    <input type="radio" name="training_id" value="{{ t.id }}" {% if reg.training_id == t.id %}checked{% endif %} style="width: 20px; height: 20px; accent-color: var(--blue); cursor: pointer;">
+                        <label class="training-shift-card {% if reg.training_id == t.id %}selected{% endif %}">
+                            <div class="shift-card-header">
+                                <div class="shift-title-box">
+                                    <h4>{{ t.title }}</h4>
+                                    <span class="age-group-tag">{{ t.age_group }}</span>
                                 </div>
+                                <input type="radio" name="training_id" value="{{ t.id }}" {% if reg.training_id == t.id %}checked{% endif %} class="shift-radio">
+                            </div>
 
-                                <div style="margin-bottom: 10px;">
-                                    <span class="ann-badge category-تمرینات" style="font-size: 0.75rem;">رده: {{ t.age_group }}</span>
+                            <div class="shift-details">
+                                <div class="detail-row">
+                                    <i class="far fa-calendar-alt"></i>
+                                    <span>روزهای برگزاری: <strong>{{ t.days }}</strong></span>
                                 </div>
-
-                                <div style="font-size: 0.85rem; color: var(--navy); line-height: 1.9;">
-                                    <div><strong>📅 روزها:</strong> {{ t.days }}</div>
-                                    <div><strong>⏰ ساعت:</strong> {{ t.time }}</div>
-                                    <div><strong>📍 مکان:</strong> {{ t.venue_name }}</div>
-                                    {% if t.coach_name %}<div><strong>👨‍🏫 مربی:</strong> {{ t.coach_name }}</div>{% endif %}
+                                <div class="detail-row">
+                                    <i class="far fa-clock"></i>
+                                    <span>ساعت تمرین: <strong>{{ t.time }}</strong></span>
                                 </div>
+                                <div class="detail-row">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>محل برگزاری: {{ t.venue_name }}</span>
+                                </div>
+                                {% if t.coach_name %}
+                                    <div class="detail-row">
+                                        <i class="fas fa-user-tie"></i>
+                                        <span>مربی مسئول: {{ t.coach_name }}</span>
+                                    </div>
+                                {% endif %}
                             </div>
 
                             {% if t.notes %}
-                                <div style="font-size: 0.78rem; color: var(--text-muted); border-top: 1px dashed var(--line); padding-top: 8px; margin-top: 10px;">
-                                    💡 {{ t.notes }}
+                                <div class="shift-notes">
+                                    <i class="fas fa-info-circle"></i> {{ t.notes }}
                                 </div>
                             {% endif %}
-
                         </label>
                     {% endfor %}
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem;">
-                    ثبت و ذخیره شیفت تمرینی
-                </button>
+                <div class="submit-action-box">
+                    <button type="submit" class="btn btn-gold btn-lg btn-block">
+                        <i class="fas fa-save"></i> ثبت نهایی و انتخاب این شیفت تمرینی
+                    </button>
+                </div>
             </form>
         {% else %}
-            <div class="empty-announcements" style="padding: 40px; text-align: center;">
-                <p>در حال حاضر هیچ شیفت تمرینی فعالی تعریف نشده است.</p>
+            <div class="empty-state-card" style="padding: 40px;">
+                <i class="far fa-calendar-times" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 12px;"></i>
+                <p>در حال حاضر هیچ برنامه تمرینی فعالی توسط کادر فنی تعریف نشده است.</p>
             </div>
         {% endif %}
     </div>

@@ -3,50 +3,50 @@
 {% set active_page = "new_announcement" %}
 
 {% block title %}ثبت اطلاعیه جدید | {{ club_name }}{% endblock %}
-{% block page_title %}ثبت اطلاعیه جدید در باشگاه{% endblock %}
+{% block page_title %}انتشار پیام جدید در آکادمی{% endblock %}
 
 {% block admin_content %}
-<div class="profile-container" style="max-width: 800px; margin: 0 auto;">
-    
-    <div class="profile-card">
-        <h3 class="section-title" style="color: var(--danger); border-right-color: var(--danger);">انتشار پیام جدید</h3>
-        
-        <form method="POST" action="" novalidate>
-            <!-- توکن امنیتی WTForms -->
+<div class="panel-container" style="max-width: 800px; margin: 0 auto;">
+
+    <div class="panel-box">
+        <h3 class="box-title"><i class="fas fa-feather-alt"></i> نگارش و انتشار اطلاعیه</h3>
+
+        <form method="POST" action="{{ url_for('admin.add_announcement') }}" novalidate>
             {{ form.hidden_tag() }}
 
             <div class="form-group">
-                {{ form.title.label }}
-                {{ form.title(class="form-control", placeholder="مثال: لغو تمرینات به علت بارندگی") }}
-                {% for error in form.title.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                {{ form.title.label(class="form-label") }}
+                {{ form.title(class="form-control", placeholder="مثال: تغییر ساعت تمرین رده نونهالان به علت مسابقات") }}
+                {% for error in form.title.errors %}<span class="form-error-msg">{{ error }}</span>{% endfor %}
             </div>
 
-            <div class="form-row">
+            <div class="form-row-2">
                 <div class="form-group">
-                    {{ form.category.label }}
+                    {{ form.category.label(class="form-label") }}
                     {{ form.category(class="form-control") }}
-                    {% for error in form.category.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
                 </div>
                 <div class="form-group">
-                    {{ form.author.label }}
+                    {{ form.author.label(class="form-label") }}
                     {{ form.author(class="form-control", placeholder="مثال: مدیریت آکادمی") }}
-                    {% for error in form.author.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
                 </div>
             </div>
 
             <div class="form-group">
-                {{ form.content.label }}
-                {{ form.content(class="form-control", rows="6", placeholder="متن کامل اطلاعیه خود را بنویسید...", style="resize: vertical; height: auto;") }}
-                {% for error in form.content.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                {{ form.content.label(class="form-label") }}
+                {{ form.content(class="form-control", rows="6", placeholder="متن کامل اطلاعیه...") }}
+                {% for error in form.content.errors %}<span class="form-error-msg">{{ error }}</span>{% endfor %}
             </div>
 
-            <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-top: 10px; cursor: pointer;">
-                {{ form.is_important(style="width: 18px; height: 16px; cursor: pointer; accent-color: var(--danger);") }}
-                <label for="is_important" style="margin-bottom: 0; cursor: pointer; font-weight: 700;">علامت‌گذاری به عنوان اطلاعیه فوری و بسیار مهم (نوار قرمز رنگ و متمایز)</label>
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 15px;">
+                {{ form.is_important(id="is_important_toggle", style="width: 18px; height: 18px; accent-color: var(--admin-red); cursor: pointer;") }}
+                <label for="is_important_toggle" style="margin-bottom: 0; cursor: pointer; font-weight: 700; color: var(--admin-red);">
+                    علامت‌گذاری به عنوان اطلاعیه فوری و بسیار مهم (نمایش کادر متمایز قرمز برای اولیا)
+                </label>
             </div>
 
-            <!-- دکمه سابمیت انتشار با تم مدیریت ادمین (قرمز رنگ) -->
-            {{ form.submit(class="btn btn-primary", style="background: var(--danger); box-shadow: 0 8px 16px -4px rgba(231, 76, 60, 0.3);") }}
+            <div style="margin-top: 28px;">
+                {{ form.submit(class="btn btn-admin-danger btn-lg") }}
+            </div>
         </form>
     </div>
 

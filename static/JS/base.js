@@ -1,69 +1,112 @@
-// static/js/base.js
+// static/JS/base.js
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // ===================================================
-    // ۱. مدیریت منوی موبایل (با شرط محافظ برای جلوگیری از کرش)
-    // ===================================================
+    // =========================================================================
+    // ۱. افکت پیشرفته محو شدن تدریجی تصویر پس‌زمینه تیم در اسکرول (Parallax Fade)
+    // =========================================================================
+    const heroBackdrop = document.getElementById('heroTeamBackdrop');
+    const heroSection = document.getElementById('heroSection');
+
+    if (heroBackdrop && heroSection) {
+        let isTicking = false;
+
+        const updateBackdropOnScroll = () => {
+            const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+            const heroHeight = heroSection.offsetHeight;
+
+            // فقط تا زمانی که هیرو در دید است محاسبه انجام شود
+            if (scrollY <= heroHeight) {
+                // با افزایش اسکرول، شفافیت از 0.45 به 0.05 کاهش می‌یابد
+                const progress = scrollY / heroHeight;
+                const newOpacity = Math.max(0.04, 0.45 - (progress * 0.42));
+                const newScale = 1.02 + (progress * 0.08); // افکت زوم نرم هم‌زمان
+
+                heroBackdrop.style.opacity = newOpacity;
+                heroBackdrop.style.transform = `scale(${newScale}) translateY(${scrollY * 0.25}px)`;
+            }
+
+            isTicking = false;
+        };
+
+        window.addEventListener('scroll', () => {
+            if (!isTicking) {
+                window.requestAnimationFrame(updateBackdropOnScroll);
+                isTicking = true;
+            }
+        }, { passive: true });
+    }
+
+    // =========================================================================
+    // ۲. منوی کشویی موبایل
+    // =========================================================================
     const navToggle = document.getElementById('navToggle');
     const navLinks = document.getElementById('navLinks');
 
-    if (navToggle && navLinks) { // 🌟 شرط ضربه‌گیر: فقط اگر المان‌ها در صفحه بودند اجرا شود
+    if (navToggle && navLinks) {
         navToggle.addEventListener('click', () => {
-            const open = navLinks.classList.toggle('open');
-            navToggle.setAttribute('aria-expanded', open);
+            const isOpen = navLinks.classList.toggle('open');
+            navToggle.setAttribute('aria-expanded', isOpen);
+            document.body.style.overflow = isOpen ? 'hidden' : '';
         });
 
-        navLinks.querySelectorAll('a').forEach(a => {
-            a.addEventListener('click', () => {
+        // بستن خودکار منو پس از کلیک روی هر لینک
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
                 navLinks.classList.remove('open');
-                navToggle.setAttribute('aria-expanded', false);
+                navToggle.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
             });
         });
     }
 
-    // ===================================================
-    // ۲. انیمیشن اسکرول صفحات عمومی (Scroll Reveal)
-    // ===================================================
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!reduceMotion && 'IntersectionObserver' in window) {
-        const io = new IntersectionObserver((entries) => {
-            entries.forEach(e => {
-                if (e.isIntersecting) {
-                    e.target.classList.add('in-view');
-                    io.unobserve(e.target);
+    // =========================================================================
+    // ۳. انیمیشن اسکرول عناصر (Scroll Reveal)
+    // =========================================================================
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!prefersReducedMotion && 'IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                    observer.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.15 });
+        }, {
+            threshold: 0.12,
+            rootMargin: '0px 0px -50px 0px'
+        });
 
-        document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
+        document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
     } else {
         document.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('in-view'));
     }
 
-    // ===================================================
-    // ۳. مدیریت پیام‌های فلش (Toast Notifications)
-    // ===================================================
+    // =========================================================================
+    // ۴. مدیریت پیام‌های سیستم (Toast Notifications)
+    // =========================================================================
     const toasts = document.querySelectorAll('.toast');
 
     toasts.forEach(toast => {
-        // بستن خودکار بعد از ۵ ثانیه
-        const autoDismiss = setTimeout(() => {
-            if (document.body.contains(toast)) {
-                toast.classList.add('fade-out');
-                setTimeout(() => toast.remove(), 400);
-            }
+        const timer = setTimeout(() => {
+            dismissToast(toast);
         }, 5000);
 
-        // بستن دستی با زدن دکمه ضربدر
         const closeBtn = toast.querySelector('.toast-close');
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {
-                clearTimeout(autoDismiss); // لغو تایمر خودکار
-                toast.classList.add('fade-out');
-                setTimeout(() => toast.remove(), 400);
+                clearTimeout(timer);
+                dismissToast(toast);
             });
         }
     });
+
+    function dismissToast(toastEl) {
+        toastEl.style.transition = 'opacity 0.3s, transform 0.3s';
+        toastEl.style.opacity = '0';
+        toastEl.style.transform = 'translateY(-20px)';
+        setTimeout(() => toastEl.remove(), 300);
+    }
 
 });

@@ -2,116 +2,282 @@
 
 {% set active_page = "register_course" %}
 
-{% block title %}ثبت‌نام فرزند جدید | {{ club_name }}{% endblock %}
-{% block page_title %}ثبت‌نام رسمی در آکادمی{% endblock %}
+{% block title %}ثبت‌نام رسمی بازیکن | {{ club_name }}{% endblock %}
+{% block page_title %}تشکیل پرونده بازیکن{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* ================= استایل کارت‌های شیک آپلود فایل ================= */
-    .upload-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-bottom: 20px;
+    /* =========================================================
+       استایل‌های اختصاصی فرم ورق‌زن (Page-Turn Stepper)
+       ========================================================= */
+
+    .stepper-card-box {
+        background: var(--surface-card);
+        border: 1px solid var(--border-line);
+        border-radius: var(--radius-lg);
+        padding: 36px 32px;
+        box-shadow: 0 14px 40px -12px rgba(8, 22, 43, 0.08);
+        position: relative;
+        overflow: hidden;
     }
 
-    .upload-card-wrapper {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .upload-dropzone {
-        background: #f8fafc;
-        border: 2px dashed #cbd5e1;
-        border-radius: 12px;
-        padding: 20px 16px;
-        cursor: pointer;
-        transition: all 0.25s ease;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        min-height: 90px;
+    /* نوار درصد پیشرفت باریک بالای کارت */
+    .stepper-progress-bar-wrap {
+        height: 6px;
+        background: #eef3fa;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        overflow: hidden;
         position: relative;
     }
 
-    .upload-dropzone:hover {
-        border-color: var(--blue);
-        background: #f0f7ff;
-        transform: translateY(-2px);
-    }
-
-    .upload-dropzone.has-file {
-        border-style: solid;
-        border-color: #22c55e;
-        background: #f0fdf4;
-    }
-
-    .dropzone-icon {
-        width: 46px;
-        height: 46px;
+    .stepper-progress-fill {
+        height: 100%;
+        width: 16.66%;
+        background: linear-gradient(90deg, var(--pitch-gold), var(--pitch-blue));
         border-radius: 10px;
+        transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* نوار مراحل دایره‌ای */
+    .step-stepper-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 36px;
+        position: relative;
+    }
+
+    .step-stepper-nav::before {
+        content: "";
+        position: absolute;
+        top: 20px;
+        left: 5%;
+        right: 5%;
+        height: 2px;
         background: #e2e8f0;
-        color: var(--navy);
+        z-index: 1;
+    }
+
+    .step-nav-item {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .step-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #ffffff;
+        border: 2px solid #cbd5e1;
+        color: #64748b;
+        font-family: var(--font-num);
+        font-size: 1.35rem;
+        font-weight: 700;
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
-        transition: all 0.25s ease;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .upload-dropzone:hover .dropzone-icon {
-        background: var(--blue);
-        color: #ffffff;
-    }
-
-    .upload-dropzone.has-file .dropzone-icon {
-        background: #22c55e;
-        color: #ffffff;
-    }
-
-    .dropzone-info {
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
-        flex: 1;
-        overflow: hidden;
-    }
-
-    .dropzone-title {
-        font-size: 0.9rem;
+    .step-label {
+        font-size: 0.8rem;
         font-weight: 700;
-        color: var(--navy);
+        color: #64748b;
+        transition: color 0.3s;
     }
 
-    .dropzone-hint {
-        font-size: 0.75rem;
+    .step-nav-item.active .step-circle {
+        border-color: var(--pitch-blue);
+        background: var(--pitch-blue);
+        color: #ffffff;
+        box-shadow: 0 0 0 5px rgba(22, 91, 224, 0.18);
+        transform: scale(1.08);
+    }
+
+    .step-nav-item.active .step-label {
+        color: var(--pitch-blue);
+    }
+
+    .step-nav-item.completed .step-circle {
+        border-color: var(--success);
+        background: var(--success);
+        color: #ffffff;
+    }
+
+    .step-nav-item.completed .step-label {
+        color: var(--pitch-navy);
+    }
+
+    /* محفظه ورق زدن مراحل */
+    .step-pages-viewport {
+        position: relative;
+        min-height: 400px;
+    }
+
+    .form-step-page {
+        display: none;
+        opacity: 0;
+    }
+
+    .form-step-page.active {
+        display: block;
+        opacity: 1;
+    }
+
+    /* انیمیشن ورق زدن به جلو (Next Slide) */
+    .form-step-page.flip-forward {
+        animation: flipPageForward 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* انیمیشن ورق زدن به عقب (Prev Slide) */
+    .form-step-page.flip-backward {
+        animation: flipPageBackward 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes flipPageForward {
+        0% {
+            opacity: 0;
+            transform: translateX(-45px) scale(0.98);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+    }
+
+    @keyframes flipPageBackward {
+        0% {
+            opacity: 0;
+            transform: translateX(45px) scale(0.98);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+    }
+
+    /* هدر هر برگه */
+    .page-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-line);
+    }
+
+    .page-title-row h3 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--pitch-navy);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .page-step-count {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--pitch-gold);
+        background: #fdf8eb;
+        border: 1px solid rgba(229, 169, 59, 0.3);
+        padding: 4px 12px;
+        border-radius: 50px;
+    }
+
+    /* استایل دراپ‌زون‌های مدرن آپلود اسناد */
+    .upload-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .upload-zone-card {
+        background: #ffffff;
+        border: 2px dashed #cbd5e1;
+        border-radius: var(--radius-md);
+        padding: 18px 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        transition: all 0.25s var(--ease);
+        position: relative;
+    }
+
+    .upload-zone-card:hover {
+        border-color: var(--pitch-blue);
+        background: #f4f8ff;
+        transform: translateY(-2px);
+    }
+
+    .upload-zone-card.selected {
+        border-style: solid;
+        border-color: var(--success);
+        background: #f0fdf4;
+    }
+
+    .zone-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: #edf3fb;
+        color: var(--pitch-navy);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .upload-zone-card.selected .zone-icon {
+        background: var(--success);
+        color: #ffffff;
+    }
+
+    .zone-info strong {
+        display: block;
+        font-size: 0.88rem;
+        font-weight: 800;
+        color: var(--pitch-navy);
+        line-height: 1.3;
+    }
+
+    .zone-info small {
+        font-size: 0.74rem;
         color: var(--text-muted);
     }
 
-    /* پیش‌نمایش تصویر بعد از انتخاب */
-    .preview-box {
+    .zone-preview-wrap {
         display: none;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
         width: 100%;
     }
 
-    .preview-thumb {
-        width: 48px;
-        height: 48px;
+    .zone-thumb {
+        width: 44px;
+        height: 44px;
         border-radius: 8px;
         object-fit: cover;
-        border: 2px solid #22c55e;
-        flex-shrink: 0;
+        border: 1.5px solid var(--success);
     }
 
-    .preview-meta {
+    .zone-file-meta {
         display: flex;
         flex-direction: column;
         overflow: hidden;
     }
 
-    .file-name-text {
+    .zone-file-name {
         font-size: 0.8rem;
         font-weight: 700;
         color: #15803d;
@@ -122,328 +288,351 @@
         text-align: right;
     }
 
-    .file-status-text {
-        font-size: 0.72rem;
-        color: #16a34a;
+    /* دکمه‌های ناوبری ورق زدن */
+    .stepper-actions-bar {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 4px;
+        border-top: 1px solid var(--border-line);
+        padding-top: 24px;
+        margin-top: 32px;
     }
 
     @media (max-width: 768px) {
-        .upload-grid {
-            grid-template-columns: 1fr;
-        }
+        .stepper-card-box { padding: 24px 18px; }
+        .step-label { display: none; }
+        .step-circle { width: 34px; height: 34px; font-size: 1.1rem; }
     }
 </style>
 {% endblock %}
 
 {% block panel_content %}
-<div class="register-container">
+<div style="max-width: 920px; margin: 0 auto;">
 
-    <div class="profile-card">
+    <div class="stepper-card-box">
 
-        <!-- خط زمانی مراحل (Progress Bar) -->
-        <ul class="step-progressbar">
-            <li class="active">اطلاعات بازیکن</li>
-            <li>اطلاعات ولی</li>
-            <li>سکونت</li>
-            <li>اطلاعات ورزشی</li>
-            <li>مدارک</li>
-            <li>توضیحات و ثبت</li>
-        </ul>
+        <!-- نوار باریک پیشرفت درصد -->
+        <div class="stepper-progress-bar-wrap">
+            <div class="stepper-progress-fill" id="stepperProgressBar"></div>
+        </div>
 
-        <!-- فرم واحد ثبت‌نام چندمرحله‌ای -->
-        <form method="POST" action="" enctype="multipart/form-data" novalidate id="multiStepForm">
+        <!-- نوار دایره‌های مراحل (قابلیت کلیک برای بازگشت به مراحل قبل) -->
+        <div class="step-stepper-nav" id="stepperNav">
+            <div class="step-nav-item active" onclick="jumpToStep(0)">
+                <div class="step-circle">۱</div>
+                <span class="step-label">مشخصات بازیکن</span>
+            </div>
+            <div class="step-nav-item" onclick="jumpToStep(1)">
+                <div class="step-circle">۲</div>
+                <span class="step-label">مشخصات ولی</span>
+            </div>
+            <div class="step-nav-item" onclick="jumpToStep(2)">
+                <div class="step-circle">۳</div>
+                <span class="step-label">سکونت</span>
+            </div>
+            <div class="step-nav-item" onclick="jumpToStep(3)">
+                <div class="step-circle">۴</div>
+                <span class="step-label">سوابق فنی</span>
+            </div>
+            <div class="step-nav-item" onclick="jumpToStep(4)">
+                <div class="step-circle">۵</div>
+                <span class="step-label">مدارک</span>
+            </div>
+            <div class="step-nav-item" onclick="jumpToStep(5)">
+                <div class="step-circle">۶</div>
+                <span class="step-label">ثبت نهایی</span>
+            </div>
+        </div>
+
+        <!-- فرم اصلی -->
+        <form method="POST" action="{{ url_for('enrollment.register') }}" enctype="multipart/form-data" novalidate id="wizardForm">
             {{ form.hidden_tag() }}
 
-            <!-- ================= مرحله ۱: اطلاعات بازیکن ================= -->
-            <div class="form-step active">
-                <h3 class="section-title">مرحله ۱: اطلاعات فردی بازیکن</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        {{ form.player_fullname.label }}
-                        {{ form.player_fullname(class="form-control", placeholder="نام و نام خانوادگی بازیکن") }}
-                        {% for error in form.player_fullname.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
-                    </div>
-                    <div class="form-group">
-                        {{ form.birth_date.label }}
-                        {{ form.birth_date(class="form-control", placeholder="مثال: ۱۳۸۹/۰۵/۱۲") }}
-                        {% for error in form.birth_date.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        {{ form.national_id.label }}
-                        {{ form.national_id(class="form-control", placeholder="کد ملی ده رقمی") }}
-                        {% for error in form.national_id.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
-                    </div>
-                    <div class="form-group">
-                        {{ form.player_phone.label }}
-                        {{ form.player_phone(class="form-control", placeholder="شماره تماس بازیکن") }}
-                        {% for error in form.player_phone.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
-                    </div>
-                </div>
-            </div>
+            <div class="step-pages-viewport">
 
-            <!-- ================= مرحله ۲: اطلاعات ولی ================= -->
-            <div class="form-step">
-                <h3 class="section-title">مرحله ۲: مشخصات ولی (پدر یا مادر)</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        {{ form.parent_fullname.label }}
-                        {{ form.parent_fullname(class="form-control", placeholder="نام و نام خانوادگی ولی") }}
-                        {% for error in form.parent_fullname.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                <!-- ================= برگه ۱: مشخصات فردی بازیکن ================= -->
+                <div class="form-step-page active" data-step="0">
+                    <div class="page-title-row">
+                        <h3><i class="fas fa-user-circle" style="color: var(--pitch-blue);"></i> مرحله ۱: مشخصات فردی و هویتی بازیکن</h3>
+                        <span class="page-step-count">گام ۱ از ۶</span>
                     </div>
-                    <div class="form-group">
-                        {{ form.parent_relation.label }}
-                        {{ form.parent_relation(class="form-control") }}
-                        {% for error in form.parent_relation.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
-                    </div>
-                </div>
-                <div class="form-group">
-                    {{ form.parent_phone.label }}
-                    {{ form.parent_phone(class="form-control", placeholder="شماره تماس ولی بازیکن") }}
-                    {% for error in form.parent_phone.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
-                </div>
-            </div>
 
-            <!-- ================= مرحله ۳: اطلاعات سکونت ================= -->
-            <div class="form-step">
-                <h3 class="section-title">مرحله ۳: اطلاعات محل سکونت</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        {{ form.province.label }}
-                        {{ form.province(class="form-control", placeholder="مثال: تهران") }}
-                        {% for error in form.province.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            {{ form.player_fullname.label(class="form-label") }}
+                            {{ form.player_fullname(class="form-control", placeholder="نام و نام خانوادگی بازیکن") }}
+                            {% for error in form.player_fullname.errors %}<span class="form-error-msg">{{ error }}</span>{% endfor %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.birth_date.label(class="form-label") }}
+                            {{ form.birth_date(class="form-control", placeholder="مثال: ۱۳۸۹/۰۵/۱۲") }}
+                            {% for error in form.birth_date.errors %}<span class="form-error-msg">{{ error }}</span>{% endfor %}
+                        </div>
                     </div>
-                    <div class="form-group">
-                        {{ form.city.label }}
-                        {{ form.city(class="form-control", placeholder="مثال: تهران") }}
-                        {% for error in form.city.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            {{ form.national_id.label(class="form-label") }}
+                            {{ form.national_id(class="form-control", placeholder="کد ملی ۱۰ رقمی بازیکن", inputmode="numeric") }}
+                            {% for error in form.national_id.errors %}<span class="form-error-msg">{{ error }}</span>{% endfor %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.player_phone.label(class="form-label") }}
+                            {{ form.player_phone(class="form-control", placeholder="شماره تماس بازیکن (اختیاری یا ولی)", inputmode="numeric") }}
+                            {% for error in form.player_phone.errors %}<span class="form-error-msg">{{ error }}</span>{% endfor %}
+                        </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    {{ form.address.label }}
-                    {{ form.address(class="form-control", rows="3", placeholder="خیابان، کوچه، پلاک، واحد") }}
-                    {% for error in form.address.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
-                </div>
-                <div class="form-group">
-                    {{ form.postal_code.label }}
-                    {{ form.postal_code(class="form-control", placeholder="ده رقم (اختیاری)") }}
-                    {% for error in form.postal_code.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
-                </div>
-            </div>
 
-            <!-- ================= مرحله ۴: اطلاعات ورزشی ================= -->
-            <div class="form-step">
-                <h3 class="section-title">مرحله ۴: مشخصات فنی و رده ورزشی</h3>
-                <div class="form-group">
-                    {{ form.football_history.label }}
-                    {{ form.football_history(class="form-control", rows="3", placeholder="سوابق حضور در تیم‌های دیگر و سال‌های فعالیت (اختیاری)") }}
-                    {% for error in form.football_history.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+                <!-- ================= برگه ۲: مشخصات ولی ================= -->
+                <div class="form-step-page" data-step="1">
+                    <div class="page-title-row">
+                        <h3><i class="fas fa-user-shield" style="color: var(--pitch-blue);"></i> مرحله ۲: مشخصات ولی (پدر، مادر یا قیم)</h3>
+                        <span class="page-step-count">گام ۲ از ۶</span>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            {{ form.parent_fullname.label(class="form-label") }}
+                            {{ form.parent_fullname(class="form-control", placeholder="نام و نام خانوادگی ولی") }}
+                            {% for error in form.parent_fullname.errors %}<span class="form-error-msg">{{ error }}</span>{% endfor %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.parent_relation.label(class="form-label") }}
+                            {{ form.parent_relation(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.parent_phone.label(class="form-label") }}
+                        {{ form.parent_phone(class="form-control", placeholder="شماره تلفن همراه ولی (جهت اطلاع‌رسانی پیامکی)", inputmode="numeric") }}
+                        {% for error in form.parent_phone.errors %}<span class="form-error-msg">{{ error }}</span>{% endfor %}
+                    </div>
                 </div>
-                <div class="form-group">
-                    {{ form.play_position.label }}
-                    {{ form.play_position(class="form-control", placeholder="مثال: دروازه‌بان، هافبک وسط (اختیاری)") }}
-                    {% for error in form.play_position.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+
+                <!-- ================= برگه ۳: اطلاعات سکونت ================= -->
+                <div class="form-step-page" data-step="2">
+                    <div class="page-title-row">
+                        <h3><i class="fas fa-map-marked-alt" style="color: var(--pitch-blue);"></i> مرحله ۳: نشانی محل سکونت</h3>
+                        <span class="page-step-count">گام ۳ از ۶</span>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            {{ form.province.label(class="form-label") }}
+                            {{ form.province(class="form-control", placeholder="مثال: تهران") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.city.label(class="form-label") }}
+                            {{ form.city(class="form-control", placeholder="مثال: تهران") }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.address.label(class="form-label") }}
+                        {{ form.address(class="form-control", rows="2", placeholder="خیابان، کوچه، پلاک، واحد") }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.postal_code.label(class="form-label") }}
+                        {{ form.postal_code(class="form-control", placeholder="کد پستی ۱۰ رقمی (اختیاری)") }}
+                    </div>
                 </div>
-            </div>
 
-            <!-- ================= مرحله ۵: مدارک آپلود (کارت‌های شیک Dropzone) ================= -->
-            <div class="form-step">
-                <h3 class="section-title">مرحله ۵: ارسال مدارک مورد نیاز</h3>
-                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">
-                    روی هر کارت کلیک کنید و تصویر مدرک مربوطه (فرمت JPG یا PNG) را انتخاب نمایید:
-                </p>
+                <!-- ================= برگه ۴: سوابق ورزشی ================= -->
+                <div class="form-step-page" data-step="3">
+                    <div class="page-title-row">
+                        <h3><i class="fas fa-futbol" style="color: var(--pitch-blue);"></i> مرحله ۴: سوابق و مشخصات ورزشی</h3>
+                        <span class="page-step-count">گام ۴ از ۶</span>
+                    </div>
 
-                <div class="upload-grid">
+                    <div class="form-group">
+                        {{ form.football_history.label(class="form-label") }}
+                        {{ form.football_history(class="form-control", rows="3", placeholder="سوابق حضور در تیم‌ها، مسابقات یا مدارس فوتبال قبلی (اختیاری)") }}
+                    </div>
 
-                    <!-- ۱. عکس پرسنلی بازیکن -->
-                    <div class="upload-card-wrapper">
-                        <div class="upload-dropzone" onclick="triggerFileInput(this)">
-                            <div class="dropzone-icon">
-                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <div class="form-group">
+                        {{ form.play_position.label(class="form-label") }}
+                        {{ form.play_position(class="form-control", placeholder="پست بازی مورد علاقه بازیکن (مثال: دروازه‌بان، هافبک وسط)") }}
+                    </div>
+                </div>
+
+                <!-- ================= برگه ۵: بارگذاری مدارک ================= -->
+                <div class="form-step-page" data-step="4">
+                    <div class="page-title-row">
+                        <h3><i class="fas fa-cloud-upload-alt" style="color: var(--pitch-blue);"></i> مرحله ۵: بارگذاری مدارک الزامی</h3>
+                        <span class="page-step-count">گام ۵ از ۶</span>
+                    </div>
+
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">
+                        جهت انتخاب عکس مدرک (JPG یا PNG) روی هر کارت کلیک نمایید:
+                    </p>
+
+                    <div class="upload-cards-grid">
+                        <!-- ۱. عکس پرسنلی -->
+                        <div class="upload-zone-card" onclick="triggerUpload(this)">
+                            <div class="zone-icon"><i class="fas fa-camera"></i></div>
+                            <div class="zone-info">
+                                <strong>عکس پرسنلی بازیکن</strong>
+                                <small>کلیک برای انتخاب فایل</small>
                             </div>
-                            <div class="dropzone-info">
-                                <span class="dropzone-title">عکس پرسنلی بازیکن</span>
-                                <span class="dropzone-hint">کلیک برای انتخاب فایل</span>
-                            </div>
-                            <div class="preview-box">
-                                <img src="" alt="پیش‌نمایش" class="preview-thumb">
-                                <div class="preview-meta">
-                                    <span class="file-name-text"></span>
-                                    <span class="file-status-text">✓ انتخاب شد (کلیک برای تغییر)</span>
+                            <div class="zone-preview-wrap">
+                                <img src="" class="zone-thumb" alt="پیش‌نمایش">
+                                <div class="zone-file-meta">
+                                    <span class="zone-file-name"></span>
+                                    <small style="color: var(--success); font-weight: 700;">✓ انتخاب شد</small>
                                 </div>
                             </div>
-                            {{ form.player_photo(style="display:none;", onchange="handleFileSelect(this)") }}
+                            {{ form.player_photo(style="display:none;", onchange="onFilePicked(this)") }}
                         </div>
-                        {% for error in form.player_photo.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
-                    </div>
 
-                    <!-- ۲. تصویر شناسنامه -->
-                    <div class="upload-card-wrapper">
-                        <div class="upload-dropzone" onclick="triggerFileInput(this)">
-                            <div class="dropzone-icon">
-                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="7" y1="8" x2="17" y2="8"></line><line x1="7" y1="12" x2="13" y2="12"></line></svg>
+                        <!-- ۲. شناسنامه -->
+                        <div class="upload-zone-card" onclick="triggerUpload(this)">
+                            <div class="zone-icon"><i class="fas fa-id-card"></i></div>
+                            <div class="zone-info">
+                                <strong>تصویر شناسنامه</strong>
+                                <small>کلیک برای انتخاب فایل</small>
                             </div>
-                            <div class="dropzone-info">
-                                <span class="dropzone-title">تصویر شناسنامه بازیکن</span>
-                                <span class="dropzone-hint">کلیک برای انتخاب فایل</span>
-                            </div>
-                            <div class="preview-box">
-                                <img src="" alt="پیش‌نمایش" class="preview-thumb">
-                                <div class="preview-meta">
-                                    <span class="file-name-text"></span>
-                                    <span class="file-status-text">✓ انتخاب شد (کلیک برای تغییر)</span>
+                            <div class="zone-preview-wrap">
+                                <img src="" class="zone-thumb" alt="پیش‌نمایش">
+                                <div class="zone-file-meta">
+                                    <span class="zone-file-name"></span>
+                                    <small style="color: var(--success); font-weight: 700;">✓ انتخاب شد</small>
                                 </div>
                             </div>
-                            {{ form.birth_cert_img(style="display:none;", onchange="handleFileSelect(this)") }}
+                            {{ form.birth_cert_img(style="display:none;", onchange="onFilePicked(this)") }}
                         </div>
-                        {% for error in form.birth_cert_img.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
-                    </div>
 
-                    <!-- ۳. رضایت‌نامه ولی -->
-                    <div class="upload-card-wrapper">
-                        <div class="upload-dropzone" onclick="triggerFileInput(this)">
-                            <div class="dropzone-icon">
-                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                        <!-- ۳. رضایت‌نامه -->
+                        <div class="upload-zone-card" onclick="triggerUpload(this)">
+                            <div class="zone-icon"><i class="fas fa-file-signature"></i></div>
+                            <div class="zone-info">
+                                <strong>رضایت‌نامه ولی بازیکن</strong>
+                                <small>کلیک برای انتخاب فایل</small>
                             </div>
-                            <div class="dropzone-info">
-                                <span class="dropzone-title">تصویر رضایت‌نامه ولی</span>
-                                <span class="dropzone-hint">کلیک برای انتخاب فایل</span>
-                            </div>
-                            <div class="preview-box">
-                                <img src="" alt="پیش‌نمایش" class="preview-thumb">
-                                <div class="preview-meta">
-                                    <span class="file-name-text"></span>
-                                    <span class="file-status-text">✓ انتخاب شد (کلیک برای تغییر)</span>
+                            <div class="zone-preview-wrap">
+                                <img src="" class="zone-thumb" alt="پیش‌نمایش">
+                                <div class="zone-file-meta">
+                                    <span class="zone-file-name"></span>
+                                    <small style="color: var(--success); font-weight: 700;">✓ انتخاب شد</small>
                                 </div>
                             </div>
-                            {{ form.parent_consent_img(style="display:none;", onchange="handleFileSelect(this)") }}
+                            {{ form.parent_consent_img(style="display:none;", onchange="onFilePicked(this)") }}
                         </div>
-                        {% for error in form.parent_consent_img.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
-                    </div>
 
-                    <!-- ۴. گواهی سلامت پزشکی -->
-                    <div class="upload-card-wrapper">
-                        <div class="upload-dropzone" onclick="triggerFileInput(this)">
-                            <div class="dropzone-icon">
-                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                        <!-- ۴. گواهی پزشکی -->
+                        <div class="upload-zone-card" onclick="triggerUpload(this)">
+                            <div class="zone-icon"><i class="fas fa-heartbeat"></i></div>
+                            <div class="zone-info">
+                                <strong>گواهی سلامت پزشکی</strong>
+                                <small>کلیک برای انتخاب فایل</small>
                             </div>
-                            <div class="dropzone-info">
-                                <span class="dropzone-title">گواهی سلامت پزشکی</span>
-                                <span class="dropzone-hint">کلیک برای انتخاب فایل</span>
-                            </div>
-                            <div class="preview-box">
-                                <img src="" alt="پیش‌نمایش" class="preview-thumb">
-                                <div class="preview-meta">
-                                    <span class="file-name-text"></span>
-                                    <span class="file-status-text">✓ انتخاب شد (کلیک برای تغییر)</span>
+                            <div class="zone-preview-wrap">
+                                <img src="" class="zone-thumb" alt="پیش‌نمایش">
+                                <div class="zone-file-meta">
+                                    <span class="zone-file-name"></span>
+                                    <small style="color: var(--success); font-weight: 700;">✓ انتخاب شد</small>
                                 </div>
                             </div>
-                            {{ form.medical_cert_img(style="display:none;", onchange="handleFileSelect(this)") }}
+                            {{ form.medical_cert_img(style="display:none;", onchange="onFilePicked(this)") }}
                         </div>
-                        {% for error in form.medical_cert_img.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
-                    </div>
 
-                    <!-- ۵. کارت بیمه ورزشی -->
-                    <div class="upload-card-wrapper" style="grid-column: 1 / -1;">
-                        <div class="upload-dropzone" onclick="triggerFileInput(this)">
-                            <div class="dropzone-icon">
-                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        <!-- ۵. بیمه ورزشی -->
+                        <div class="upload-zone-card" onclick="triggerUpload(this)" style="grid-column: 1 / -1;">
+                            <div class="zone-icon"><i class="fas fa-shield-alt"></i></div>
+                            <div class="zone-info">
+                                <strong>کارت بیمه ورزشی معتبر</strong>
+                                <small>کلیک برای انتخاب فایل</small>
                             </div>
-                            <div class="dropzone-info">
-                                <span class="dropzone-title">کارت بیمه ورزشی بازیکن</span>
-                                <span class="dropzone-hint">کلیک برای انتخاب فایل</span>
-                            </div>
-                            <div class="preview-box">
-                                <img src="" alt="پیش‌نمایش" class="preview-thumb">
-                                <div class="preview-meta">
-                                    <span class="file-name-text"></span>
-                                    <span class="file-status-text">✓ انتخاب شد (کلیک برای تغییر)</span>
+                            <div class="zone-preview-wrap">
+                                <img src="" class="zone-thumb" alt="پیش‌نمایش">
+                                <div class="zone-file-meta">
+                                    <span class="zone-file-name"></span>
+                                    <small style="color: var(--success); font-weight: 700;">✓ انتخاب شد</small>
                                 </div>
                             </div>
-                            {{ form.sports_insurance_img(style="display:none;", onchange="handleFileSelect(this)") }}
+                            {{ form.sports_insurance_img(style="display:none;", onchange="onFilePicked(this)") }}
                         </div>
-                        {% for error in form.sports_insurance_img.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
                     </div>
-
                 </div>
+
+                <!-- ================= برگه ۶: توضیحات و تایید نهایی ================= -->
+                <div class="form-step-page" data-step="5">
+                    <div class="page-title-row">
+                        <h3><i class="fas fa-clipboard-check" style="color: var(--pitch-blue);"></i> مرحله ۶: نکات پزشکی و ثبت نهایی</h3>
+                        <span class="page-step-count">گام ۶ از ۶</span>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.medical_notes.label(class="form-label") }}
+                        {{ form.medical_notes(class="form-control", rows="4", placeholder="سابقه شکستگی، حساسیت دارویی، بیماری خاص یا مصرف مکمل (اختیاری)") }}
+                    </div>
+
+                    <div class="alert-box-info" style="margin-top: 15px;">
+                        <i class="fas fa-info-circle"></i> با فشردن دکمه ثبت نهایی، پرونده بازیکن به کارتابل مدیریت ارسال شده و پس از تایید مدارک، امکان پرداخت آنلاین شهریه فعال می‌گردد.
+                    </div>
+                </div>
+
             </div>
 
-            <!-- ================= مرحله ۶: توضیحات و ثبت ================= -->
-            <div class="form-step">
-                <h3 class="section-title">مرحله ۶: توضیحات نهایی و ثبت‌نام</h3>
-                <div class="form-group">
-                    {{ form.medical_notes.label }}
-                    {{ form.medical_notes(class="form-control", rows="5", placeholder="اگر بازیکن بیماری خاصی دارد، یا سابقه شکستگی استخوان، مصرف دارو و غیره دارد حتماً اینجا ذکر کنید (اختیاری)") }}
-                    {% for error in form.medical_notes.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
-                </div>
+            <!-- دکمه‌های ورق زدن به جلو و عقب -->
+            <div class="stepper-actions-bar">
+                <button type="button" class="btn btn-ghost" id="flipPrevBtn" style="visibility: hidden;">
+                    <i class="fas fa-arrow-right"></i> ورق زدن به قبل
+                </button>
 
-                <div class="registration-final-info" style="background: #fffcfc; border: 1.5px dashed var(--danger); padding: 20px; border-radius: 8px; margin-bottom: 24px;">
-                    <p style="font-weight: 700; color: var(--danger); margin-bottom: 8px;">توجه مهم:</p>
-                    <p style="font-size: 0.9rem; color: var(--text-main); line-height: 1.6;">با فشردن دکمه ثبت نهایی، پرونده بازیکن تشکیل شده و برای تایید ادمین ارسال می‌شود. در فاز بعدی پس از تایید مدارک، امکان پرداخت آنلاین شهریه برای شما فراهم خواهد شد.</p>
-                </div>
-            </div>
+                <button type="button" class="btn btn-primary btn-lg" id="flipNextBtn">
+                    ورق زدن به بعد <i class="fas fa-arrow-left"></i>
+                </button>
 
-            <!-- دکمه‌های ناوبری فرم -->
-            <div class="form-navigation" style="display: flex; justify-content: space-between; margin-top: 32px; border-top: 1px solid var(--line); padding-top: 24px;">
-                <button type="button" class="btn btn-ghost" id="prevBtn" style="visibility: hidden;">مرحله قبلی</button>
-                <button type="button" class="btn btn-primary" id="nextBtn">مرحله بعدی</button>
-                {{ form.submit(class="btn btn-primary", id="submitBtn", style="display: none; background: #2ecc71; border-color: #2ecc71; box-shadow: 0 8px 16px -4px rgba(46, 204, 113, 0.3);") }}
+                {{ form.submit(class="btn btn-gold btn-xl", id="finalSubmitBtn", style="display: none;") }}
             </div>
 
         </form>
+
     </div>
 
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<!-- جاوااسکریپت کنترل آپلود و پیش‌نمایش تصویر -->
 <script>
-    function triggerFileInput(dropzoneElement) {
-        const fileInput = dropzoneElement.querySelector('input[type="file"]');
-        if (fileInput) {
-            fileInput.click();
-        }
+    function triggerUpload(card) {
+        const fileInput = card.querySelector('input[type="file"]');
+        if (fileInput) fileInput.click();
     }
 
-    function handleFileSelect(inputElement) {
-        const dropzone = inputElement.closest('.upload-dropzone');
-        const iconBox = dropzone.querySelector('.dropzone-icon');
-        const infoBox = dropzone.querySelector('.dropzone-info');
-        const previewBox = dropzone.querySelector('.preview-box');
-        const previewThumb = dropzone.querySelector('.preview-thumb');
-        const fileNameText = dropzone.querySelector('.file-name-text');
+    function onFilePicked(input) {
+        const card = input.closest('.upload-zone-card');
+        const icon = card.querySelector('.zone-icon');
+        const info = card.querySelector('.zone-info');
+        const previewWrap = card.querySelector('.zone-preview-wrap');
+        const thumb = card.querySelector('.zone-thumb');
+        const fileName = card.querySelector('.zone-file-name');
 
-        const file = inputElement.files[0];
-        if (file) {
-            fileNameText.textContent = file.name;
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            fileName.textContent = file.name;
 
-            // ساخت پیش‌نمایش تصویری
             if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
-                reader.onload = function (e) {
-                    previewThumb.src = e.target.result;
-                    iconBox.style.display = 'none';
-                    infoBox.style.display = 'none';
-                    previewBox.style.display = 'flex';
-                    dropzone.classList.add('has-file');
+                reader.onload = (e) => {
+                    thumb.src = e.target.result;
+                    icon.style.display = 'none';
+                    info.style.display = 'none';
+                    previewWrap.style.display = 'flex';
+                    card.classList.add('selected');
                 };
                 reader.readAsDataURL(file);
             } else {
-                iconBox.style.display = 'none';
-                infoBox.style.display = 'none';
-                previewThumb.style.display = 'none';
-                previewBox.style.display = 'flex';
-                dropzone.classList.add('has-file');
+                icon.style.display = 'none';
+                info.style.display = 'none';
+                thumb.style.display = 'none';
+                previewWrap.style.display = 'flex';
+                card.classList.add('selected');
             }
         }
     }
 </script>
-
-<!-- جاوااسکریپت داینامیک جابه‌جایی مراحل -->
-<script src="{{ url_for('static', filename='js/register_course.js') }}"></script>
+<script src="{{ url_for('static', filename='JS/register_course.js') }}"></script>
 {% endblock %}

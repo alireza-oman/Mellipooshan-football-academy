@@ -3,151 +3,125 @@
 {% block title %}درباره ما | {{ club_name }}{% endblock %}
 
 {% block extra_css %}
-<style>
-    @media (max-width: 768px) {
-        .about-hero {
-            padding-block: 40px 50px;
-        }
-        .hero-title {
-            font-size: 1.7rem;
-        }
-        .hero-img-box {
-            height: 220px;
-        }
-        .section-block {
-            padding-block: 40px 0;
-        }
-        .block-head {
-            margin-bottom: 28px;
-        }
-        .block-head h2 {
-            font-size: 1.4rem;
-        }
-        .cta-banner {
-            padding: 40px 20px;
-            margin-top: 50px;
-        }
-        .cta-banner h2 {
-            font-size: 1.5rem;
-        }
-        .cta-banner .btn {
-            width: 100%;
-        }
-        .gallery-card {
-            height: 180px;
-        }
-    }
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='CSS/about.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="about-page">
+<div class="about-elite-page">
 
-    <!-- ۱. معرفی اصلی (هیرو) -->
-    <section class="about-hero">
+    <!-- ۱. هیرو معرفی رسمی -->
+    <section class="about-hero-section">
         <div class="wrap">
-            <div class="hero-grid">
-                <div>
-                    <span class="eyebrow">معرفی آکادمی</span>
-                    <h1 class="hero-title">آکادمی فوتبال ملی‌پوشان</h1>
-                    <p class="hero-text">
-                        {{ about_main.main_goal if about_main else 'آکادمی فوتبال ملی‌پوشان با هدف کشف و پرورش استعدادهای درخشان فوتبال پایه تاسیس شده است.' }}
+            <div class="about-hero-grid">
+                <div class="about-text-block">
+                    <span class="pro-badge">داستان و تعهد ما</span>
+                    <h1>آکادمی فوتبال ملی‌پوشان؛ نماد توسعه علمی فوتبال</h1>
+                    <p class="lead-p">
+                        {{ about_main.main_goal if about_main else 'این آکادمی با هدف ارتقای فوتبال پایه و آموزش صحیح طبق الگوهای مدرن بین‌المللی ایجاد شده است.' }}
                     </p>
-                    <div class="hero-badges">
-                        <span class="hero-badge">📅 تاسیس: {{ about_main.established_year if about_main else '۱۳۹۰' }}</span>
-                        <span class="hero-badge">⚽ رده‌های سنی: {{ about_main.age_summary if about_main else '۶ تا ۱۸ سال' }}</span>
+                    <div class="history-pills">
+                        <div class="h-pill"><i class="fas fa-history"></i> تاسیس: <strong>{{ about_main.established_year if about_main else '۱۳۹۰' }}</strong></div>
+                        <div class="h-pill"><i class="fas fa-users"></i> رده‌های سنی: <strong>{{ about_main.age_summary if about_main else '۶ تا ۱۸ سال' }}</strong></div>
+                        <div class="h-pill"><i class="fas fa-certificate"></i> مجوز رسمی تربیت‌بدنی و فدراسیون</div>
                     </div>
                 </div>
 
-                <div class="hero-img-box">
-                    {% if about_main and about_main.intro_image %}
-                        <img src="{{ url_for('static', filename='uploads/about/' + about_main.intro_image) }}" alt="آکادمی ملی‌پوشان" onerror="this.src='{{ url_for('static', filename='images/logo.png') }}';">
-                    {% else %}
-                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="لوگو آکادمی">
-                    {% endif %}
+                <div class="about-main-img-wrap">
+                    <div class="img-frame-accent">
+                        {% if about_main and about_main.intro_image %}
+                            <img src="{{ url_for('static', filename='uploads/about/' + about_main.intro_image) }}" alt="آکادمی ملی‌پوشان" onerror="this.src='https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1000&auto=format&fit=crop';">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1000&auto=format&fit=crop" alt="لوگو آکادمی">
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ۲. نوار آمار و ارقام -->
+    <!-- ۲. آمار و دستاوردها -->
     {% if stats %}
-    <section class="stats-band">
-        <div class="wrap">
-            <div class="stats-grid">
-                {% for stat in stats %}
-                    <div class="stat">
-                        <div class="stat-icon">
-                            <i class="fas fa-{{ stat.icon }}"></i>
-                        </div>
-                        <div class="stat-num">{{ stat.number }}</div>
-                        <div class="stat-lbl">{{ stat.label }}</div>
-                    </div>
-                {% endfor %}
-            </div>
+    <section class="about-stats-band">
+        <div class="wrap stats-row">
+            {% for stat in stats %}
+                <div class="stat-col">
+                    <i class="fas fa-{{ stat.icon }}"></i>
+                    <div class="s-number">{{ stat.number }}</div>
+                    <div class="s-label">{{ stat.label }}</div>
+                </div>
+            {% endfor %}
         </div>
     </section>
     {% endif %}
 
-    <div class="wrap">
+    <div class="wrap content-blocks-wrap">
 
-        <!-- ۳. مأموریت و چشم‌انداز -->
+        <!-- ۳. مثلث رسالت، چشم‌انداز و هدف -->
         {% if about_main %}
-        <section class="section-block">
-            <div class="block-head">
-                <h2>مأموریت و اهداف ما</h2>
-                <p>نقشه راه و مسیر حرکت آکادمی فوتبال ملی‌پوشان برای آینده</p>
+        <section class="about-section">
+            <div class="section-title-center">
+                <h2>نقشه راه و چشم‌انداز آکادمی</h2>
+                <p>اهدافی که هر جلسه تمرینی بر مدار آن برنامه‌ریزی می‌شود</p>
             </div>
-            <div class="mv-grid">
-                <div class="mv-card">
-                    <h3>🎯 مأموریت ما</h3>
+            <div class="vision-cards-grid">
+                <div class="v-card">
+                    <div class="v-icon"><i class="fas fa-bullseye"></i></div>
+                    <h3>مأموریت ما</h3>
                     <p>{{ about_main.mission }}</p>
                 </div>
-                <div class="mv-card">
-                    <h3>🌟 چشم‌انداز</h3>
+                <div class="v-card highlight">
+                    <div class="v-icon"><i class="fas fa-compass"></i></div>
+                    <h3>چشم‌انداز</h3>
                     <p>{{ about_main.vision }}</p>
                 </div>
-                <div class="mv-card">
-                    <h3>🏆 اهداف بلندمدت</h3>
+                <div class="v-card">
+                    <div class="v-icon"><i class="fas fa-mountain"></i></div>
+                    <h3>اهداف بلندمدت</h3>
                     <p>{{ about_main.long_term_goals }}</p>
                 </div>
             </div>
         </section>
         {% endif %}
 
-        <!-- ۴. چرا ما؟ -->
-        {% if features %}
-        <section class="section-block">
-            <div class="block-head">
-                <h2>چرا آکادمی ملی‌پوشان؟</h2>
-                <p>مزایا و ویژگی‌های متمایز آموزش در باشگاه ما</p>
+        <!-- ۴. کادر فنی و سرمربیان -->
+        {% if coaches %}
+        <section class="about-section">
+            <div class="section-title-center">
+                <h2>کادر فنی و اساتید مجرب</h2>
+                <p>بهره‌گیری از اساتید بااخلاق و مربیان دارای بالاترین مدارک مربیگری رسمی</p>
             </div>
-            <div class="cards-grid-4">
-                {% for feature in features %}
-                    <div class="info-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-{{ feature.icon }}"></i>
+            <div class="coaches-elite-grid">
+                {% for coach in coaches %}
+                    <div class="coach-profile-card">
+                        <div class="coach-photo-wrap">
+                            <img src="{{ url_for('static', filename='uploads/coaches/' + coach.photo) }}" alt="{{ coach.name }}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop';">
+                            <span class="coach-badge-overlay"><i class="fas fa-id-badge"></i> مربی رسمی</span>
                         </div>
-                        <h4>{{ feature.title }}</h4>
-                        <p>{{ feature.description }}</p>
+                        <div class="coach-info">
+                            <h3>{{ coach.name }}</h3>
+                            <span class="coach-post">{{ coach.role }}</span>
+                            {% if coach.bio %}<p class="coach-bio">{{ coach.bio }}</p>{% endif %}
+                        </div>
                     </div>
                 {% endfor %}
             </div>
         </section>
         {% endif %}
 
-        <!-- ۵. امکانات آکادمی -->
+        <!-- ۵. امکانات و تجهیزات تخصصی -->
         {% if facilities %}
-        <section class="section-block">
-            <div class="block-head">
-                <h2>امکانات و تجهیزات</h2>
-                <p>فضای تمرینی و امکانات مدرن جهت رشد تخصصی بازیکنان</p>
+        <section class="about-section">
+            <div class="section-title-center">
+                <h2>امکانات و فضاهای تمرینی</h2>
+                <p>زمین‌های تمرینی استاندارد چمن، سالن‌های بدنسازی و تجهیزات ایمنی نوین</p>
             </div>
-            <div class="cards-grid-4">
+            <div class="facilities-grid">
                 {% for item in facilities %}
-                    <div class="info-card" style="padding: 0; overflow: hidden;">
-                        <img src="{{ url_for('static', filename='uploads/about/' + item.image) }}" alt="{{ item.title }}" style="width: 100%; height: 170px; object-fit: cover;" onerror="this.src='{{ url_for('static', filename='images/logo.png') }}';">
-                        <div style="padding: 16px;">
+                    <div class="facility-card">
+                        <div class="facility-img">
+                            <img src="{{ url_for('static', filename='uploads/about/' + item.image) }}" alt="{{ item.title }}" onerror="this.src='https://images.unsplash.com/photo-1529900748604-07564a03e7a6?q=80&w=800&auto=format&fit=crop';">
+                        </div>
+                        <div class="facility-body">
                             <h4>{{ item.title }}</h4>
                             <p>{{ item.description }}</p>
                         </div>
@@ -157,56 +131,18 @@
         </section>
         {% endif %}
 
-        <!-- ۶. مربیان و کادر فنی -->
-        {% if coaches %}
-        <section class="section-block">
-            <div class="block-head">
-                <h2>مربیان و کادر فنی</h2>
-                <p>بهره‌گیری از اساتید و مربیان مدرک‌دار رسمی فدراسیون فوتبال</p>
-            </div>
-            <div class="cards-grid-4">
-                {% for coach in coaches %}
-                    <div class="coach-card">
-                        <img src="{{ url_for('static', filename='uploads/coaches/' + coach.photo) }}" alt="{{ coach.name }}" class="coach-img" onerror="this.src='{{ url_for('static', filename='images/logo.png') }}';">
-                        <h4>{{ coach.name }}</h4>
-                        <span class="coach-role">{{ coach.role }}</span>
-                        {% if coach.bio %}<p>{{ coach.bio }}</p>{% endif %}
-                    </div>
-                {% endfor %}
-            </div>
-        </section>
-        {% endif %}
-
-        <!-- ۷. رده‌های سنی -->
-        {% if age_groups %}
-        <section class="section-block">
-            <div class="block-head">
-                <h2>رده‌های سنی فعال</h2>
-                <p>برنامه‌های آموزشی مجزا متناسب با شرایط سنی و بدنی بازیکنان</p>
-            </div>
-            <div class="cards-grid-4">
-                {% for age in age_groups %}
-                    <div class="info-card" style="border-right: 4px solid var(--blue);">
-                        <h4>{{ age.title }}</h4>
-                        <span style="font-size: 0.85rem; color: var(--blue); font-weight: 700; display: block; margin-bottom: 8px;">محدوده سنی: {{ age.age_range }}</span>
-                        {% if age.description %}<p>{{ age.description }}</p>{% endif %}
-                    </div>
-                {% endfor %}
-            </div>
-        </section>
-        {% endif %}
-
-        <!-- ۸. افتخارات و دستاوردها -->
+        <!-- ۶. افتخارات و کاپ‌ها -->
         {% if achievements %}
-        <section class="section-block">
-            <div class="block-head">
-                <h2>افتخارات و دستاوردها</h2>
-                <p>مقام‌ها و قهرمانی‌های کسب‌شده توسط تیم‌های پایه آکادمی</p>
+        <section class="about-section">
+            <div class="section-title-center">
+                <h2>ویترین افتخارات و دستاوردها</h2>
+                <p>عناوین کسب‌شده با تلاش شبانه‌روزی بازیکنان و کادر فنی</p>
             </div>
-            <div class="cards-grid-4">
+            <div class="trophy-grid">
                 {% for ach in achievements %}
-                    <div class="info-card" style="border-right: 4px solid var(--danger);">
-                        <span style="font-size: 0.8rem; background: #fdf2f2; color: var(--danger); padding: 2px 10px; border-radius: 50px; font-weight: 700; display: inline-block; margin-bottom: 10px;">سال {{ ach.year }}</span>
+                    <div class="trophy-card">
+                        <div class="trophy-icon"><i class="fas fa-trophy"></i></div>
+                        <div class="trophy-year">سال {{ ach.year }}</div>
                         <h4>{{ ach.title }}</h4>
                         {% if ach.description %}<p>{{ ach.description }}</p>{% endif %}
                     </div>
@@ -215,39 +151,35 @@
         </section>
         {% endif %}
 
-        <!-- ۹. گالری تصاویر -->
+        <!-- ۷. گالری تصاویر -->
         {% if gallery %}
-        <section class="section-block">
-            <div class="block-head">
-                <h2>گالری تصاویر</h2>
-                <p>تصاویری از تمرینات، مسابقات و مراسم‌های آکادمی</p>
+        <section class="about-section">
+            <div class="section-title-center">
+                <h2>آلبوم تصاویر تمرینات و مسابقات</h2>
+                <p>لحظات شورانگیز و تلاش مستمر استعدادهای باشگاه</p>
             </div>
-            <div class="gallery-grid">
+            <div class="pro-gallery-grid">
                 {% for img in gallery %}
-                    <div class="gallery-card">
-                        <img src="{{ url_for('static', filename='uploads/gallery/' + img.image) }}" alt="گالری آکادمی" onerror="this.src='{{ url_for('static', filename='images/logo.png') }}';">
-                        <span class="gallery-badge">{{ img.category }}</span>
+                    <div class="pro-gallery-item">
+                        <img src="{{ url_for('static', filename='uploads/gallery/' + img.image) }}" alt="گالری" onerror="this.src='https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=800&auto=format&fit=crop';">
+                        <span class="gallery-category-pill">{{ img.category }}</span>
+                        {% if img.title %}<div class="gallery-caption">{{ img.title }}</div>{% endif %}
                     </div>
                 {% endfor %}
             </div>
         </section>
         {% endif %}
 
-        <!-- ۱۰. دعوت به ثبت‌نام (CTA) -->
-        <section class="cta-banner">
-            <h2>{{ about_main.cta_title if about_main else 'همین امروز به ما بپیوندید!' }}</h2>
-            <p>{{ about_main.cta_text if about_main else 'برای شرکت در جلسات استعدادیابی و عضویت در آکادمی فوتبال ملی‌پوشان همین حالا ثبت‌نام کنید.' }}</p>
-
+        <!-- ۸. دعوت نهایی به استعدادیابی -->
+        <div class="about-final-cta">
+            <h2>{{ about_main.cta_title if about_main else 'آینده فوتبالی فرزندتان را امروز رقم بزنید' }}</h2>
+            <p>{{ about_main.cta_text if about_main else 'جهت شرکت در جلسات استعدادیابی و ثبت‌نام در آکادمی فوتبال ملی‌پوشان اقدام کنید.' }}</p>
             {% if current_user.is_authenticated %}
-              <a href="{{ url_for('enrollment.register') }}" class="btn btn-primary" style="padding: 14px 36px; font-size: 1.05rem;">
-                  ثبت‌نام بازیکن در آکادمی
-              </a>
+                <a href="{{ url_for('enrollment.register') }}" class="btn btn-gold btn-xl">ورود به فرم ثبت‌نام</a>
             {% else %}
-              <a href="{{ url_for('auth.signup') }}" class="btn btn-primary" style="padding: 14px 36px; font-size: 1.05rem;">
-                  {{ about_main.cta_btn_text if about_main else 'ثبت‌نام و عضویت در آکادمی' }}
-              </a>
+                <a href="{{ url_for('auth.signup') }}" class="btn btn-gold btn-xl">{{ about_main.cta_btn_text if about_main else 'عضویت و ثبت‌نام' }}</a>
             {% endif %}
-        </section>
+        </div>
 
     </div>
 </div>

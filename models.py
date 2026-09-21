@@ -1,7 +1,16 @@
-from extensions import db
-from flask_login import UserMixin
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
+from extensions import db
+
+# تضمین فعال بودن کلیدهای خارجی در SQLite
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 
 class User(db.Model, UserMixin):
@@ -13,18 +22,31 @@ class User(db.Model, UserMixin):
     phone = db.Column(db.String(15), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
     avatar = db.Column(db.String(255), nullable=False, default='default-avatar.png')
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-    is_admin = db.Column(db.Boolean, default=0, nullable=False)
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
-    club_registrations = db.relationship('ClubRegistration', backref='user', lazy=True, cascade="all, delete-orphan")
+    club_registrations = db.relationship(
+        'ClubRegistration',
+        backref='user',
+        lazy='select',
+        cascade="all, delete-orphan"
+    )
 
-    def set_password(self, password):
-        """متد اختصاصی برای هش کردن و تنظیم رمز عبور"""
-        self.password_hash = generate_password_hash(password)
+    def set_password(self, password: str):
+        if not password or len(password) < 8:
+            raise ValueError("رمز عبور باید حداقل ۸ کاراکتر باشد.")
+        # استفاده از متد scrypt برای امنیت بالاتر در برابر GPU Cracking
+        self.password_hash = generate_password_hash(password, method='scrypt')
 
-    def check_password(self, password):
-        """متد اختصاصی برای بررسی صحت رمز عبور وارد شده"""
+    def check_password(self, password: str) -> bool:
+        if not self.password_hash or not password:
+            return False
         return check_password_hash(self.password_hash, password)
+
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
 
 
 class Announcement(db.Model):
@@ -33,18 +55,48 @@ class Announcement(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
-
     category = db.Column(db.String(50), nullable=False, default='عمومی')
     author = db.Column(db.String(100), nullable=False, default='مدیریت آکادمی')
     is_important = db.Column(db.Boolean, nullable=False, default=False)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), index=True)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), index=True, nullable=False)
+
+
+class AgeGroup(db.Model):
+    __tablename__ = 'age_groups'
+
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(50), unique=True, nullable=False)
+    title = db.Column(db.String(100), nullable=False)
+    min_age = db.Column(db.Integer, nullable=False)
+    max_age = db.Column(db.Integer, nullable=False)
+
+
+class Training(db.Model):
+    __tablename__ = 'trainings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    venue_name = db.Column(db.String(150), nullable=False)
+    address = db.Column(db.Text, nullable=False)
+    equipment = db.Column(db.String(200), nullable=True)
+    time = db.Column(db.String(50), nullable=False)
+    days = db.Column(db.String(100), nullable=False)
+
+    coach_name = db.Column(db.String(100), nullable=True)
+    contact_phone = db.Column(db.String(15), nullable=True)
+    notes = db.Column(db.Text, nullable=True)
+
+    age_group_id = db.Column(db.Integer, db.ForeignKey('age_groups.id', ondelete='RESTRICT'), nullable=True, index=True)
+    age_group = db.relationship('AgeGroup', backref='trainings')
+
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
 
 class ClubRegistration(db.Model):
     __tablename__ = 'club_registrations'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
 
     player_fullname = db.Column(db.String(100), nullable=False)
     birth_date = db.Column(db.String(10), nullable=False)
@@ -71,15 +123,14 @@ class ClubRegistration(db.Model):
 
     medical_notes = db.Column(db.Text, nullable=True)
 
-    status = db.Column(db.String(30), default='pending_approval', nullable=False)
+    status = db.Column(db.String(30), default='pending_approval', nullable=False, index=True)
     reject_reason = db.Column(db.String(255), nullable=True)
+    payment_status = db.Column(db.String(30), default='unpaid', nullable=False, index=True)
 
-    payment_status = db.Column(db.String(30), default='unpaid', nullable=False)
-
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), index=True)
-
-    training_id = db.Column(db.Integer, db.ForeignKey('trainings.id', ondelete='SET NULL'), nullable=True)
+    training_id = db.Column(db.Integer, db.ForeignKey('trainings.id', ondelete='SET NULL'), nullable=True, index=True)
     training = db.relationship('Training', backref='registered_players')
+
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), index=True, nullable=False)
 
 
 class AboutUsMain(db.Model):
@@ -102,7 +153,6 @@ class AboutUsMain(db.Model):
 
 class AboutFeature(db.Model):
     __tablename__ = 'about_features'
-
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
@@ -111,7 +161,6 @@ class AboutFeature(db.Model):
 
 class AboutFacility(db.Model):
     __tablename__ = 'about_facilities'
-
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
@@ -120,7 +169,6 @@ class AboutFacility(db.Model):
 
 class Coach(db.Model):
     __tablename__ = 'coaches'
-
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     role = db.Column(db.String(100), nullable=False)
@@ -130,7 +178,6 @@ class Coach(db.Model):
 
 class AboutAgeGroup(db.Model):
     __tablename__ = 'about_age_groups'
-
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50), nullable=False)
     age_range = db.Column(db.String(50), nullable=False)
@@ -139,7 +186,6 @@ class AboutAgeGroup(db.Model):
 
 class Achievement(db.Model):
     __tablename__ = 'achievements'
-
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     year = db.Column(db.String(20), nullable=False)
@@ -148,7 +194,6 @@ class Achievement(db.Model):
 
 class AboutStat(db.Model):
     __tablename__ = 'about_stats'
-
     id = db.Column(db.Integer, primary_key=True)
     number = db.Column(db.String(50), nullable=False)
     label = db.Column(db.String(100), nullable=False)
@@ -157,42 +202,7 @@ class AboutStat(db.Model):
 
 class GalleryItem(db.Model):
     __tablename__ = 'gallery_items'
-
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=True)
     image = db.Column(db.String(255), nullable=False)
     category = db.Column(db.String(50), default='تمرینات')
-
-
-class AgeGroup(db.Model):
-    __tablename__ = 'age_groups'
-    id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(50), nullable=False)
-    title = db.Column(db.String(100), nullable=False)
-    min_age = db.Column(db.Integer, nullable=False)
-    max_age = db.Column(db.Integer, nullable=False)
-
-
-class Training(db.Model):
-    __tablename__ = 'trainings'
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    venue_name = db.Column(db.String(150), nullable=False)
-    address = db.Column(db.Text, nullable=False)
-    equipment = db.Column(db.String(200), nullable=True)
-    time = db.Column(db.String(50), nullable=False)
-    days = db.Column(db.String(100), nullable=False)
-
-    coach_name = db.Column(db.String(100), nullable=True)
-    contact_phone = db.Column(db.String(15), nullable=True)
-    notes = db.Column(db.Text, nullable=True)
-
-    age_group = db.Column(db.String(100), nullable=False)
-
-    # age_group_id = db.Column(db.Integer, db.ForeignKey('age_groups.id'), nullable=False)
-    # age_group = db.relationship('AgeGroup', backref='trainings')
-
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-
-

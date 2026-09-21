@@ -1,0 +1,395 @@
+/* =========================================================
+   ABOUT US PAGE SPECIFIC STYLES
+   ========================================================= */
+
+.about-elite-page {
+    background: var(--surface-light);
+    padding-bottom: 90px;
+}
+
+.about-hero-section {
+    background: var(--pitch-dark);
+    color: var(--text-pure);
+    padding-block: 85px 75px;
+    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.about-hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 50px;
+    align-items: center;
+}
+
+.pro-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    background: rgba(229, 169, 59, 0.15);
+    color: var(--pitch-gold);
+    font-weight: 700;
+    font-size: 0.85rem;
+    border-radius: 50px;
+    margin-bottom: 18px;
+}
+
+.about-text-block h1 {
+    font-size: clamp(2rem, 1.6rem + 1.8vw, 3rem);
+    font-weight: 900;
+    line-height: 1.35;
+    margin-bottom: 22px;
+}
+
+.lead-p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    line-height: 2;
+    margin-bottom: 30px;
+}
+
+.history-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.h-pill {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-glass);
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-size: 0.88rem;
+    color: var(--text-pure);
+}
+
+.h-pill i {
+    color: var(--pitch-gold);
+    margin-left: 6px;
+}
+
+.img-frame-accent {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    height: 380px;
+}
+
+.img-frame-accent img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* نوار آمار */
+.about-stats-band {
+    background: var(--pitch-navy);
+    padding-block: 45px;
+    color: var(--text-pure);
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+    text-align: center;
+}
+
+.stat-col i {
+    font-size: 2.2rem;
+    color: var(--pitch-gold);
+    margin-bottom: 10px;
+}
+
+.s-number {
+    font-family: var(--font-num);
+    font-size: 3.2rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.s-label {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* بخش‌های داخلی */
+.about-section {
+    padding-top: 80px;
+}
+
+.vision-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.v-card {
+    background: var(--surface-card);
+    padding: 36px 30px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+    box-shadow: 0 10px 30px -10px rgba(8, 22, 43, 0.05);
+}
+
+.v-card.highlight {
+    border-color: var(--pitch-blue);
+    box-shadow: 0 15px 40px -10px rgba(22, 91, 224, 0.15);
+}
+
+.v-icon {
+    font-size: 2rem;
+    color: var(--pitch-blue);
+    margin-bottom: 16px;
+}
+
+.v-card h3 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--pitch-navy);
+    margin-bottom: 12px;
+}
+
+.v-card p {
+    color: #62748d;
+    line-height: 1.9;
+}
+
+/* کارت‌های مربیان */
+.coaches-elite-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.coach-profile-card {
+    background: var(--surface-card);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: 0 10px 30px -10px rgba(8, 22, 43, 0.06);
+    border: 1px solid var(--border-light);
+    transition: transform 0.3s;
+}
+
+.coach-profile-card:hover {
+    transform: translateY(-6px);
+}
+
+.coach-photo-wrap {
+    position: relative;
+    height: 280px;
+}
+
+.coach-photo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.coach-badge-overlay {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(8, 22, 43, 0.88);
+    color: var(--pitch-gold);
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    backdrop-filter: blur(8px);
+}
+
+.coach-info {
+    padding: 20px;
+    text-align: center;
+}
+
+.coach-info h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--pitch-navy);
+}
+
+.coach-post {
+    display: block;
+    color: var(--pitch-blue);
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 4px;
+    margin-bottom: 10px;
+}
+
+.coach-bio {
+    font-size: 0.85rem;
+    color: #62748d;
+    line-height: 1.7;
+}
+
+/* امکانات */
+.facilities-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.facility-card {
+    background: var(--surface-card);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+}
+
+.facility-img {
+    height: 200px;
+}
+
+.facility-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.facility-body {
+    padding: 20px;
+}
+
+.facility-body h4 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--pitch-navy);
+    margin-bottom: 8px;
+}
+
+.facility-body p {
+    font-size: 0.88rem;
+    color: #62748d;
+    line-height: 1.7;
+}
+
+/* کاپ‌ها */
+.trophy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 22px;
+}
+
+.trophy-card {
+    background: var(--surface-card);
+    padding: 28px;
+    border-radius: var(--radius-md);
+    border-right: 4px solid var(--pitch-gold);
+    box-shadow: 0 8px 24px -8px rgba(8, 22, 43, 0.05);
+}
+
+.trophy-icon {
+    font-size: 2rem;
+    color: var(--pitch-gold);
+    margin-bottom: 8px;
+}
+
+.trophy-year {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--pitch-blue);
+    margin-bottom: 4px;
+}
+
+.trophy-card h4 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--pitch-navy);
+}
+
+.trophy-card p {
+    font-size: 0.88rem;
+    color: #62748d;
+    margin-top: 6px;
+}
+
+/* گالری */
+.pro-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.pro-gallery-item {
+    position: relative;
+    height: 220px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.pro-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s;
+}
+
+.pro-gallery-item:hover img {
+    transform: scale(1.08);
+}
+
+.gallery-category-pill {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(4, 12, 24, 0.85);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.gallery-caption {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: linear-gradient(transparent, rgba(4, 12, 24, 0.85));
+    color: #fff;
+    padding: 20px 14px 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.about-final-cta {
+    margin-top: 80px;
+    background: linear-gradient(135deg, var(--pitch-navy), var(--pitch-dark));
+    color: #fff;
+    padding: 60px 40px;
+    border-radius: var(--radius-lg);
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.about-final-cta h2 {
+    font-size: 2.1rem;
+    font-weight: 900;
+    margin-bottom: 12px;
+}
+
+.about-final-cta p {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    max-width: 600px;
+    margin: 0 auto 30px;
+}
+
+@media (max-width: 950px) {
+    .about-hero-grid, .vision-cards-grid, .facilities-grid {
+        grid-template-columns: 1fr;
+    }
+    .coaches-elite-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .coaches-elite-grid {
+        grid-template-columns: 1fr;
+    }
+}

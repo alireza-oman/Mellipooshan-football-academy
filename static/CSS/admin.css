@@ -1,0 +1,325 @@
+/* =========================================================
+   ADMIN COMMAND CENTER STYLES (Elite Academy Administration)
+   ========================================================= */
+
+:root {
+    --admin-red: #ff4757;
+    --admin-red-hover: #e03847;
+    --admin-red-bg: rgba(255, 71, 87, 0.08);
+    --admin-border: rgba(255, 71, 87, 0.25);
+}
+
+/* اصلاح سایدبار ادمین */
+.sidebar.admin-mode {
+    border-left-color: var(--admin-red);
+}
+
+.admin-badge {
+    background: var(--admin-red);
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 50px;
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.admin-sidebar-title strong {
+    color: var(--admin-red);
+    font-size: 0.95rem;
+    font-weight: 900;
+}
+
+.admin-sidebar-title small {
+    color: var(--pitch-gold);
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.sidebar-nav a.admin-active {
+    background: linear-gradient(135deg, rgba(255, 71, 87, 0.2), rgba(255, 71, 87, 0.05)) !important;
+    border: 1px solid var(--admin-border) !important;
+    color: #ffffff !important;
+}
+
+.sidebar-nav a.admin-active i {
+    color: var(--admin-red) !important;
+}
+
+.sidebar-nav a.admin-link:hover {
+    background: rgba(255, 71, 87, 0.08);
+    color: #ffffff;
+}
+
+.sidebar-nav a.admin-link:hover i {
+    color: var(--admin-red);
+}
+
+/* کارت‌های آمار پیشرفته داشبورد ادمین */
+.admin-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 22px;
+    margin-bottom: 35px;
+}
+
+.admin-stat-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-line);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 10px 25px -10px rgba(8, 22, 43, 0.05);
+    transition: transform 0.25s var(--ease);
+}
+
+.admin-stat-card:hover {
+    transform: translateY(-3px);
+}
+
+.stat-card-info .stat-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.stat-card-info .stat-val {
+    font-family: var(--font-num);
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--pitch-navy);
+}
+
+.stat-card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+}
+
+.stat-icon-users { background: #edf3ff; color: var(--pitch-blue); }
+.stat-icon-announcements { background: #fef7e6; color: var(--warning); }
+.stat-icon-registrations { background: #e8f8ed; color: var(--success); }
+.stat-icon-pending { background: #feebeb; color: var(--admin-red); }
+
+/* تب‌بندی ماژول درباره ما */
+.tabs-nav-bar {
+    display: flex;
+    gap: 8px;
+    border-bottom: 2px solid var(--border-line);
+    margin-bottom: 28px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+}
+
+.tab-nav-btn {
+    padding: 11px 20px;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.25s var(--ease);
+}
+
+.tab-nav-btn:hover {
+    color: var(--pitch-navy);
+}
+
+.tab-nav-btn.active {
+    color: var(--admin-red);
+    border-bottom-color: var(--admin-red);
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+    animation: fadeInTab 0.3s var(--ease);
+}
+
+@keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* شبکه کارت‌های المان‌های درباره ما */
+.admin-items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+    margin-top: 26px;
+}
+
+.admin-item-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-line);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 15px rgba(8, 22, 43, 0.04);
+}
+
+.admin-item-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+}
+
+.admin-item-card h4 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--pitch-navy);
+    margin-bottom: 6px;
+}
+
+.admin-item-card p {
+    font-size: 0.86rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 14px;
+}
+
+/* جدول‌های ادمین */
+.admin-table-wrapper {
+    background: var(--surface-card);
+    border: 1px solid var(--border-line);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    overflow-x: auto;
+    box-shadow: 0 10px 25px -10px rgba(8, 22, 43, 0.05);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 15px 18px;
+    text-align: right;
+    border-bottom: 1px solid var(--border-line);
+    vertical-align: middle;
+}
+
+.admin-table th {
+    font-weight: 800;
+    color: var(--pitch-navy);
+    background: var(--pitch-light);
+    font-size: 0.88rem;
+}
+
+.admin-table tr:hover td {
+    background: #fbfcfe;
+}
+
+.table-avatar-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border-line);
+}
+
+.action-btns-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* گالری اسناد بررسی پرونده */
+.doc-review-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.doc-review-card {
+    background: var(--surface-card);
+    border: 1.5px solid var(--border-line);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    text-align: center;
+    transition: all 0.25s var(--ease);
+    display: block;
+    position: relative;
+    overflow: hidden;
+}
+
+.doc-review-card:hover {
+    border-color: var(--pitch-blue);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px -8px rgba(22, 91, 224, 0.18);
+}
+
+.doc-review-card img {
+    width: 100%;
+    height: 135px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.doc-review-card .doc-title-pill {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--pitch-navy);
+}
+
+/* دکمه‌های ادمین با رنگ خطر/اکشن */
+.btn-admin-danger {
+    background: var(--admin-red);
+    color: #ffffff;
+    box-shadow: 0 6px 16px -4px rgba(255, 71, 87, 0.4);
+}
+
+.btn-admin-danger:hover {
+    background: var(--admin-red-hover);
+    transform: translateY(-2px);
+}
+
+.btn-admin-outline-danger {
+    background: transparent;
+    border: 1px solid var(--admin-red);
+    color: var(--admin-red);
+}
+
+.btn-admin-outline-danger:hover {
+    background: var(--admin-red);
+    color: #ffffff;
+}
+
+/* بخش تصمیم‌گیری پرونده */
+.decision-panel {
+    background: var(--pitch-light);
+    border: 1px solid var(--border-line);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    margin-top: 28px;
+}

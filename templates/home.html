@@ -1,134 +1,152 @@
 {% extends "base.html" %}
 
-{% block title %}صفحه اصلی | {{ club_name }}{% endblock %}
+{% block title %}آکادمی تخصصی فوتبال پایه | {{ club_name }}{% endblock %}
 
 {% block extra_css %}
-<style>
-  /* استایل‌های اختصاصی واکنش‌گرایی هیرو و کارت‌ها */
-  @media (max-width: 768px) {
-    .hero {
-      padding-block: 50px 70px;
-    }
-    .hero-actions {
-      flex-direction: column;
-      gap: 12px;
-    }
-    .hero-actions .btn {
-      width: 100%;
-    }
-    .hero-visual {
-      height: 280px;
-      margin-top: 10px;
-    }
-    .badge-float {
-      font-size: 0.75rem;
-      padding: 8px 12px;
-    }
-    .badge-1 {
-      bottom: 2%;
-      right: 2%;
-    }
-    .badge-2 {
-      top: 2%;
-      left: 2%;
-    }
-    .hero-stats {
-      gap: 16px;
-      justify-content: space-between;
-    }
-    .hero-stats .num {
-      font-size: 1.8rem;
-    }
-    .why, .programs {
-      padding-block: 60px;
-    }
-    .cta-band {
-      padding-block: 50px;
-    }
-  }
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='CSS/home.css') }}">
 {% endblock %}
 
 {% block content %}
 
-<!-- ===== هیرو اصلی ===== -->
-<section class="hero">
-  <svg class="hero-pitch-lines" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
-    <circle cx="1000" cy="120" r="220" fill="none" stroke="#fff" stroke-width="1"/>
-    <circle cx="1000" cy="120" r="4" fill="#fff"/>
-    <line x1="0" y1="640" x2="1200" y2="640" stroke="#fff" stroke-width="1"/>
-  </svg>
+<!-- ===== هیرو سکشن با پس‌زمینه محوشونده تیم ===== -->
+<section class="pro-hero" id="heroSection">
 
-  <div class="wrap hero-grid">
-    <div>
-      <span class="eyebrow">مدرسه فوتبال پایه · ثبت‌نام نیم‌سال جدید باز است</span>
-      <h1>هر قهرمان بزرگ،<br>یک <span>روز اول</span> ساده داشت</h1>
-      <p class="lead">
-        {{ about_main.main_goal if about_main else 'در آکادمی ملی‌پوشان، فرزند شما با مربیان دارای مدرک رسمی، برنامه تمرینی متناسب با سن، و ارتباط مستقیم با والدین، مسیر درست فوتبال را از پایه یاد می‌گیرد.' }}
+  <!-- ۱. لایه تصویر پس‌زمینه تیم و استادیوم (با افکت محو در اسکرول) -->
+  <div class="hero-team-backdrop" id="heroTeamBackdrop">
+    <div class="backdrop-gradient-overlay"></div>
+    <div class="stadium-light"></div>
+    <!-- خطوط زمین تاکتیکی فوتبال -->
+    <svg class="tactical-field-lines" viewBox="0 0 1200 800" preserveAspectRatio="none">
+      <rect x="50" y="50" width="1100" height="700" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+      <line x1="600" y1="50" x2="600" y2="750" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+      <circle cx="600" cy="400" r="120" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+      <circle cx="600" cy="400" r="4" fill="rgba(255,255,255,0.2)"/>
+    </svg>
+  </div>
+
+  <div class="wrap hero-content-wrap">
+    <div class="hero-text-side" data-reveal>
+
+      <!-- نشان رسمی وضعیت ثبت‌نام -->
+      <div class="pro-status-pill">
+        <span class="live-pulse"></span>
+        <span>ترم جدید · ثبت‌نام و آزمون‌های استعدادیابی آغاز شد</span>
+      </div>
+
+      <h1 class="hero-glory-title">
+        مسیر حرفه‌ای شدن،<br>
+        از <span>زمین ما</span> آغاز می‌شود
+      </h1>
+
+      <p class="hero-description">
+        {{ about_main.main_goal if about_main else 'پرورش علمی نسل جدید فوتبال پایه با کادر آموزش‌دیده AFC، ارزیابی هفتگی آمادگی جسمانی و مسیر پیوستن به تیم‌های ملی و لیگ‌های حرفه‌ای.' }}
       </p>
 
-      <div class="hero-actions">
+      <div class="hero-action-group">
         {% if current_user.is_authenticated %}
-          <a href="{{ url_for('enrollment.register') }}" class="btn btn-primary">ثبت‌نام بازیکن در آکادمی</a>
+          <a href="{{ url_for('enrollment.register') }}" class="btn btn-gold btn-lg shadow-gold">
+            <i class="fas fa-id-card"></i> تکمیل فرم ثبت‌نام بازیکن
+          </a>
         {% else %}
-          <a href="{{ url_for('auth.signup') }}" class="btn btn-primary">ثبت‌نام فرزندم</a>
+          <a href="{{ url_for('auth.signup') }}" class="btn btn-gold btn-lg shadow-gold">
+            <i class="fas fa-futbol"></i> ثبت‌نام فرزند در آکادمی
+          </a>
         {% endif %}
-        <a href="#programs" class="btn btn-ghost">مشاهده برنامه‌های سنی</a>
+        <a href="#programs" class="btn btn-ghost btn-lg">
+          <i class="fas fa-calendar-alt"></i> رده‌ها و شیفت‌های تمرینی
+        </a>
       </div>
 
-      {% if stats %}
-      <div class="hero-stats">
-        {% for stat in stats[:3] %}
-          <div class="stat">
-            <span class="num">{{ stat.number }}</span>
-            <span class="lbl">{{ stat.label }}</span>
+      <!-- ۳ شاخص اعتمادساز -->
+      <div class="trust-strip">
+        <div class="trust-item">
+          <i class="fas fa-award"></i>
+          <div>
+            <strong>مربیان لول A آسیا</strong>
+            <span>نظارت دائمی فدراسیون</span>
           </div>
-        {% endfor %}
+        </div>
+        <div class="trust-item">
+          <i class="fas fa-shield-heart"></i>
+          <div>
+            <strong>بیمه و سلامت کامل</strong>
+            <span>پزشک و پشتیبان در تمرین</span>
+          </div>
+        </div>
+        <div class="trust-item">
+          <i class="fas fa-chart-line"></i>
+          <div>
+            <strong>آنالیز ویدیویی فردی</strong>
+            <span>گزارش ماهانه به اولیا</span>
+          </div>
+        </div>
       </div>
-      {% endif %}
     </div>
 
-    <div class="hero-visual">
-      <svg class="trajectory" viewBox="0 0 400 420">
-        <rect class="goal" x="260" y="40" width="90" height="60" rx="4"/>
-        <path id="shotPath" d="M60,360 C140,300 200,220 280,90"/>
-        <circle class="ball" cx="60" cy="360" r="8"/>
-      </svg>
+    <!-- کارت شناور برندینگ و تصویر اصلی -->
+    <div class="hero-visual-side" data-reveal>
+      <div class="hero-card-frame">
+        <div class="hero-inner-img">
+          {% if about_main and about_main.intro_image %}
+            <img src="{{ url_for('static', filename='uploads/about/' + about_main.intro_image) }}" alt="تیم فوتبال پایه" onerror="this.src='https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=1000&auto=format&fit=crop';">
+          {% else %}
+            <img src="https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=1000&auto=format&fit=crop" alt="تیم آکادمی ملی‌پوشان">
+          {% endif %}
+        </div>
 
-      <div class="placeholder-card">
-        {% if about_main and about_main.intro_image %}
-            <img src="{{ url_for('static', filename='uploads/about/' + about_main.intro_image) }}" alt="آکادمی ملی‌پوشان" onerror="this.src='{{ url_for('static', filename='images/logo.png') }}';">
-        {% else %}
-            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="لوگو آکادمی">
-        {% endif %}
-      </div>
+        <div class="floating-chip chip-stats">
+          <div class="chip-icon"><i class="fas fa-trophy"></i></div>
+          <div>
+            <div class="chip-val">+۲۰ قهرمانی</div>
+            <div class="chip-sub">در رده‌های تهران و کشور</div>
+          </div>
+        </div>
 
-      <div class="badge-float badge-1">
-        <span class="dot"></span> گزارش پیشرفت هفتگی
-      </div>
-      <div class="badge-float badge-2">
-        <span class="dot"></span> آموزش اصولی از پایه
+        <div class="floating-chip chip-coach">
+          <div class="chip-icon"><i class="fas fa-check-double"></i></div>
+          <div>
+            <div class="chip-val">استعدادیابی استاندارد</div>
+            <div class="chip-sub">تست‌های فیفا و آمادگی بدنی</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="divider"></div>
-
-<!-- ===== چرا ما (Why us) ===== -->
-<section class="why">
+<!-- ===== نوار آمار و عملکرد باشگاه ===== -->
+{% if stats %}
+<section class="stats-counter-strip">
   <div class="wrap">
-    <div class="section-head" data-reveal>
-      <span class="eyebrow">چرا ملی‌پوشان؟</span>
-      <h2>چون فوتبال پایه فقط توپ‌زدن نیست</h2>
-      <p>رشد شخصیت، انضباط و عشق به بازی، همراه با آموزش فنی اصولی.</p>
+    <div class="stats-counter-grid">
+      {% for stat in stats %}
+        <div class="counter-box" data-reveal>
+          <div class="counter-icon-wrap">
+            <i class="fas fa-{{ stat.icon }}"></i>
+          </div>
+          <div class="counter-number">{{ stat.number }}</div>
+          <div class="counter-label">{{ stat.label }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ===== چرا آکادمی ملی‌پوشان؟ ===== -->
+<section class="pitch-section why-us-section">
+  <div class="wrap">
+    <div class="section-title-center" data-reveal>
+      <span class="pro-tag">استانداردهای بین‌المللی</span>
+      <h2>چرا خانواده‌های آینده‌نگر ما را انتخاب می‌کنند؟</h2>
+      <p>ما فوتبال را بستری برای ساختن شخصیت، اراده و فیزیک قوی نسل فردا می‌دانیم.</p>
     </div>
 
-    <div class="cards-grid">
+    <div class="pro-grid-4">
       {% if features %}
         {% for feature in features %}
-          <div class="feature-card" data-reveal>
-            <div class="icon">
+          <div class="pro-feature-card" data-reveal>
+            <div class="card-icon-halo">
               <i class="fas fa-{{ feature.icon }}"></i>
             </div>
             <h3>{{ feature.title }}</h3>
@@ -136,129 +154,109 @@
           </div>
         {% endfor %}
       {% else %}
-        <div class="feature-card" data-reveal>
-          <div class="icon"><i class="fas fa-trophy"></i></div>
-          <h3>مربیان دارای مدرک رسمی</h3>
-          <p>تمام مربیان ما مدرک مربی‌گری رسمی فوتبال پایه دارند و برنامه هر رده سنی را جداگانه طراحی می‌کنند.</p>
+        <div class="pro-feature-card" data-reveal>
+          <div class="card-icon-halo"><i class="fas fa-user-graduate"></i></div>
+          <h3>کادر فنی دارای مدرک رسمی AFC</h3>
+          <p>تمام جلسات زیر نظر سرمربیان رسمی با تفکیک تخصصی تمرینات دروازه‌بانی، هافبک و خط حمله برگزار می‌گردد.</p>
         </div>
-        <div class="feature-card" data-reveal>
-          <div class="icon"><i class="fas fa-chart-line"></i></div>
-          <h3>برنامه تمرینی اصولی</h3>
-          <p>تمرینات بر پایه اصول رشد حرکتی کودکان، در چهار محور تکنیکی، تاکتیکی، بدنی و ذهنی طراحی شده‌اند.</p>
+        <div class="pro-feature-card" data-reveal>
+          <div class="card-icon-halo"><i class="fas fa-heartbeat"></i></div>
+          <h3>پرونده سلامت و فیزیک هفتگی</h3>
+          <p>کنترل شاخص‌های رشد، قد، وزن و ارزیابی ضربان قلب و استقامت قلبی-عروقی به صورت مدون.</p>
         </div>
-        <div class="feature-card" data-reveal>
-          <div class="icon"><i class="fas fa-comments"></i></div>
-          <h3>ارتباط مستقیم با والدین</h3>
-          <p>گزارش پیشرفت، برنامه هفتگی تمرینات و اطلاع‌رسانی مسابقات، همیشه در دسترس والدین است.</p>
+        <div class="pro-feature-card" data-reveal>
+          <div class="card-icon-halo"><i class="fas fa-users-cog"></i></div>
+          <h3>ارتباط و پنل اختصاصی اولیا</h3>
+          <p>مشاهده برنامه تمرینات، پرداخت شهریه و گزارش مربی به صورت کاملاً آنلاین و شفاف در حساب کاربری.</p>
         </div>
-        <div class="feature-card" data-reveal>
-          <div class="icon"><i class="fas fa-building"></i></div>
-          <h3>امکانات استاندارد</h3>
-          <p>زمین چمن استاندارد، تجهیزات ایمنی مناسب و فضای اختصاصی برای رده‌های سنی مختلف.</p>
+        <div class="pro-feature-card" data-reveal>
+          <div class="card-icon-halo"><i class="fas fa-shield-alt"></i></div>
+          <h3>محیط امن و استانداردهای اخلاقی</h3>
+          <p>تاکید بر انضباط فردی، روحیه تیمی و محیطی شاداب و امن برای رشد فرزند شما.</p>
         </div>
       {% endif %}
     </div>
   </div>
 </section>
 
-<!-- ===== نوار آمارها ===== -->
-{% if stats %}
-<section class="stats-band">
-  <div class="wrap stats-grid">
-    {% for stat in stats %}
-      <div class="stat">
-        <div class="stat-icon">
-          <i class="fas fa-{{ stat.icon }}"></i>
-        </div>
-        <span class="num">{{ stat.number }}</span>
-        <span class="lbl">{{ stat.label }}</span>
-      </div>
-    {% endfor %}
-  </div>
-</section>
-{% endif %}
-
-<!-- ===== برنامه‌ها و رده‌های سنی ===== -->
-<section class="programs" id="programs">
+<!-- ===== رده‌های سنی فعال ===== -->
+<section class="pitch-section programs-section" id="programs">
   <div class="wrap">
-    <div class="section-head" data-reveal>
-      <span class="eyebrow">برنامه‌های سنی</span>
-      <h2>از اولین لمس توپ تا آماده‌سازی رقابتی</h2>
-      <p>هر رده سنی، هدف و برنامه تمرینی مخصوص به خود را دارد.</p>
+    <div class="section-title-center" data-reveal>
+      <span class="pro-tag">مسیر توسعه مرحله‌به‌مرحله</span>
+      <h2>برنامه‌های تمرینی تفکیک‌شده بر اساس سن</h2>
+      <p>هر رده سنی با توپ استاندارد، ابعاد زمین مناسب و متدولوژی علمی همان سن آموزش می‌بیند.</p>
     </div>
 
-    <div class="programs-grid">
+    <div class="programs-elite-grid">
       {% if age_groups %}
         {% for age in age_groups %}
-          <div class="program-card" data-reveal>
-            <span class="program-tag">{{ age.title }}</span>
-            <span class="age">محدوده سنی: {{ age.age_range }}</span>
-            <p>{{ age.description or 'آموزش مهارت‌های پایه و رشد تاکتیکی متناسب با سن بازیکن.' }}</p>
+          <div class="elite-program-card" data-reveal>
+            <div class="program-badge-top">{{ age.title }}</div>
+            <div class="program-age-pill">
+              <i class="far fa-clock"></i> محدوده سنی: {{ age.age_range }}
+            </div>
+            <p class="program-desc">{{ age.description or 'یادگیری مهارت‌های حرکتی پایه، لمس توپ و تمرینات تاکتیکی متناسب.' }}</p>
+            <div class="program-features-list">
+              <span><i class="fas fa-check"></i> آزمون استعدادیابی رایگان</span>
+              <span><i class="fas fa-check"></i> مسابقات هفتگی درون‌باشگاهی</span>
+            </div>
           </div>
         {% endfor %}
       {% else %}
-        <div class="program-card" data-reveal>
-          <span class="program-tag">پیش‌خردسالان</span>
-          <span class="age">سنین ۵ تا ۷ سال</span>
-          <h3>آشنایی با توپ</h3>
-          <p>تمرکز بر بازی، هماهنگی حرکتی و ایجاد عشق به فوتبال.</p>
+        <div class="elite-program-card" data-reveal>
+          <div class="program-badge-top">پیش‌خردسالان (Grassroots)</div>
+          <div class="program-age-pill"><i class="far fa-clock"></i> ۶ تا ۸ سال</div>
+          <p class="program-desc">تمرکز کامل بر بازی‌محوری، چابکی، تعادل و ایجاد عشق واقعی به فوتبال در فضایی پر انرژی.</p>
+          <div class="program-features-list">
+            <span><i class="fas fa-check"></i> توپ‌های سایز ۳ استاندارد</span>
+            <span><i class="fas fa-check"></i> هماهنگی عصب و عضله</span>
+          </div>
         </div>
-        <div class="program-card" data-reveal>
-          <span class="program-tag">خردسالان</span>
-          <span class="age">سنین ۸ تا ۹ سال</span>
-          <h3>پایه‌های تکنیکی</h3>
-          <p>کنترل توپ، پاس‌کاری و اولین قدم‌های درک تاکتیکی.</p>
+        <div class="elite-program-card" data-reveal>
+          <div class="program-badge-top">نونهالان (U12)</div>
+          <div class="program-age-pill"><i class="far fa-clock"></i> ۹ تا ۱۲ سال</div>
+          <p class="program-desc">تسلط بر پاس، کنترل اول، دریبل و اصول دفاع و حمله تیمی به همراه آموزش قوانین فوتبال.</p>
+          <div class="program-features-list">
+            <span><i class="fas fa-check"></i> شبیه‌سازی شرایط مسابقه</span>
+            <span><i class="fas fa-check"></i> مسابقات استانی و دوستانه</span>
+          </div>
         </div>
-        <div class="program-card" data-reveal>
-          <span class="program-tag">نونهالان</span>
-          <span class="age">سنین ۱۰ تا ۱۳ سال</span>
-          <h3>رشد تاکتیکی</h3>
-          <p>درک بازی گروهی، موقعیت‌گیری و تصمیم‌گیری در زمین.</p>
-        </div>
-        <div class="program-card" data-reveal>
-          <span class="program-tag">نوجوانان</span>
-          <span class="age">سنین ۱۴ تا ۱۵ سال</span>
-          <h3>آماده‌سازی رقابتی</h3>
-          <p>آماده‌سازی بدنی، ذهنی و فنی برای فوتبال رقابتی.</p>
+        <div class="elite-program-card" data-reveal>
+          <div class="program-badge-top">نوجوانان (U15)</div>
+          <div class="program-age-pill"><i class="far fa-clock"></i> ۱۳ تا ۱۵ سال</div>
+          <p class="program-desc">ورود به دنیای فوتبال حرفه‌ای، تاکتیک‌های ۱۱ به ۱۱، بدنسازی تخصصی و معرفی به لیگ‌های برتر.</p>
+          <div class="program-features-list">
+            <span><i class="fas fa-check"></i> آنالیز تاکتیکی ویدئویی</span>
+            <span><i class="fas fa-check"></i> آمادگی برای مسابقات کشوری</span>
+          </div>
         </div>
       {% endif %}
     </div>
   </div>
 </section>
 
-<!-- ===== بنر دعوت به ثبت‌نام (CTA) ===== -->
-<section class="cta-band">
+<!-- ===== بنر اقدام به ثبت‌نام (CTA Pro) ===== -->
+<section class="pro-cta-banner">
   <div class="wrap">
-    <h2>{{ about_main.cta_title if about_main else 'آماده‌اید اولین قدم را با هم برداریم؟' }}</h2>
-    <p>{{ about_main.cta_text if about_main else 'ثبت‌نام آنلاین در آکادمی فقط چند دقیقه زمان می‌برد.' }}</p>
-
-    {% if current_user.is_authenticated %}
-      <a href="{{ url_for('enrollment.register') }}" class="btn btn-dark">ثبت‌نام بازیکن در آکادمی</a>
-    {% else %}
-      <a href="{{ url_for('auth.signup') }}" class="btn btn-dark">
-        {{ about_main.cta_btn_text if about_main else 'شروع ثبت‌نام' }}
-      </a>
-    {% endif %}
+    <div class="cta-banner-inner" data-reveal>
+      <div class="cta-content">
+        <h2>{{ about_main.cta_title if about_main else 'آیا فرزند شما ستاره بعدی فوتبال ایران است؟' }}</h2>
+        <p>{{ about_main.cta_text if about_main else 'همین حالا در چند مرحله ساده ثبت‌نام کنید تا مربیان ما در اولین جلسه استعدادیابی میزبان شما باشند.' }}</p>
+      </div>
+      <div class="cta-btn-box">
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('enrollment.register') }}" class="btn btn-gold btn-xl">
+            ثبت‌نام مستقیم بازیکن <i class="fas fa-arrow-left"></i>
+          </a>
+        {% else %}
+          <a href="{{ url_for('auth.signup') }}" class="btn btn-gold btn-xl">
+            {{ about_main.cta_btn_text if about_main else 'عضویت و آغاز ثبت‌نام' }} <i class="fas fa-arrow-left"></i>
+          </a>
+        {% endif %}
+      </div>
+    </div>
   </div>
 </section>
 
-{% endblock %}
-
-{% block extra_js %}
-<script>
-  // انیمیشن خط شلیک توپ
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (!reduceMotion) {
-    const path = document.getElementById('shotPath');
-    if (path) {
-      const len = path.getTotalLength();
-      path.style.strokeDasharray = len;
-      path.style.strokeDashoffset = len;
-      requestAnimationFrame(() => {
-        path.style.transition = 'stroke-dashoffset 1.8s ease-out .3s';
-        path.style.strokeDashoffset = '0';
-      });
-    }
-  }
-</script>
 {% endblock %}

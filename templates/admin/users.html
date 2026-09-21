@@ -3,82 +3,101 @@
 {% set active_page = "users_list" %}
 
 {% block title %}مدیریت کاربران | {{ club_name }}{% endblock %}
-{% block page_title %}مدیریت کاربران آکادمی{% endblock %}
+{% block page_title %}مدیریت کاربران و بازیکنان آکادمی{% endblock %}
 
 {% block admin_content %}
-<div class="users-container">
-    
-    <div class="profile-card" style="padding: 24px; overflow-x: auto;">
-        <h3 class="section-title" style="color: var(--danger); border-right-color: var(--danger); margin-bottom: 20px;">لیست بازیکنان و اعضا</h3>
-        
-        <table class="panel-table">
-            <thead>
-                <tr>
-                    <th style="width: 70px; text-align: center;">تصویر</th>
-                    <th>نام و نام خانوادگی</th>
-                    <th>شماره موبایل</th>
-                    <th style="text-align: center;">نقش</th>
-                    <th style="text-align: center;">تاریخ عضویت</th>
-                    <th style="width: 150px; text-align: center;">عملیات</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for u in users %}
+<div class="admin-table-wrapper">
 
-                    <tr>
-                        <td style="text-align: center;">
-                            <img src="{{ url_for('static', filename='uploads/avatars/' + u.avatar) }}" alt="آواتار" class="table-avatar">
-                        </td>
-                        <td style="font-weight: 700; color: var(--navy);">{{ u.first_name }} {{ u.last_name }}</td>
-                        <td style="font-weight: 600; font-family: monospace; letter-spacing: 1px;">{{ u.phone }}</td>
-                        <td style="text-align: center;">
-                            {% if u.is_admin %}
-                                <span class="ann-badge category-urgent">مدیر کل</span>
-                            {% else %}
-                                <span class="ann-badge category-تمرینات">بازیکن</span>
-                            {% endif %}
-                        </td>
-                        <td style="text-align: center; font-size: 0.85rem; color: var(--text-muted);">
-                            {{ u.created_at.strftime('%Y/%m/%d') }}
-                        </td>
-                        <td>
-                            <div class="table-actions">
-                                <!-- دکمه ویرایش اطلاعات -->
-                                <a href="{{ url_for('admin.edit_user', user_id=u.id) }}" class="btn btn-ghost action-edit-btn">ویرایش</a>
-                                
-                                <!-- فرم حذف ایمن با متد POST همراه با توکن امنیتی WTForms -->
-                                <form action="{{ url_for('admin.delete_user', user_id=u.id) }}" method="POST" onsubmit="return confirm('آیا از حذف کامل کاربر {{ u.first_name }} {{ u.last_name }} مطمئن هستید؟');" style="display: inline;">
-
-                                    <!-- 🌟 رندر کردن توکن امنیتی با استفاده از فرم خالی ارسال شده 🌟 -->
-                                    {{ form.hidden_tag() }}
-
-                                    <button type="submit" class="btn btn-primary action-delete-btn">حذف</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <!-- 🌟 بخش جدید: کنترل‌های صفحه‌بندی (Pagination) در صورتی که کاربران بیشتر از یک صفحه باشند 🌟 -->
-        {% if pagination and pagination.pages > 1 %}
-            <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--line);">
-                {% if pagination.has_prev %}
-                    <a href="{{ url_for('admin.users_list', page=pagination.prev_num) }}" class="btn btn-ghost" style="padding: 6px 14px; font-size: 0.85rem;">صفحه قبلی</a>
-                {% endif %}
-
-                <span style="font-size: 0.9rem; font-weight: 700; color: var(--navy);">
-                    صفحه {{ pagination.page }} از {{ pagination.pages }}
-                </span>
-
-                {% if pagination.has_next %}
-                    <a href="{{ url_for('admin.users_list', page=pagination.next_num) }}" class="btn btn-ghost" style="padding: 6px 14px; font-size: 0.85rem;">صفحه بعدی</a>
-                {% endif %}
-            </div>
-        {% endif %}
-
+    <div class="dashboard-header-flex">
+        <div class="section-heading">
+            <h3><i class="fas fa-users-cog"></i> کاربران عضو سامانه</h3>
+            <span class="sub-text">مشاهده، ویرایش نقش‌ها و مدیریت دسترسی‌های کاربری</span>
+        </div>
     </div>
+
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th style="width: 70px; text-align: center;">تصویر</th>
+                <th>نام و نام خانوادگی</th>
+                <th>شماره همراه (شناسه)</th>
+                <th style="text-align: center;">نقش سیستمی</th>
+                <th style="text-align: center;">وضعیت حساب</th>
+                <th style="text-align: center;">تاریخ عضویت</th>
+                <th style="width: 160px; text-align: center;">عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+                <tr>
+                    <td style="text-align: center;">
+                        <img src="{{ url_for('static', filename='uploads/avatars/' + u.avatar) }}"
+                             alt="آواتار"
+                             class="table-avatar-circle"
+                             onerror="this.src='{{ url_for('static', filename='images/logo.png') }}';">
+                    </td>
+                    <td style="font-weight: 800; color: var(--pitch-navy);">{{ u.first_name }} {{ u.last_name }}</td>
+                    <td dir="ltr" style="text-align: right; font-weight: 700; color: #475569;">{{ u.phone }}</td>
+                    <td style="text-align: center;">
+                        {% if u.is_admin %}
+                            <span class="badge badge-danger"><i class="fas fa-crown"></i> مدیر کل</span>
+                        {% else %}
+                            <span class="badge badge-muted"><i class="fas fa-user"></i> بازیکن / ولی</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center;">
+                        {% if u.is_active %}
+                            <span class="badge badge-success">فعال</span>
+                        {% else %}
+                            <span class="badge badge-danger">مسدود</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+                        {{ u.created_at.strftime('%Y/%m/%d') }}
+                    </td>
+                    <td>
+                        <div class="action-btns-group" style="justify-content: center;">
+                            <!-- دکمه ویرایش -->
+                            <a href="{{ url_for('admin.edit_user', user_id=u.id) }}" class="btn btn-ghost btn-sm" title="ویرایش اطلاعات">
+                                <i class="fas fa-user-edit"></i>
+                            </a>
+
+                            <!-- فرم حذف ایمن کاربر با محافظت کامل در برابر CSRF -->
+                            {% if u.id != current_user.id %}
+                                <form action="{{ url_for('admin.delete_user', user_id=u.id) }}" method="POST" onsubmit="return confirm('آیا از حذف کامل حساب کاربری {{ u.first_name }} {{ u.last_name }} مطمئن هستید؟');" style="display: inline;">
+                                    {{ form.hidden_tag() }}
+                                    <button type="submit" class="btn btn-admin-outline-danger btn-sm" title="حذف کاربر">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- صفحه‌بندی هوشمند (Pagination) -->
+    {% if pagination and pagination.pages > 1 %}
+        <div style="display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--border-line);">
+            {% if pagination.has_prev %}
+                <a href="{{ url_for('admin.users_list', page=pagination.prev_num) }}" class="btn btn-ghost btn-sm">
+                    <i class="fas fa-chevron-right"></i> صفحه قبلی
+                </a>
+            {% endif %}
+
+            <span style="font-size: 0.9rem; font-weight: 800; color: var(--pitch-navy);">
+                صفحه {{ pagination.page }} از {{ pagination.pages }}
+            </span>
+
+            {% if pagination.has_next %}
+                <a href="{{ url_for('admin.users_list', page=pagination.next_num) }}" class="btn btn-ghost btn-sm">
+                    صفحه بعدی <i class="fas fa-chevron-left"></i>
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
 
 </div>
 {% endblock %}

@@ -1,20 +1,15 @@
-from app import app
 from extensions import db
 from models import AboutUsMain, AboutFeature, AboutAgeGroup, AboutStat
-def seed_database():
-    with app.app_context():
+
+def run_seed():
+    try:
         main_about = AboutUsMain.query.first()
-
-        if main_about:
-            main_about.intro_image = 'about-intro-default.jpg'
-
-        db.session.commit()
-
-        if not AboutUsMain.query.first():
+        if not main_about:
             main_about = AboutUsMain(
                 established_year="۱۳۹۰",
                 main_goal="پرورش استعدادهای برتر فوتبال پایه کشور",
                 age_summary="رده‌های سنی ۶ تا ۱۸ سال",
+                intro_image="about-intro-default.jpg",
                 mission="آموزش علمی و اصولی فوتبال همراه با پرورش اخلاقی",
                 vision="تبدیل شدن به برترین آکادمی تخصصی فوتبال پایه",
                 long_term_goals="معرفی بازیکنان به تیم‌های مطرح کشور و تیم‌های ملی",
@@ -43,7 +38,8 @@ def seed_database():
             ])
 
         db.session.commit()
-        print("✅ داده‌های اولیه دیتابیس با موفقیت ثبت شدند (Database Seeded Successfully).")
-
-if __name__ == '__main__':
-    seed_database()
+        print("✅ داده‌های اولیه دیتابیس با موفقیت و بدون تداخل ثبت شدند.")
+    except Exception as e:
+        db.session.rollback()
+        print(f"❌ خطا در ثبت داده‌های اولیه: {e}")
+        raise e
