@@ -1,16 +1,17 @@
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from extensions import db
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
-from extensions import db
 
-# تضمین فعال بودن کلیدهای خارجی در SQLite
+# فعال کردن Foreign Keys فقط برای SQLite
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
-    cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON")
-    cursor.close()
+    if dbapi_connection.__class__.__module__.startswith("sqlite3"):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
 
 
 class User(db.Model, UserMixin):
