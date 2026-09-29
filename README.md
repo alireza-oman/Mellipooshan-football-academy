@@ -1,182 +1,380 @@
-# ⚽ سامانه جامع مدیریت و ثبت‌نام آکادمی فوتبال ملی‌پوشان
+# Mellipooshan Football Academy
 
-یک وب‌اپلیکیشن یکپارچه و مدرن برای مدارس و آکادمی‌های فوتبال پایه، ساخته‌شده با **Flask (Python)**، پایگاه‌داده **SQLAlchemy** و طراحی کاملاً راست‌چین و ریسپانسیو (RTL).
+A full-stack football academy management and online registration platform built with **Python and Flask**.
 
-## 🌟 ویژگی‌های کلیدی پروژه
+The platform provides an online registration system for players, user accounts, player management, training session selection, payment status management, announcements, and a dedicated administration panel.
 
-### 👨‍👩‍👦 پنل اولیا و بازیکنان
+## Features
 
-* **ثبت‌نام چندمرحله‌ای (Multi-Step Form):** فرم ۶ مرحله‌ای هوشمند همراه با دراپ‌زون اختصاصی برای آپلود مدارک:
+### User Authentication
 
-  * عکس پرسنلی
-  * شناسنامه
-  * بیمه ورزشی
-  * رضایت‌نامه
-* **رهگیری پرونده:** بررسی وضعیت مدارک و مشاهده دلایل رد احتمالی توسط مدیریت.
-* **پرداخت شهریه و انتخاب شیفت:** امکان انتخاب شیفت تمرینی ثابت هفتگی پس از تأیید شهریه.
-* **پروفایل کاربری:** مدیریت مشخصات، تغییر رمز عبور و آپلود آواتار با پیش‌نمایش زنده.
+* User registration and login
+* Secure password hashing
+* Remember-me authentication
+* Account activation/deactivation
+* Profile management
+* Password change
+* Profile avatar upload
+* Role-based access for administrators
 
-### 👑 پنل مدیریت ارشد (Admin Dashboard)
+### Online Player Registration
 
-* **بررسی پرونده‌های ثبت‌نام:** مشاهده مشخصات کامل، پیش‌نمایش اسناد و تأیید یا رد مدارک همراه با ثبت علت.
-* **مدیریت پرداخت‌ها:** بررسی درخواست‌های شهریه و تأیید یا لغو آن‌ها.
-* **برنامه‌ریزی شیفت‌های تمرینی:** تعریف، ویرایش و حذف جلسات تمرینی رده‌های مختلف سنی.
-* **سیستم اطلاعیه‌رسانی:** انتشار اطلاعیه‌ها در دسته‌بندی‌های مختلف با قابلیت تعیین میزان فوریت.
-* **مدیریت پویای محتوا (CMS):** مدیریت بخش‌های مختلف صفحه «درباره ما»، مربیان، افتخارات، آمارها و گالری تصاویر.
-* **مدیریت کاربران:** مشاهده، تغییر سطح دسترسی و حذف اعضا با قابلیت صفحه‌بندی (Pagination).
+* Multi-step registration form
+* Player personal information
+* Parent/guardian information
+* Football background and playing position
+* Address and contact information
+* Document and image uploads
+* Registration status tracking
+* Form validation
+* CSRF protection
 
-## 🛠️ تکنولوژی‌های استفاده‌شده
+### Player Panel
+
+* Personal dashboard
+* Registration status
+* Payment status
+* Training session selection
+* Announcements
+* Profile management
+* Avatar management
+* Password management
+
+### Administration Panel
+
+* Dashboard with system statistics
+* User management
+* Player registration management
+* Registration approval/rejection
+* Payment status management
+* Training session management
+* Announcement management
+* Academy information management
+* Coaches management
+* Age-group management
+* Achievements management
+* Statistics management
+* Gallery management
+
+### Frontend
+
+* Responsive design
+* RTL layout for Persian users
+* Multi-step registration interface
+* Mobile navigation
+* Toast notifications
+* Scroll animations
+* Responsive admin and user panels
+* Modern football-themed UI
+* Vazirmatn and Teko typography
+* Font Awesome icons
+
+## Technology Stack
 
 ### Backend
 
-* Python 3
+* Python
 * Flask
 * Flask-SQLAlchemy
 * Flask-Login
 * Flask-WTF
 * Flask-Migrate
+* WTForms
+* SQLAlchemy
+* Werkzeug
 
 ### Database
 
-* SQLite
-* سازگار با PostgreSQL و MySQL
+* SQLite for local development
+* PostgreSQL for production
 
 ### Frontend
 
 * HTML5
 * CSS3
-* Vanilla JavaScript
+* JavaScript
 * Jinja2
-* FontAwesome 6
+* Font Awesome
 
-### Fonts
+### Deployment
 
-* Vazirmatn
-* Teko
+* Gunicorn
+* Render
+* PostgreSQL
 
-## 🚀 راهنمای نصب و راه‌اندازی محلی
+## Project Structure
 
-### 1. کلون کردن مخزن
-
-```bash
-git clone https://github.com/your-username/football-academy.git
-cd football-academy
+```text
+Mellipooshan-football-academy/
+│
+├── admin/
+│   ├── __init__.py
+│   ├── forms.py
+│   └── routes.py
+│
+├── auth/
+│   ├── __init__.py
+│   ├── forms.py
+│   └── routes.py
+│
+├── enrollment/
+│   ├── __init__.py
+│   ├── forms.py
+│   └── routes.py
+│
+├── panel/
+│   ├── __init__.py
+│   ├── forms.py
+│   └── routes.py
+│
+├── migrations/
+│
+├── static/
+│   ├── CSS/
+│   ├── JS/
+│   └── images/
+│
+├── templates/
+│   ├── admin/
+│   ├── auth/
+│   ├── enrollment/
+│   ├── panel/
+│   └── ...
+│
+├── app.py
+├── config.py
+├── extensions.py
+├── models.py
+├── security_utils.py
+├── seed.py
+├── requirements.txt
+└── README.md
 ```
 
-### 2. ساخت و فعال‌سازی محیط مجازی
+## Application Architecture
 
-#### Windows
+The application uses Flask Blueprints to separate the major parts of the system:
 
-```bash
-python -m venv venv
-venv\Scripts\activate
+```text
+Application
+│
+├── Authentication
+│   ├── Login
+│   ├── Registration
+│   └── Logout
+│
+├── Player Panel
+│   ├── Dashboard
+│   ├── Profile
+│   ├── Registrations
+│   └── Training Selection
+│
+├── Enrollment
+│   ├── Player Registration
+│   ├── File Uploads
+│   └── Payment Workflow
+│
+└── Administration
+    ├── Users
+    ├── Registrations
+    ├── Payments
+    ├── Trainings
+    ├── Announcements
+    └── Academy Content
 ```
 
-#### Linux / macOS
+## Security
+
+The project includes several security mechanisms:
+
+* Password hashing using Werkzeug
+* CSRF protection with Flask-WTF
+* Authentication with Flask-Login
+* Role-based authorization for administrators
+* Secure file naming for uploaded files
+* Protected administrative routes
+* Ownership checks for player registrations
+* POST requests for sensitive actions
+* Safe redirect URL validation
+* Secure session cookie configuration
+
+## Database Models
+
+The application uses SQLAlchemy ORM for database management.
+
+Major entities include:
+
+* `User`
+* `ClubRegistration`
+* `Training`
+* `Announcement`
+* `AboutUsMain`
+* `AboutFeature`
+* `AboutFacility`
+* `Coach`
+* `AboutAgeGroup`
+* `Achievement`
+* `AboutStat`
+* `GalleryItem`
+
+Relationships between users, player registrations, and training sessions are handled through SQLAlchemy.
+
+## Local Development
+
+### 1. Clone the repository
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+git clone https://github.com/alireza-oman/Mellipooshan-football-academy.git
+cd Mellipooshan-football-academy
 ```
 
-### 3. نصب وابستگی‌ها
+### 2. Create a virtual environment
+
+Windows:
+
+```bash
+python -m venv .venv
+```
+
+Activate it:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+Linux/macOS:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. آماده‌سازی دیتابیس و داده‌های اولیه
+### 4. Configure environment variables
 
-```bash
-python seed.py
+Create a `.env` file and configure the required application settings.
+
+Example:
+
+```env
+SECRET_KEY=your-secret-key
+DATABASE_URL=sqlite:///academy.db
 ```
 
-### 5. اجرای پروژه
+For production, use a PostgreSQL connection string instead of SQLite.
+
+### 5. Run the application
 
 ```bash
-python app.py
+flask run
 ```
 
-سپس مرورگر خود را باز کرده و وارد آدرس زیر شوید:
+The application will be available at:
 
 ```text
 http://127.0.0.1:5000
 ```
 
-## 👤 حساب کاربری مدیر پیش‌فرض
+## Production Deployment
 
-پس از اجرای پروژه، یک کاربر مدیر با دسترسی ادمین به‌صورت پیش‌فرض ایجاد می‌شود.
+The application can be deployed using **Gunicorn** with PostgreSQL.
 
-* **شماره موبایل:** `---`
-
-> در صورت استفاده از پروژه در محیط واقعی، حتماً اطلاعات ورود پیش‌فرض را تغییر دهید.
-
-## 📂 ساختار پروژه
-
-```text
-football-academy/
-│
-├── admin/                    # بلوپرینت و منطق پنل مدیریت
-├── auth/                     # بلوپرینت احراز هویت
-├── enrollment/               # ثبت‌نام دوره‌ها و آپلود اسناد
-├── panel/                    # پنل کاربری بازیکنان
-│
-├── static/
-│   ├── css/                 # استایل‌های عمومی و پنل‌ها
-│   ├── js/                  # اسکریپت‌های تعاملی
-│   └── uploads/             # تصاویر و مدارک آپلودشده
-│
-├── templates/               # قالب‌های Jinja2
-│
-├── app.py                   # نقطه ورود اصلی برنامه
-├── config.py                # تنظیمات Development و Production
-├── extensions.py            # نمونه‌سازی Extensionهای Flask
-├── models.py                # مدل‌های پایگاه داده
-├── seed.py                  # ایجاد داده‌های اولیه
-├── requirements.txt         # وابستگی‌های Python
-├── .gitignore               # فایل‌های نادیده گرفته‌شده توسط Git
-└── README.md                # مستندات پروژه
-```
-
-## 📌 ارسال پروژه به GitHub
-
-اگر هنوز Repository را به Git متصل نکرده‌اید:
+Example:
 
 ```bash
-git init
-git add .
-git commit -m "Initial commit: Football Academy Management System"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-git push -u origin main
+gunicorn app:app
 ```
 
-برای تغییرات بعدی:
-
-```bash
-git add .
-git commit -m "Update project"
-git push
-```
-
-## 🔐 نکات امنیتی
-
-قبل از انتشار پروژه در GitHub، اطلاعات حساس را داخل کد قرار ندهید.
-
-مواردی مانند:
+For production environments, configure:
 
 * `SECRET_KEY`
-* رمز عبور مدیر
-* اطلاعات اتصال به دیتابیس
-* API Keyها
-* اطلاعات درگاه پرداخت
+* `DATABASE_URL`
+* PostgreSQL database
+* Secure HTTPS configuration
 
-باید در Environment Variables یا فایل‌های محلی قرار بگیرند و در `.gitignore` ثبت شوند.
+## User Workflow
 
-## 📄 License
+A typical player registration workflow looks like this:
 
-این پروژه تحت مجوز **MIT License** منتشر شده است.
+```text
+Create Account
+      ↓
+Login
+      ↓
+Complete Player Registration
+      ↓
+Upload Required Documents
+      ↓
+Submit Registration
+      ↓
+Admin Review
+      ↓
+Registration Approved
+      ↓
+Payment
+      ↓
+Payment Approved
+      ↓
+Select Training Session
+```
 
-## 🏷️ Tags
+## Admin Workflow
 
-`Python` `Flask` `SQLAlchemy` `Flask-Login` `Flask-WTF` `Flask-Migrate` `SQLite` `JavaScript` `HTML5` `CSS3` `Jinja2` `Football Academy` `Management System` `RTL` `Web Application`
+Administrators can manage the main operational parts of the academy:
+
+```text
+Dashboard
+   │
+   ├── Users
+   ├── Player Registrations
+   ├── Payments
+   ├── Training Sessions
+   ├── Announcements
+   └── Academy Content
+          ├── Coaches
+          ├── Age Groups
+          ├── Facilities
+          ├── Achievements
+          ├── Statistics
+          └── Gallery
+```
+
+## UI and Design
+
+The interface is designed for a Persian-speaking football academy and uses an RTL layout.
+
+The design focuses on:
+
+* Dark football-inspired visual styling
+* Responsive layouts
+* Mobile-friendly navigation
+* Clear registration steps
+* Separate user and administration interfaces
+* Persian typography
+* Interactive UI elements
+
+## Project Status
+
+This project is an ongoing Flask-based football academy management system developed as a practical backend project.
+
+It demonstrates experience with:
+
+* Flask application architecture
+* SQLAlchemy and relational databases
+* Authentication and authorization
+* Form validation
+* File uploads
+* Administrative systems
+* Responsive frontend integration
+* Production deployment
+
+## License
+
+This project is currently intended as a personal portfolio and learning project.
+
+All rights reserved unless otherwise specified.
