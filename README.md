@@ -4,39 +4,39 @@
 
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-Web%20Framework-000000?logo=flask&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Production%20DB-336791?logo=postgresql&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-Local%20DB-003B57?logo=sqlite&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-ORM-D71F00?logo=sqlalchemy&logoColor=white)
+![License](https://img.shields.io/badge/License-All%20Rights%20Reserved-lightgrey)
 
-A full-stack football academy management and online player registration platform built with **Python** and **Flask**. It supports user authentication, multi-step online player registration with document uploads, payment status tracking, training session selection, announcements, and a dedicated administration panel.
+A modular, full-stack football academy management and online player registration platform built with **Python** and **Flask**. Designed with a responsive RTL interface for Persian-speaking users, it supports phone-based authentication, multi-step player registration with document uploads, tuition payment review, weekly training shift selection, announcements, and a dedicated administration panel with a built-in CMS.
 
 ---
 
 ## Features
 
-- **User Authentication:** Registration, login, remember-me authentication, profile management, avatar upload, password change, and account activation/deactivation powered by `Flask-Login` and `Flask-WTF`.
-- **Multi-Step Player Registration:** Guided onboarding capturing player personal details, parent/guardian info, football background/playing position, contact details, and required document uploads.
-- **Player Panel:** Personal dashboard displaying registration status, payment verification status, training session selection, and academy announcements.
-- **Administration Panel:** Custom dashboard with system statistics, user management, registration approval/rejection, payment status updates, training session management, and announcements.
-- **Dynamic Academy CMS:** Full management of academy info, coaches, age groups, facilities, achievements, statistics, and gallery items.
-- **Security Hardening:** Password hashing via `Werkzeug`, CSRF protection via `Flask-WTF`, role-based access control (RBAC), secure filename sanitization, ownership checks, POST-only sensitive actions, and safe redirect URL validation.
-- **Responsive RTL Frontend:** Dark football-themed interface tailored for Persian users with right-to-left layout, Vazirmatn & Teko typography, mobile navigation, and toast notifications.
-- **Database Migrations:** Version-controlled schema management via `Alembic` (`Flask-Migrate`).
+- **User Authentication & Security:** Phone-based registration and login powered by `Flask-Login`, Werkzeug password hashing, remember-me sessions, safe redirect validation, CSRF protection (`Flask-WTF`), and rate limiting (`Flask-Limiter`).
+- **Multi-Step Online Player Registration:** Guided 6-step enrollment form capturing player details, guardian information, football background, address, and required document uploads (personal photo, ID card, sports insurance, and consent form).
+- **Player & Parent Panel:** Personal dashboard for tracking registration approval status (including rejection reasons), viewing payment status, selecting weekly training shifts after payment approval, reading academy announcements, and managing profile details, password, and avatar.
+- **Administration Panel:** Role-protected management interface featuring live system statistics, paginated user management (with self-deletion and last-admin safeguards), registration approval/rejection with custom reasons, tuition payment verification, training schedule management, and categorized announcements.
+- **Dynamic Academy CMS:** Full control over the "About Us" page from the admin panel—including academy mission/vision, features, facilities, coaches, age groups, achievements, statistics, and photo gallery—with secure file naming and automatic cleanup of deleted media.
+- **Custom Error Pages:** Dedicated templates for HTTP `403` and `404` responses.
+- **Database Migrations & Seeding:** Schema versioning via Alembic (`Flask-Migrate`) and initial data setup via `seed.py`.
 
 ---
 
 ## Application Flow
 
-1. **Player Journey:** Create account → Login → Complete multi-step registration → Upload documents → Submit registration → Wait for admin approval → Complete payment → Payment approved → Select training session.
-2. **Admin Journey:** Access admin panel → Review dashboard metrics & incoming registrations → Approve/reject players & verify payments → Manage training sessions, announcements & academy CMS content.
+1. **Player / Parent Journey:** Create account → Log in → Complete 6-step registration & upload documents → Wait for admin review → Complete tuition payment → Wait for payment approval → Select a weekly training shift.
+2. **Admin Journey:** Access admin dashboard → Review pending player registrations (approve/reject with reason) → Verify tuition payments → Manage training schedules, announcements, users, and academy CMS content.
 
 ---
 
 ## Tech Stack
 
-- **Backend:** Python, Flask, Flask-Login, Flask-WTF, WTForms, Werkzeug
-- **Database & ORM:** SQLAlchemy, Alembic (Flask-Migrate), SQLite (Local), PostgreSQL (Production)
-- **Frontend:** Jinja2 Templates, HTML5, CSS3, Vanilla JavaScript, Font Awesome
-- **Deployment:** Gunicorn, Render, PostgreSQL
+- **Backend:** Python, Flask, Flask-Login, Flask-Limiter, Werkzeug
+- **Database & ORM:** SQLAlchemy, Flask-SQLAlchemy, Alembic (Flask-Migrate), SQLite (development), PostgreSQL (production)
+- **Forms & Validation:** Flask-WTF, WTForms
+- **Frontend:** Jinja2 Templates, HTML5, CSS3 (RTL), Vanilla JavaScript, Font Awesome
+- **Deployment:** Gunicorn
 
 ---
 
@@ -44,32 +44,28 @@ A full-stack football academy management and online player registration platform
 
 ```text
 Mellipooshan-football-academy/
-├── admin/                  # Admin blueprint (dashboard, approvals, CMS management)
-│   ├── __init__.py
-│   ├── forms.py
-│   └── routes.py
-├── auth/                   # Authentication blueprint (login, register, logout)
-│   ├── __init__.py
-│   ├── forms.py
-│   └── routes.py
-├── enrollment/             # Player registration, file uploads & payment workflow
-│   ├── __init__.py
-│   ├── forms.py
-│   └── routes.py
-├── panel/                  # Player dashboard, profile & training selection
-│   ├── __init__.py
-│   ├── forms.py
-│   └── routes.py
-├── migrations/             # Alembic database migration scripts
-├── static/                 # Static assets (CSS, JS, images)
-├── templates/              # Jinja2 HTML templates organized by blueprint
-├── app.py                  # Application factory & entry point
-├── config.py               # Environment-based configuration
-├── extensions.py           # Flask extensions initialization
-├── models.py               # SQLAlchemy ORM models
-├── security_utils.py       # Custom security helpers & validators
-├── seed.py                 # Database seeding script
-├── requirements.txt        # Python dependencies
+├── admin/                   # Admin blueprint, forms, and management routes
+├── auth/                    # Authentication blueprint (signup, login, logout)
+├── enrollment/              # Multi-step player registration and document uploads
+├── panel/                   # Player/parent dashboard, profile, and training selection
+├── migrations/              # Alembic database migration scripts
+├── static/
+│   ├── CSS/                 # Modular stylesheets (public, auth, panel, admin)
+│   ├── JS/                  # Interactive scripts (base, profile, registration)
+│   └── images/              # Static assets and academy logo
+├── templates/
+│   ├── admin/               # Admin dashboard and CMS templates
+│   ├── auth/                # Login and signup templates
+│   ├── enrollment/          # Multi-step course registration template
+│   ├── error/               # Custom 403 and 404 error pages
+│   └── panel/               # Player panel templates
+├── app.py                   # Application entry point
+├── config.py                # Development and production configurations
+├── extensions.py            # Flask extensions initialization
+├── models.py                # SQLAlchemy database models
+├── security_utils.py        # Admin decorators, safe URL checks, and secure file handling
+├── seed.py                  # Initial database seeding script
+├── requirements.txt         # Python dependencies
 └── .gitignore
 ```
 
@@ -86,23 +82,19 @@ Mellipooshan-football-academy/
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/alireza-oman/Mellipooshan-football-academy.git](https://github.com/alireza-oman/Mellipooshan-football-academy.git)
+   git clone https://github.com/alireza-oman/Mellipooshan-football-academy.git
    cd Mellipooshan-football-academy
    ```
 
 2. **Create and activate a virtual environment:**
    ```bash
    # Linux / macOS
-   python3 -m venv .venv
-   source .venv/bin/activate
-
-   # Windows (Command Prompt)
-   python -m venv .venv
-   .venv\Scripts\activate
+   python3 -m venv venv
+   source venv/bin/activate
 
    # Windows (PowerShell)
-   python -m venv .venv
-   .venv\Scripts\Activate.ps1
+   python -m venv venv
+   venv\Scripts\Activate.ps1
    ```
 
 3. **Install dependencies:**
@@ -116,25 +108,22 @@ Mellipooshan-football-academy/
    SECRET_KEY=your-secret-key-here
    DATABASE_URL=sqlite:///academy.db
    ```
-   > **Security Note:** Never commit your `.env` file or real credentials to Git.
+   > **Security Note:** Never commit your `.env` file, real credentials, or production database URLs to Git. For production deployments, use PostgreSQL and serve the app with Gunicorn (`gunicorn app:app`).
 
-5. **Run database migrations:**
+5. **Initialize the database and seed initial data:**
    ```bash
+   # Apply database migrations (if using Alembic)
    flask db upgrade
+
+   # Seed initial data
+   python seed.py
    ```
 
 6. **Start the application:**
    ```bash
-   flask run
+   python app.py
    ```
    The application will be available at `http://127.0.0.1:5000`.
-
-### Production Deployment
-
-For production environments (such as Render), configure `SECRET_KEY` and a `PostgreSQL` `DATABASE_URL`, then serve with Gunicorn:
-```bash
-gunicorn app:app
-```
 
 ---
 
@@ -142,66 +131,59 @@ gunicorn app:app
 
 | Model | Description |
 | :--- | :--- |
-| `User` | Registered player and administrator accounts |
-| `ClubRegistration` | Multi-step player enrollment records, documents, and approval/payment statuses |
-| `Training` | Available academy training schedules and sessions |
-| `Announcement` | Official academy news and announcements |
-| `AboutUsMain` / `AboutFeature` / `AboutFacility` | Academy overview, core features, and facility details |
-| `Coach` / `AboutAgeGroup` | Coaching staff profiles and age-group categories |
-| `Achievement` / `AboutStat` / `GalleryItem` | Academy honors, key statistics, and media gallery |
-
----
-
-## Roadmap / Future Improvements
-
-- [ ] Add automated unit and integration tests (`pytest`)
-- [ ] Add `.env.example` for easier onboarding
-- [ ] Implement online payment gateway integration alongside manual verification
-- [ ] Optimize static image assets (e.g., WebP compression)
+| `User` | Registered player/parent and administrator accounts |
+| `ClubRegistration` | Player enrollment records, uploaded documents, approval status, and payment status |
+| `Training` | Weekly training shifts, age groups, venues, and schedules |
+| `Announcement` | Categorized academy notices with priority/importance flags |
+| `AboutUsMain` | Core academy introduction, mission, vision, and CTA content |
+| `AboutFeature` & `AboutFacility` | Academy highlights and training facilities |
+| `Coach` | Coaching staff profiles, roles, bios, and photos |
+| `AboutAgeGroup` | Supported academy age categories |
+| `Achievement` & `AboutStat` | Club honors, trophies, and key numerical statistics |
+| `GalleryItem` | Categorized media gallery images (trainings, matches, ceremonies) |
 
 ---
 
 ## License
 
-Copyright © 2026 Alireza. All rights reserved.
-This software is proprietary and developed exclusively for Mellipooshan Football Academy. It is published here solely for portfolio showcase purposes; unauthorized copying, distribution, or modification is strictly prohibited.
+All rights reserved unless otherwise specified. This project is developed as a portfolio and practical backend web application.
 
 ---
 
 <div id="mellipooshan-football-academy-persian" dir="rtl">
 
-# آکادمی فوتبال ملی‌پوشان (Mellipooshan Football Academy)
+# سامانه مدیریت و ثبت‌نام آکادمی فوتبال ملی‌پوشان
 
-یک وب‌اپلیکیشن فول‌استک ساخته‌شده با **Python** و **Flask** برای مدیریت آکادمی فوتبال و ثبت‌نام آنلاین بازیکنان. این سامانه شامل احراز هویت کاربران، فرم ثبت‌نام چندمرحله‌ای همراه با بارگذاری مدارک، پیگیری وضعیت تایید و پرداخت، انتخاب سانس تمرینی و پنل مدیریت اختصاصی است.
+یک وب‌اپلیکیشن یکپارچه و ماژولار ساخته‌شده با **Python** و **Flask** برای مدیریت آکادمی فوتبال و ثبت‌نام آنلاین بازیکنان. این سامانه با رابط کاربری کاملاً راست‌چین (RTL) و واکنش‌گرا طراحی شده و شامل احراز هویت با شماره موبایل، ثبت‌نام چندمرحله‌ای همراه با آپلود مدارک، بررسی و تأیید شهریه، انتخاب شیفت تمرینی هفتگی، سیستم اطلاعیه‌رسانی و پنل مدیریت اختصاصی با قابلیت مدیریت محتوا (CMS) است.
 
 ---
 
 ## ویژگی‌ها
 
-- **احراز هویت کاربران:** ثبت‌نام، ورود، قابلیت «مرا به خاطر بسپار»، مدیریت پروفایل، آپلود آواتار، تغییر رمز عبور و فعال/غیرفعال‌سازی حساب‌ها با `Flask-Login` و `Flask-WTF`.
-- **ثبت‌نام آنلاین چندمرحله‌ای:** دریافت گام‌به‌گام اطلاعات فردی بازیکن، مشخصات والدین، سوابق فوتبالی و پست بازی، اطلاعات تماس و بارگذاری مدارک.
-- **پنل اختصاصی بازیکن:** داشبورد کاربری برای مشاهده وضعیت ثبت‌نام، وضعیت تایید پرداخت، انتخاب سانس تمرینی و مشاهده اطلاعیه‌ها.
-- **پنل مدیریت اختصاصی:** داشبورد آماری سیستم، مدیریت کاربران، تایید یا رد ثبت‌نام‌ها، مدیریت وضعیت پرداخت‌ها، تعریف سانس‌های تمرینی و انتشار اطلاعیه‌ها.
-- **مدیریت محتوای آکادمی (CMS):** مدیریت پویا برای معرفی آکادمی، مربیان، رده‌های سنی، امکانات، افتخارات، آمارها و گالری تصاویر.
-- **امنیت و حفاظت داده‌ها:** هش کردن رمزها با `Werkzeug`، محافظت CSRF با `Flask-WTF`، کنترل دسترسی مبتنی بر نقش، ایمن‌سازی نام فایل‌های آپلودی، بررسی مالکیت رکوردها و اعتبارسنجی آدرس‌های بازگشتی.
-- **رابط کاربری راست‌به‌چپ (RTL):** طراحی تیره و واکنش‌گرا با فونت‌های وزیرمتن و Teko، منوی موبایل و اعلان‌های Toast.
-- **مدیریت تغییرات دیتابیس:** مایگریشن‌های نسخه‌بندی‌شده با `Alembic` (`Flask-Migrate`).
+- **احراز هویت و امنیت:** ثبت‌نام و ورود مبتنی بر شماره موبایل با `Flask-Login`، رمزنگاری امن رمز عبور (Werkzeug)، قابلیت «مرا به خاطر بسپار»، اعتبارسنجی ریدایرکت‌های امن، محافظت CSRF با `Flask-WTF` و محدودسازی نرخ درخواست‌ها با `Flask-Limiter`.
+- **ثبت‌نام آنلاین چندمرحله‌ای:** فرم هوشمند ۶ مرحله‌ای برای ثبت مشخصات بازیکن، اطلاعات ولی، سابقه ورزشی، آدرس و آپلود مدارک موردنیاز (عکس پرسنلی، شناسنامه، بیمه ورزشی و رضایت‌نامه).
+- **پنل اولیا و بازیکنان:** داشبورد شخصی برای رهگیری وضعیت پرونده (همراه با مشاهده علت رد احتمالی)، پیگیری وضعیت پرداخت شهریه، انتخاب شیفت تمرینی هفتگی پس از تأیید شهریه، مشاهده اطلاعیه‌ها و مدیریت پروفایل، رمز عبور و آواتار.
+- **پنل مدیریت ارشد:** داشبورد آماری با دسترسی محدود به ادمین، مدیریت کاربران همراه با صفحه‌بندی (با محافظت در برابر حذف خود و حذف آخرین ادمین)، بررسی و تأیید یا رد پرونده‌های ثبت‌نام با ذکر دلیل، تأیید یا رد پرداخت‌ها، برنامه‌ریزی شیفت‌های تمرینی و انتشار اطلاعیه‌های دسته‌بندی‌شده.
+- **سیستم مدیریت محتوای پویا (CMS):** مدیریت کامل بخش‌های صفحه «درباره ما» از جمله معرفی، مأموریت و چشم‌انداز، ویژگی‌ها، امکانات، مربیان، رده‌های سنی، افتخارات، آمارها و گالری تصاویر همراه با ذخیره‌سازی امن فایل‌ها و پاکسازی خودکار رسانه‌های حذف‌شده.
+- **صفحات خطای اختصاصی:** قالب‌های طراحی‌شده برای خطاهای `403` و `404`.
+- **مدیریت دیتابیس و داده‌های اولیه:** مدیریت تغییرات ساختار دیتابیس با `Alembic` (`Flask-Migrate`) و مقداردهی اولیه با اسکریپت `seed.py`.
 
 ---
 
 ## جریان کار سیستم
 
-1. **مسیر بازیکن:** ایجاد حساب کاربری ← ورود ← تکمیل فرم چندمرحله‌ای ← بارگذاری مدارک ← ارسال درخواست ← تایید ثبت‌نام توسط ادمین ← پرداخت شهریه ← تایید پرداخت ← انتخاب سانس تمرینی.
-2. **مسیر ادمین:** ورود به پنل مدیریت ← بررسی آمار داشبورد و ثبت‌نام‌های جدید ← تایید یا رد بازیکنان و بررسی پرداخت‌ها ← مدیریت سانس‌ها، اطلاعیه‌ها و محتوای سایت.
+1. **مسیر بازیکن / ولی:** ایجاد حساب کاربری ← ورود به سیستم ← تکمیل فرم ۶ مرحله‌ای و آپلود مدارک ← بررسی پرونده توسط مدیریت ← پرداخت شهریه ← تأیید پرداخت ← انتخاب شیفت تمرینی هفتگی.
+2. **مسیر ادمین:** ورود به داشبورد مدیریت ← بررسی پرونده‌های در انتظار تأیید (تأیید یا رد با ثبت علت) ← بررسی و تأیید شهریه‌ها ← مدیریت شیفت‌های تمرینی، اطلاعیه‌ها، کاربران و محتوای صفحه درباره ما.
 
 ---
 
 ## تکنولوژی‌های استفاده‌شده
 
-- **بک‌اند:** Python, Flask, Flask-Login, Flask-WTF, WTForms, Werkzeug
-- **دیتابیس و ORM:** SQLAlchemy, Alembic (Flask-Migrate), SQLite (محیط توسعه), PostgreSQL (محیط عملیاتی)
-- **فرانت‌اند:** Jinja2 Templates, HTML5, CSS3, Vanilla JavaScript, Font Awesome
-- **استقرار (Deployment):** Gunicorn, Render, PostgreSQL
+- **بک‌اند:** Python, Flask, Flask-Login, Flask-Limiter, Werkzeug
+- **دیتابیس و ORM:** SQLAlchemy, Flask-SQLAlchemy, Alembic (Flask-Migrate)، SQLite (توسعه)، PostgreSQL (محیط واقعی)
+- **فرم‌ها و اعتبارسنجی:** Flask-WTF, WTForms
+- **فرانت‌اند:** Jinja2 Templates, HTML5, CSS3 (RTL), Vanilla JavaScript, Font Awesome
+- **استقرار (Deployment):** Gunicorn
 
 ---
 
@@ -219,7 +201,7 @@ This software is proprietary and developed exclusively for Mellipooshan Football
 <div dir="ltr">
 
 ```bash
-git clone [https://github.com/alireza-oman/Mellipooshan-football-academy.git](https://github.com/alireza-oman/Mellipooshan-football-academy.git)
+git clone https://github.com/alireza-oman/Mellipooshan-football-academy.git
 cd Mellipooshan-football-academy
 ```
 
@@ -231,16 +213,12 @@ cd Mellipooshan-football-academy
 
 ```bash
 # Linux / macOS
-python3 -m venv .venv
-source .venv/bin/activate
-
-# Windows (Command Prompt)
-python -m venv .venv
-.venv\Scripts\activate
+python3 -m venv venv
+source venv/bin/activate
 
 # Windows (PowerShell)
-python -m venv .venv
-.venv\Scripts\Activate.ps1
+python -m venv venv
+venv\Scripts\Activate.ps1
 ```
 
 </div>
@@ -267,14 +245,18 @@ DATABASE_URL=sqlite:///academy.db
 
 </div>
 
-   > **نکته امنیتی:** هرگز فایل `.env` یا کلیدهای واقعی خود را روی گیت کامیت نکنید.
+   > **نکته امنیتی:** هرگز فایل `.env`، رمزهای عبور یا اطلاعات دیتابیس واقعی را روی گیت کامیت نکنید. برای استقرار در محیط واقعی از PostgreSQL و `gunicorn app:app` استفاده کنید.
 
-5. **اجرای مایگریشن‌های دیتابیس:**
+5. **آماده‌سازی دیتابیس و داده‌های اولیه:**
 
 <div dir="ltr">
 
 ```bash
+# اجرای مایگریشن‌های دیتابیس
 flask db upgrade
+
+# ایجاد داده‌های اولیه
+python seed.py
 ```
 
 </div>
@@ -284,7 +266,7 @@ flask db upgrade
 <div dir="ltr">
 
 ```bash
-flask run
+python app.py
 ```
 
 </div>
@@ -293,16 +275,8 @@ flask run
 
 ---
 
-## نقشه راه و بهبودهای آینده
-
-- [ ] افزودن تست‌های خودکار با `pytest`
-- [ ] افزودن فایل `.env.example` برای راه‌اندازی سریع‌تر
-- [ ] اتصال به درگاه پرداخت آنلاین در کنار بررسی دستی
-- [ ] بهینه‌سازی حجم تصاویر استاتیک (تبدیل به WebP)
-
----
 ## لایسنس
 
-تمامی حقوق این نرم‌افزار متعلق به توسعه‌دهنده و آکادمی فوتبال ملی‌پوشان است. این مخزن صرفاً جهت نمایش در نمونه‌کار (پورتفولیو) منتشر شده و هرگونه کپی‌برداری، انتشار یا استفاده غیرمجاز بدون اجازه کتبی ممنوع می‌باشد..
+تمامی حقوق این پروژه محفوظ است (All Rights Reserved)، مگر اینکه خلاف آن ذکر شده باشد. این پروژه به‌عنوان یک نمونه کار عملی در حوزه توسعه بک‌اند طراحی و پیاده‌سازی شده است.
 
 </div>
